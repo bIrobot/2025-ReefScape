@@ -75,9 +75,9 @@ public class DriveSubsystem extends SubsystemBase {
     // store this in your Constants file
     RobotConfig config = null;
     try{
-      config = RobotConfig.fromGUISettings();
+      config = RobotConfig.fromGUISettings();  // load settings from deployed pathplanner settings.json
     } catch (Exception e) {
-      // Handle exception as needed
+      // Handle exception as needed; config will be null below and we'll except again
       e.printStackTrace();
     }
 
