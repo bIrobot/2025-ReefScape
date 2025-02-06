@@ -1,0 +1,4 @@
+don't forget:
+
+Constants.java -- review and compare to 2024
+settings.json -- set all parameters thru pathplanner gui (and measure bumpers)
