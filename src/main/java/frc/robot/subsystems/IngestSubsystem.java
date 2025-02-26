@@ -20,7 +20,9 @@ public class IngestSubsystem extends SubsystemBase{
     private SparkAbsoluteEncoder m_PivotEncoder;
 
     private IngestState m_currentIngestState = IngestState.STOP;
+    private double m_IngestTime = 0;
     private PivotState m_currentPivotState = PivotState.STOW;
+    private double m_PivotTime = 0;
 
     private static final double k_pivotMotorP = 0.12;
     private static final double k_pivotMotorI = 0.0;
@@ -40,7 +42,8 @@ public class IngestSubsystem extends SubsystemBase{
         STOW
     };
   
-    public IngestSubsystem() {
+    public IngestSubsystem()
+    {
         m_ingestMotorLeft = new SparkMax(17, MotorType.kBrushless);
 
         m_ingestMotorRight = new SparkMax(15, MotorType.kBrushless);
@@ -88,19 +91,28 @@ public class IngestSubsystem extends SubsystemBase{
         }
     }
 
-    public boolean getIngestHasCoral() {
+    public boolean getIngestHasCoral()
+    {
         // TODO
         return false;
     }
 
-    public void startIngesting() {
+    public void startIngesting()
+    {
         m_currentIngestState = IngestState.FORWARD;
         m_currentPivotState = PivotState.GROUND;
     }
 
-    public void stopIngesting() {
+    public void stopIngesting()
+    {
         m_currentIngestState = IngestState.STOP;
         m_currentPivotState = PivotState.HANDOFF;
+    }
+
+    public void reverseIngesting()
+    {
+        m_currentIngestState = IngestState.REVERSE;
+        m_IngestTime = System.nanoTime();
     }
 
     public boolean isPivotAtTarget() {
@@ -116,7 +128,7 @@ public class IngestSubsystem extends SubsystemBase{
         // XXX if we find coral, stop ingesting
         //stopIngesting();
 
-        //setIngestMotorToTarget();
+        setIngestMotorToTarget();
         setPivotAngleToTarget();
     }
 
@@ -127,8 +139,12 @@ public class IngestSubsystem extends SubsystemBase{
                 m_ingestMotorRight.set(IngestConstants.k_intakeSpeed+0.05);
                 break;
             case REVERSE:
-                m_ingestMotorLeft.set(IngestConstants.k_ejectSpeed);
-                m_ingestMotorRight.set(IngestConstants.k_ejectSpeed);
+                if (System.nanoTime() - m_IngestTime > IngestConstants.k_reverseNsec) {
+                    m_currentIngestState = IngestState.STOP;
+                } else {
+                    m_ingestMotorLeft.set(IngestConstants.k_ejectSpeed);
+                    m_ingestMotorRight.set(IngestConstants.k_ejectSpeed);
+                }
                 break;
             case STOP:
                 m_ingestMotorLeft.set(0.0);

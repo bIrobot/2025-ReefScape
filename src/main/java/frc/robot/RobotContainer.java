@@ -65,6 +65,8 @@ public class RobotContainer {
         m_IngestSubsystem.startIngesting();
     } else if (m_driverController.getXButtonReleased()){
         m_IngestSubsystem.stopIngesting();
+    } else if (m_driverController.getBButtonPressed()) {
+        m_IngestSubsystem.reverseIngesting();
     }
   }
 
