@@ -22,6 +22,29 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static final class ArmConstants {
+    public static final double kClimberGearRatio = 1.0 / 12.0;
+  }
+
+  public static final class ElevatorConstants {
+  }
+  
+  public static final class IngestConstants {
+    // Intake speeds
+    public static final double k_intakeSpeed = 0.25;
+    public static final double k_ejectSpeed = -0.5;
+
+    public static final double k_pivotSpeed = 0.1;
+
+    // Pivot set point encodings; readings are from 0..1(not inclusive).
+    // Any values above Wrap are considered Ground; any values between Stow and Wrap are considered Stow.
+    public static final double k_pivotAngleGroundFraction = 0.00;  // MUST BE 0 -- zero absolute encoder here!
+    public static final double k_pivotAngleHandoffFraction = 0.36;
+    public static final double k_pivotAngleStowFraction = 0.44;
+    public static final double k_pivotAngleWrapFraction = k_pivotAngleStowFraction + (1-k_pivotAngleStowFraction)/2;
+    public static final double k_pivotFractionResolution = 0.02;
+  }
+  
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
