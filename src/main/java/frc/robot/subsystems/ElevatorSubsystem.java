@@ -38,10 +38,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     public ElevatorSubsystem()
     {
         m_ElevatorMotorLeft = new SparkMax(10, MotorType.kBrushless);  // XXX Constants
+        m_ElevatorEncoder = m_ElevatorMotorLeft.getAbsoluteEncoder();
 
         m_ElevatorMotorRight = new SparkMax(9, MotorType.kBrushless);  // XXX Constants
-
-        m_ElevatorEncoder = m_ElevatorMotorLeft.getAbsoluteEncoder();
 
         SparkMaxConfig configLeft = new SparkMaxConfig();
         configLeft.idleMode(IdleMode.kBrake);
@@ -69,7 +68,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (ticks++%50==0) System.out.println("Encoder: " + m_ElevatorEncoder.getPosition());
+        if (ticks++%50==0) System.out.println("ELEVATOR: Encoder: " + m_ElevatorEncoder.getPosition());
 
         setElevatorMotorToTarget();
     }

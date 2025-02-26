@@ -21,6 +21,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IngestSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ArmSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -38,6 +39,9 @@ public class RobotContainer {
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final IngestSubsystem m_IngestSubsystem = new IngestSubsystem();
   private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
+  private final ArmSubsystem m_ArmSubsystem = new ArmSubsystem();
+
+  private int ticks = 0;
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -71,15 +75,11 @@ public class RobotContainer {
         m_IngestSubsystem.reverseIngesting();
     }
 
-    if (m_driverController.getYButton()) {
+    if (m_driverController.getLeftBumperButton()) {
         m_ElevatorSubsystem.elevatorUp();
-    } else if (m_driverController.getYButtonReleased()) {
-        m_ElevatorSubsystem.elevatorStop();
-    }
-
-    if (m_driverController.getAButton()) {
+    } else if (m_driverController.getLeftTriggerAxis() > .1) {
         m_ElevatorSubsystem.elevatorDown();
-    } else if (m_driverController.getAButtonReleased()) {
+    } else {
         m_ElevatorSubsystem.elevatorStop();
     }
 }

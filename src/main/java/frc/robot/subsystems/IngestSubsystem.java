@@ -21,7 +21,7 @@ public class IngestSubsystem extends SubsystemBase{
 
     private IngestState m_currentIngestState = IngestState.STOP;
     private double m_IngestTime = 0;
-    private PivotState m_currentPivotState = PivotState.STOW;
+    private PivotState m_currentPivotState = PivotState.GROUND;  // STOW
     private double m_PivotTime = 0;
 
     private static final double k_pivotMotorP = 0.12;
@@ -49,7 +49,6 @@ public class IngestSubsystem extends SubsystemBase{
         m_ingestMotorRight = new SparkMax(15, MotorType.kBrushless);  // XXX Constants
 
         m_PivotMotor = new SparkMax(16, MotorType.kBrushless);  // XXX Constants
-
         m_PivotEncoder = m_PivotMotor.getAbsoluteEncoder();
 
         SparkMaxConfig configPivot = new SparkMaxConfig();
@@ -121,7 +120,7 @@ public class IngestSubsystem extends SubsystemBase{
 
     @Override
     public void periodic() {
-        if (ticks++%50==0) System.out.println("Position: " + getPivotEncoderFraction() +
+        if (ticks++%50==0) System.out.println("INGEST: Position: " + getPivotEncoderFraction() +
                                               " Target: " + getPivotTargetFraction() +
                                               " atTarget: " + isPivotAtTarget());
 
