@@ -20,6 +20,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IngestSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -36,6 +37,7 @@ public class RobotContainer {
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final IngestSubsystem m_IngestSubsystem = new IngestSubsystem();
+  private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -68,7 +70,19 @@ public class RobotContainer {
     } else if (m_driverController.getBButtonPressed()) {
         m_IngestSubsystem.reverseIngesting();
     }
-  }
+
+    if (m_driverController.getYButton()) {
+        m_ElevatorSubsystem.elevatorUp();
+    } else if (m_driverController.getYButtonReleased()) {
+        m_ElevatorSubsystem.elevatorStop();
+    }
+
+    if (m_driverController.getAButton()) {
+        m_ElevatorSubsystem.elevatorDown();
+    } else if (m_driverController.getAButtonReleased()) {
+        m_ElevatorSubsystem.elevatorStop();
+    }
+}
 
   /**
    * Use this method to define your button->command mappings. Buttons can be

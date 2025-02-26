@@ -44,11 +44,11 @@ public class IngestSubsystem extends SubsystemBase{
   
     public IngestSubsystem()
     {
-        m_ingestMotorLeft = new SparkMax(17, MotorType.kBrushless);
+        m_ingestMotorLeft = new SparkMax(17, MotorType.kBrushless);  // XXX Constants
 
-        m_ingestMotorRight = new SparkMax(15, MotorType.kBrushless);
+        m_ingestMotorRight = new SparkMax(15, MotorType.kBrushless);  // XXX Constants
 
-        m_PivotMotor = new SparkMax(16, MotorType.kBrushless);
+        m_PivotMotor = new SparkMax(16, MotorType.kBrushless);  // XXX Constants
 
         m_PivotEncoder = m_PivotMotor.getAbsoluteEncoder();
 
@@ -136,14 +136,14 @@ public class IngestSubsystem extends SubsystemBase{
         switch (m_currentIngestState){
             case FORWARD:
                 m_ingestMotorLeft.set(IngestConstants.k_intakeSpeed);
-                m_ingestMotorRight.set(IngestConstants.k_intakeSpeed+0.05);
+                m_ingestMotorRight.set(-IngestConstants.k_intakeSpeed-0.05);
                 break;
             case REVERSE:
                 if (System.nanoTime() - m_IngestTime > IngestConstants.k_reverseNsec) {
                     m_currentIngestState = IngestState.STOP;
                 } else {
                     m_ingestMotorLeft.set(IngestConstants.k_ejectSpeed);
-                    m_ingestMotorRight.set(IngestConstants.k_ejectSpeed);
+                    m_ingestMotorRight.set(-IngestConstants.k_ejectSpeed);
                 }
                 break;
             case STOP:
