@@ -26,7 +26,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private double lastPos = -1.0;  // illegal value
     private int revolutions = 0;
 
-    public enum ElevatorState {
+    public enum ElevatorState {  // XXX -- should be private!
         STOP,
         UP,
         DOWN,

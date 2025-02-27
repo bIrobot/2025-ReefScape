@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.IngestConstants;
+import frc.robot.subsystems.ElevatorSubsystem.ElevatorState;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -14,9 +15,9 @@ import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 public class ArmSubsystem extends SubsystemBase{
-    private final SparkMax m_armMotorLeft;
-    private final SparkMax m_armMotorRight;
-    private SparkAbsoluteEncoder m_armEncoder;
+    private final SparkMax m_ArmMotorLeft;
+    private final SparkMax m_ArmMotorRight;
+    private SparkAbsoluteEncoder m_ArmEncoder;
 
     private final SparkMax m_handMotor;
     private SparkAbsoluteEncoder m_handEncoder;
@@ -32,11 +33,14 @@ public class ArmSubsystem extends SubsystemBase{
 
     private int ticks = 0;
 
-    private enum ArmState {
+    public enum ArmState {  // XXX -- should be private!
         STOP,
         UP,
-        DOWN
-        // XXX -- real state targets, not motions
+        DOWN,
+        LEVEL1,
+        LEVEL2,
+        LEVEL3,
+        LEVEL4
     };
   
     private enum HandState {
@@ -54,10 +58,10 @@ public class ArmSubsystem extends SubsystemBase{
 
     public ArmSubsystem()
     {
-        m_armMotorLeft = new SparkMax(11, MotorType.kBrushless);  // XXX Constants
-        m_armEncoder = m_armMotorLeft.getAbsoluteEncoder();
+        m_ArmMotorLeft = new SparkMax(11, MotorType.kBrushless);  // XXX Constants
+        m_ArmEncoder = m_ArmMotorLeft.getAbsoluteEncoder();
 
-        m_armMotorRight = new SparkMax(12, MotorType.kBrushless);  // XXX Constants
+        m_ArmMotorRight = new SparkMax(12, MotorType.kBrushless);  // XXX Constants
 
         m_handMotor = new SparkMax(13, MotorType.kBrushless);  // XXX Constants
         m_handEncoder = m_handMotor.getAbsoluteEncoder();
@@ -66,11 +70,11 @@ public class ArmSubsystem extends SubsystemBase{
 
         SparkMaxConfig configArmLeft = new SparkMaxConfig();
         configArmLeft.idleMode(IdleMode.kBrake);
-        m_armMotorLeft.configure(configArmLeft, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        m_ArmMotorLeft.configure(configArmLeft, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         SparkMaxConfig configArmRight = new SparkMaxConfig();
         configArmRight.idleMode(IdleMode.kBrake);
-        m_armMotorRight.configure(configArmRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        m_ArmMotorRight.configure(configArmRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         SparkMaxConfig configHand = new SparkMaxConfig();
         configHand.idleMode(IdleMode.kBrake);
@@ -81,7 +85,7 @@ public class ArmSubsystem extends SubsystemBase{
 
     public double getArmEncoderFraction()
     {
-        double value = m_armEncoder.getPosition();
+        double value = m_ArmEncoder.getPosition();
         if (value > ArmConstants.k_armAngleWrapFraction) {
             return 0;
         }
@@ -91,15 +95,11 @@ public class ArmSubsystem extends SubsystemBase{
         return value;
     }
 
-    private double getArmTargetFraction()
-    {
-        assert(false);
-        return 0.0;
-    }
-
     public void armStop()
     {
-        m_currentArmState = ArmState.STOP;
+        if (m_currentArmState == ArmState.UP || m_currentArmState == ArmState.DOWN) {
+            m_currentArmState = ArmState.STOP;
+        }
     }
 
     public void armUp()
@@ -110,6 +110,11 @@ public class ArmSubsystem extends SubsystemBase{
     public void armDown()
     {
         m_currentArmState = ArmState.DOWN;
+    }
+
+    public void armGoto(ArmState level)  // XXX -- horrible api to have illegal enum values!
+    {
+        m_currentArmState = level;
     }
 
     public void handStop()
@@ -127,14 +132,14 @@ public class ArmSubsystem extends SubsystemBase{
         m_currentHandState = HandState.DOWN;
     }
 
-    public void fingerGrab()
-    {
-        m_currentFingerState = FingerState.GRAB;
-    }
-
     public void fingerStop()
     {
         m_currentFingerState = FingerState.STOP;
+    }
+
+    public void fingerGrab()
+    {
+        m_currentFingerState = FingerState.GRAB;
     }
 
     public void fingerRelease()
@@ -146,7 +151,7 @@ public class ArmSubsystem extends SubsystemBase{
 
     @Override
     public void periodic() {
-        if (ticks++%50==0) System.out.println("ARM: Arm Encoder: " + m_armEncoder.getPosition() +
+        if (ticks++%50==0) System.out.println("ARM: Arm Encoder: " + m_ArmEncoder.getPosition() +
                                               " Hand Encoder: " + m_handEncoder.getPosition());
 
         setArmMotorToTarget();
@@ -157,20 +162,72 @@ public class ArmSubsystem extends SubsystemBase{
     private void setArmMotorToTarget() {
         switch (m_currentArmState){
             case STOP:
-                m_armMotorLeft.set(0.0);
-                m_armMotorRight.set(0.0);
+                m_ArmMotorLeft.set(0.0);
+                m_ArmMotorRight.set(0.0);
                 break;
             case UP:
-                m_armMotorLeft.set(ArmConstants.kArmUpSpeed);
-                m_armMotorRight.set(-ArmConstants.kArmUpSpeed);
+                m_ArmMotorLeft.set(ArmConstants.kArmUpSpeed);
+                m_ArmMotorRight.set(-ArmConstants.kArmUpSpeed);
                 break;
             case DOWN:
-                m_armMotorLeft.set(-ArmConstants.kArmDownSpeed);
-                m_armMotorRight.set(ArmConstants.kArmDownSpeed);
+                m_ArmMotorLeft.set(-ArmConstants.kArmDownSpeed);
+                m_ArmMotorRight.set(ArmConstants.kArmDownSpeed);
+                break;
+            case LEVEL1:
+                setMotorsLevel(ArmConstants.kArmLevel1);
+                break;
+            case LEVEL2:
+                setMotorsLevel(ArmConstants.kArmLevel2);
+                break;
+            case LEVEL3:
+                setMotorsLevel(ArmConstants.kArmLevel3);
+                break;
+            case LEVEL4:
+                setMotorsLevel(ArmConstants.kArmLevel4);
                 break;
             default:
                 assert(false);
                 break;
+        }
+    }
+
+    // poor man's PID controller
+    private void setMotorsLevel(double pos) {
+        double sign;
+        double diff;
+
+        sign = pos-getArmEncoderFraction();
+        diff = Math.abs(sign);
+
+        if (diff < 0.02) {
+            if (pos < 0.1) {
+                m_ArmMotorLeft.set(0.0);
+                m_ArmMotorRight.set(0.0);
+            } else {
+                // resist gravity
+                m_ArmMotorLeft.set(ArmConstants.kArmUpSpeed/4);
+                m_ArmMotorRight.set(-ArmConstants.kArmUpSpeed/4);
+            }
+    } else if (diff < 0.2) {
+            if (sign > 0) {
+                // down slow
+                m_ArmMotorLeft.set(-ArmConstants.kArmDownSpeed/2);
+                m_ArmMotorRight.set(ArmConstants.kArmDownSpeed/2);
+            } else {
+                // up slow
+                m_ArmMotorLeft.set(ArmConstants.kArmUpSpeed/2);
+                m_ArmMotorRight.set(-ArmConstants.kArmUpSpeed/2);
+            }
+        } else {
+            if (sign > 0) {
+                // down
+                m_ArmMotorLeft.set(-ArmConstants.kArmDownSpeed);
+                m_ArmMotorRight.set(ArmConstants.kArmDownSpeed);
+            } else {
+                // up
+                m_ArmMotorLeft.set(ArmConstants.kArmUpSpeed);
+                m_ArmMotorRight.set(-ArmConstants.kArmUpSpeed);
+            }
         }
     }
 

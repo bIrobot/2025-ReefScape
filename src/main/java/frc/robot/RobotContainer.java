@@ -23,6 +23,7 @@ import frc.robot.subsystems.IngestSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorState;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ArmSubsystem.ArmState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -43,6 +44,8 @@ public class RobotContainer {
   private final ArmSubsystem m_ArmSubsystem = new ArmSubsystem();
 
   private int ticks = 0;
+
+  private int lastPov = -1;
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -109,14 +112,21 @@ public class RobotContainer {
     }
 
     int pov = m_driverController.getPOV();
-    if (pov == 0) {
-        m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL1);
-    } else if (pov == 90) {
-        m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL2);
-    } else if (pov == 180) {
-        m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL3);
-    } else if (pov == 270) {
-        m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL4);
+    if (pov != lastPov) {
+        if (pov == 0) {
+            m_ArmSubsystem.armGoto(ArmState.LEVEL1);
+            m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL1);
+        } else if (pov == 90) {
+            m_ArmSubsystem.armGoto(ArmState.LEVEL2);
+            m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL2);
+        } else if (pov == 180) {
+            m_ArmSubsystem.armGoto(ArmState.LEVEL3);
+            m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL3);
+        } else if (pov == 270) {
+            m_ArmSubsystem.armGoto(ArmState.LEVEL4);
+            m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL4);
+        }
+        lastPov = pov;
     }
 }
 

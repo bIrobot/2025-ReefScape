@@ -26,6 +26,11 @@ public final class Constants {
     public static final double kArmUpSpeed = 0.1;
     public static final double kArmDownSpeed = 0.08;
 
+    public static final double kArmLevel1 = 0.23;
+    public static final double kArmLevel2 = 0.13;
+    public static final double kArmLevel3 = 0.08;
+    public static final double kArmLevel4 = 0.12;
+
     public static final double kHandUpSpeed = 0.5;
     public static final double kHandDownSpeed = 0.4;
 
