@@ -23,8 +23,6 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   public static final class ArmConstants {
-    public static final double kClimberGearRatio = 1.0 / 12.0;
-
     public static final double kArmUpSpeed = 0.1;
     public static final double kArmDownSpeed = 0.08;
 
@@ -61,14 +59,9 @@ public final class Constants {
     public static final double k_pivotSpeed = 0.15;
 
     // Pivot set point encodings; readings are from 0..1(not inclusive).
-    // Any values above Wrap are considered Ground; any values between Stow and Wrap are considered Stow.
     public static final double k_pivotAngleGroundFraction = 0.00;  // MUST BE 0 -- zero absolute encoder here!
     public static final double k_pivotAngleHandoffFraction = 0.36;
     public static final double k_pivotAngleStowFraction = 0.44;
-    public static final double k_pivotAngleMaxFraction = 0.44;  // MUST BE MAX
-    // from Max to Wrap is treated as Max; from Wrap to 1 is treated as 0
-    public static final double k_pivotAngleWrapFraction = k_pivotAngleMaxFraction + (1-k_pivotAngleMaxFraction)/2;
-    public static final double k_pivotFractionResolution = 0.02;  // "close enough" for target seeking
   }
   
   public static final class DriveConstants {
