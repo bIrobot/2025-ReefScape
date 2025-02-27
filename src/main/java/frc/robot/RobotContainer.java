@@ -82,6 +82,22 @@ public class RobotContainer {
     } else {
         m_ElevatorSubsystem.elevatorStop();
     }
+
+    if (m_driverController.getRightBumperButton()) {
+        m_ArmSubsystem.armUp();
+    } else if (m_driverController.getRightTriggerAxis() > .1) {
+        m_ArmSubsystem.armDown();
+    } else {
+        m_ArmSubsystem.armStop();
+    }
+
+    if (m_driverController.getYButton()) {
+        m_ArmSubsystem.handUp();
+    } else if (m_driverController.getAButton()) {
+        m_ArmSubsystem.handDown();
+    } else {
+        m_ArmSubsystem.handStop();
+    }
 }
 
   /**
@@ -94,10 +110,12 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
+    /*
     new JoystickButton(m_driverController, Button.kR1.value)
         .whileTrue(new RunCommand(
             () -> m_robotDrive.setX(),
             m_robotDrive));
+            */
   }
 
   /**

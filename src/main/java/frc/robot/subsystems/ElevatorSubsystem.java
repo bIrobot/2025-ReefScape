@@ -27,6 +27,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         STOP,
         UP,
         DOWN
+        // XXX -- real state targets, not motions
         //BOTTOM,
         //HANDOFF,
         //LEVEL1,

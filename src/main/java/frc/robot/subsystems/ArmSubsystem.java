@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.IngestConstants;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -16,25 +18,28 @@ public class ArmSubsystem extends SubsystemBase{
     private final SparkMax m_armMotorRight;
     private SparkAbsoluteEncoder m_armEncoder;
 
-    private ArmState m_currentArmState = ArmState.LIMP;
+    private final SparkMax m_handMotor;
+    private SparkAbsoluteEncoder m_handEncoder;
+
+    private ArmState m_currentArmState = ArmState.STOP;
     private double m_ArmTime = 0;
-    private HandState m_currentHandState = HandState.LIMP;  // ???
-    private double m_PivotTime = 0;
+    private HandState m_currentHandState = HandState.STOP;
+    private double m_HandTime = 0;
 
     private int ticks = 0;
 
     private enum HandState {
-        LIMP,
-        STRAIGHT,
-        DOWN,
-        UP
+        STOP,
+        UP,
+        DOWN
+        // XXX -- real state targets, not motions
     };
 
     private enum ArmState {
-        LIMP,
-        DOWN,
-        HANDOFF,
-        STOW
+        STOP,
+        UP,
+        DOWN
+        // XXX -- real state targets, not motions
     };
   
     public ArmSubsystem()
@@ -44,17 +49,113 @@ public class ArmSubsystem extends SubsystemBase{
 
         m_armMotorRight = new SparkMax(12, MotorType.kBrushless);  // XXX Constants
 
+        m_handMotor = new SparkMax(13, MotorType.kBrushless);  // XXX Constants
+        m_handEncoder = m_handMotor.getAbsoluteEncoder();
+
         SparkMaxConfig configArmLeft = new SparkMaxConfig();
-        //configArmLeft.idleMode(IdleMode.kBrake);
+        configArmLeft.idleMode(IdleMode.kBrake);
         m_armMotorLeft.configure(configArmLeft, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         SparkMaxConfig configArmRight = new SparkMaxConfig();
-        //configArmRight.idleMode(IdleMode.kBrake);
+        configArmRight.idleMode(IdleMode.kBrake);
         m_armMotorRight.configure(configArmRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+
+        SparkMaxConfig configHand = new SparkMaxConfig();
+        configHand.idleMode(IdleMode.kBrake);
+        m_handMotor.configure(configHand, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    }
+
+    public double getArmEncoderFraction()
+    {
+        double value = m_armEncoder.getPosition();
+        if (value > ArmConstants.k_armAngleWrapFraction) {
+            return 0;
+        }
+        if (value > ArmConstants.k_armAngleMaxFraction) {
+            return ArmConstants.k_armAngleMaxFraction;
+        }
+        return value;
+    }
+
+    private double getArmTargetFraction()
+    {
+        assert(false);
+        return 0.0;
+    }
+
+    public void armStop()
+    {
+        m_currentArmState = ArmState.STOP;
+    }
+
+    public void armUp()
+    {
+        m_currentArmState = ArmState.UP;
+    }
+
+    public void armDown()
+    {
+        m_currentArmState = ArmState.DOWN;
+    }
+
+    public void handStop()
+    {
+        m_currentHandState = HandState.STOP;
+    }
+
+    public void handUp()
+    {
+        m_currentHandState = HandState.UP;
+    }
+
+    public void handDown()
+    {
+        m_currentHandState = HandState.DOWN;
     }
 
     @Override
     public void periodic() {
-        if (ticks++%50==0) System.out.println("ARM: Encoder: " + m_armEncoder.getPosition());
+        if (ticks++%50==0) System.out.println("ARM: Arm Encoder: " + m_armEncoder.getPosition() +
+                                              " Hand Encoder: " + m_handEncoder.getPosition());
+
+        setArmMotorToTarget();
+        setHandMotorToTarget();
+    }
+
+    private void setArmMotorToTarget() {
+        switch (m_currentArmState){
+            case STOP:
+                m_armMotorLeft.set(0.0);
+                m_armMotorRight.set(0.0);
+                break;
+            case UP:
+                m_armMotorLeft.set(ArmConstants.kArmUpSpeed);
+                m_armMotorRight.set(-ArmConstants.kArmUpSpeed);
+                break;
+            case DOWN:
+                m_armMotorLeft.set(-ArmConstants.kArmDownSpeed);
+                m_armMotorRight.set(ArmConstants.kArmDownSpeed);
+                break;
+            default:
+                assert(false);
+                break;
+        }
+    }
+
+    private void setHandMotorToTarget() {
+        switch (m_currentHandState){
+            case STOP:
+                m_handMotor.set(0.0);
+                break;
+            case UP:
+                m_handMotor.set(ArmConstants.kHandUpSpeed);
+                break;
+            case DOWN:
+                m_handMotor.set(-ArmConstants.kHandDownSpeed);
+                break;
+            default:
+                assert(false);
+                break;
+        }
     }
 }

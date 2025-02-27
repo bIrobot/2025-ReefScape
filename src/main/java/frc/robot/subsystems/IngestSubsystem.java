@@ -67,10 +67,10 @@ public class IngestSubsystem extends SubsystemBase{
     {
         double value = m_PivotEncoder.getPosition();
         if (value > IngestConstants.k_pivotAngleWrapFraction) {
-            return IngestConstants.k_pivotAngleGroundFraction;
+            return 0;
         }
-        if (value > IngestConstants.k_pivotAngleStowFraction) {
-            return IngestConstants.k_pivotAngleStowFraction;
+        if (value > IngestConstants.k_pivotAngleMaxFraction) {
+            return IngestConstants.k_pivotAngleMaxFraction;
         }
         return value;
     }
