@@ -21,19 +21,16 @@ public class ArmSubsystem extends SubsystemBase{
     private final SparkMax m_handMotor;
     private SparkAbsoluteEncoder m_handEncoder;
 
+    private final SparkMax m_fingerMotor;
+
     private ArmState m_currentArmState = ArmState.STOP;
     private double m_ArmTime = 0;
     private HandState m_currentHandState = HandState.STOP;
     private double m_HandTime = 0;
+    private FingerState m_currentFingerState = FingerState.STOP;
+    private double m_FingerTime = 0;
 
     private int ticks = 0;
-
-    private enum HandState {
-        STOP,
-        UP,
-        DOWN
-        // XXX -- real state targets, not motions
-    };
 
     private enum ArmState {
         STOP,
@@ -42,6 +39,19 @@ public class ArmSubsystem extends SubsystemBase{
         // XXX -- real state targets, not motions
     };
   
+    private enum HandState {
+        STOP,
+        UP,
+        DOWN
+        // XXX -- real state targets, not motions
+    };
+
+    private enum FingerState {
+        STOP,
+        GRAB,
+        RELEASE
+    };
+
     public ArmSubsystem()
     {
         m_armMotorLeft = new SparkMax(11, MotorType.kBrushless);  // XXX Constants
@@ -51,6 +61,8 @@ public class ArmSubsystem extends SubsystemBase{
 
         m_handMotor = new SparkMax(13, MotorType.kBrushless);  // XXX Constants
         m_handEncoder = m_handMotor.getAbsoluteEncoder();
+
+        m_fingerMotor = new SparkMax(14, MotorType.kBrushless);  // XXX Constants
 
         SparkMaxConfig configArmLeft = new SparkMaxConfig();
         configArmLeft.idleMode(IdleMode.kBrake);
@@ -113,6 +125,23 @@ public class ArmSubsystem extends SubsystemBase{
         m_currentHandState = HandState.DOWN;
     }
 
+    public void fingerGrab()
+    {
+        m_currentFingerState = FingerState.GRAB;
+    }
+
+    public void fingerStop()
+    {
+        m_currentFingerState = FingerState.STOP;
+    }
+
+    public void fingerRelease()
+    {
+        m_FingerTime = System.nanoTime();
+        m_currentFingerState = FingerState.RELEASE;
+
+    }
+
     @Override
     public void periodic() {
         if (ticks++%50==0) System.out.println("ARM: Arm Encoder: " + m_armEncoder.getPosition() +
@@ -120,6 +149,7 @@ public class ArmSubsystem extends SubsystemBase{
 
         setArmMotorToTarget();
         setHandMotorToTarget();
+        setFingerMotorToTarget();
     }
 
     private void setArmMotorToTarget() {
@@ -148,10 +178,31 @@ public class ArmSubsystem extends SubsystemBase{
                 m_handMotor.set(0.0);
                 break;
             case UP:
-                m_handMotor.set(ArmConstants.kHandUpSpeed);
+                m_handMotor.set(-ArmConstants.kHandUpSpeed);
                 break;
             case DOWN:
-                m_handMotor.set(-ArmConstants.kHandDownSpeed);
+                m_handMotor.set(ArmConstants.kHandDownSpeed);
+                break;
+            default:
+                assert(false);
+                break;
+        }
+    }
+
+    private void setFingerMotorToTarget() {
+        switch (m_currentFingerState){
+            case STOP:
+                m_fingerMotor.set(0.0);
+                break;
+            case GRAB:
+                m_fingerMotor.set(ArmConstants.kFingerGrabSpeed);
+                break;
+            case RELEASE:
+                if (System.nanoTime() - m_FingerTime > ArmConstants.k_reverseNsec) {
+                    m_currentFingerState = FingerState.STOP;
+                } else {
+                    m_fingerMotor.set(-ArmConstants.kFingerReleaseSpeed);
+                }
                 break;
             default:
                 assert(false);

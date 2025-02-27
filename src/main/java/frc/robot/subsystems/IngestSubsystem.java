@@ -110,8 +110,8 @@ public class IngestSubsystem extends SubsystemBase{
 
     public void reverseIngesting()
     {
-        m_currentIngestState = IngestState.REVERSE;
         m_IngestTime = System.nanoTime();
+        m_currentIngestState = IngestState.REVERSE;
     }
 
     public boolean isPivotAtTarget() {
@@ -141,8 +141,8 @@ public class IngestSubsystem extends SubsystemBase{
                 if (System.nanoTime() - m_IngestTime > IngestConstants.k_reverseNsec) {
                     m_currentIngestState = IngestState.STOP;
                 } else {
-                    m_ingestMotorLeft.set(IngestConstants.k_ejectSpeed);
-                    m_ingestMotorRight.set(-IngestConstants.k_ejectSpeed);
+                    m_ingestMotorLeft.set(-IngestConstants.k_ejectSpeed);
+                    m_ingestMotorRight.set(IngestConstants.k_ejectSpeed);
                 }
                 break;
             case STOP:

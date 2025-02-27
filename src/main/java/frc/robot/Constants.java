@@ -31,6 +31,11 @@ public final class Constants {
     public static final double kHandUpSpeed = 0.5;
     public static final double kHandDownSpeed = 0.4;
 
+    public static final double kFingerGrabSpeed = 1.0;
+    public static final double kFingerReleaseSpeed = 0.5;
+
+    public static final double k_reverseNsec = 100000000;
+
     // Arm set point encodings; readings are from 0..1(not inclusive).
     // Any values above Wrap are considered Ground; any values between Stow and Wrap are considered Stow.
     public static final double k_armAngleStowFraction = 0.00;  // MUST BE 0 -- zero absolute encoder here!
@@ -50,7 +55,7 @@ public final class Constants {
   public static final class IngestConstants {
     // Intake speeds
     public static final double k_intakeSpeed = 0.25;
-    public static final double k_ejectSpeed = -0.5;
+    public static final double k_ejectSpeed = 0.5;
 
     public static final double k_pivotSpeed = 0.1;
     public static final double k_reverseNsec = 100000000;

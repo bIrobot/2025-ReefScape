@@ -98,6 +98,14 @@ public class RobotContainer {
     } else {
         m_ArmSubsystem.handStop();
     }
+
+    if (m_driverController.getStartButton()) {
+        m_ArmSubsystem.fingerGrab();
+    } else if (m_driverController.getStartButtonReleased()) {
+        m_ArmSubsystem.fingerStop();
+    } else if (m_driverController.getBackButtonPressed()) {
+        m_ArmSubsystem.fingerRelease();
+    }
 }
 
   /**
