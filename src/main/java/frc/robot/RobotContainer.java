@@ -67,7 +67,7 @@ public class RobotContainer {
   }
 
   public void teleopRunning() {
-    if (m_driverController.getXButton()) {
+    if (m_driverController.getXButtonPressed()) {
         m_IngestSubsystem.startIngesting();
     } else if (m_driverController.getXButtonReleased()){
         m_IngestSubsystem.stopIngesting();
@@ -99,11 +99,11 @@ public class RobotContainer {
         m_ArmSubsystem.handStop();
     }
 
-    if (m_driverController.getStartButton()) {
+    if (m_driverController.getBackButton()) {
         m_ArmSubsystem.fingerGrab();
-    } else if (m_driverController.getStartButtonReleased()) {
+    } else if (m_driverController.getBackButtonReleased()) {
         m_ArmSubsystem.fingerStop();
-    } else if (m_driverController.getBackButtonPressed()) {
+    } else if (m_driverController.getStartButtonPressed()) {
         m_ArmSubsystem.fingerRelease();
     }
 }

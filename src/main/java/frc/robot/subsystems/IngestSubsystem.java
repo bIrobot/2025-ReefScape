@@ -28,6 +28,8 @@ public class IngestSubsystem extends SubsystemBase{
     private static final double k_pivotMotorI = 0.0;
     private static final double k_pivotMotorD = 0.001;
 
+    private final DigitalInput m_beamNotBroken = new DigitalInput(0);
+
     private int ticks = 0;
 
     private enum IngestState {
@@ -122,7 +124,8 @@ public class IngestSubsystem extends SubsystemBase{
     public void periodic() {
         if (ticks++%50==0) System.out.println("INGEST: Position: " + getPivotEncoderFraction() +
                                               " Target: " + getPivotTargetFraction() +
-                                              " atTarget: " + isPivotAtTarget());
+                                              " atTarget: " + isPivotAtTarget() +
+                                              " beamNotBroken: " + m_beamNotBroken.get());
 
         // XXX if we find coral, stop ingesting
         //stopIngesting();
@@ -134,8 +137,12 @@ public class IngestSubsystem extends SubsystemBase{
     private void setIngestMotorToTarget() {
         switch (m_currentIngestState){
             case FORWARD:
-                m_ingestMotorLeft.set(IngestConstants.k_intakeSpeed);
-                m_ingestMotorRight.set(-IngestConstants.k_intakeSpeed-0.05);
+                if (! m_beamNotBroken.get()) {
+                    m_currentIngestState = IngestState.STOP;
+                } else {
+                    m_ingestMotorLeft.set(IngestConstants.k_intakeSpeed);
+                    m_ingestMotorRight.set(-IngestConstants.k_intakeSpeed-0.05);
+                }
                 break;
             case REVERSE:
                 if (System.nanoTime() - m_IngestTime > IngestConstants.k_reverseNsec) {

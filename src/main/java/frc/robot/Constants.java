@@ -56,9 +56,9 @@ public final class Constants {
     // Intake speeds
     public static final double k_intakeSpeed = 0.25;
     public static final double k_ejectSpeed = 0.5;
-
-    public static final double k_pivotSpeed = 0.1;
     public static final double k_reverseNsec = 100000000;
+
+    public static final double k_pivotSpeed = 0.15;
 
     // Pivot set point encodings; readings are from 0..1(not inclusive).
     // Any values above Wrap are considered Ground; any values between Stow and Wrap are considered Stow.
