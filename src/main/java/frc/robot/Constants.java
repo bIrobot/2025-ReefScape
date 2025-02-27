@@ -70,8 +70,9 @@ public final class Constants {
 
     // Pivot set point encodings; readings are from 0..1(not inclusive).
     public static final double k_pivotAngleGroundFraction = 0.00;  // MUST BE 0 -- zero absolute encoder here!
-    public static final double k_pivotAngleHandoffFraction = 0.36;
-    public static final double k_pivotAngleStowFraction = 0.44;
+    public static final double k_pivotAngleMoveFraction = 0.38;
+    public static final double k_pivotAngleHandoffFraction = 0.38;
+    public static final double k_pivotAngleStowFraction = 0.38;
   }
   
   public static final class DriveConstants {

@@ -23,8 +23,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     private int ticks = 0;
 
-    private double lastPos = -1.0;  // illegal value
-    private int revolutions = 0;
+    private boolean m_firstPos = true;
+    private double m_lastPos = -1.0;  // illegal value
+    private int m_revolutions = 0;
 
     public enum ElevatorState {  // XXX -- should be private!
         STOP,
@@ -152,15 +153,21 @@ public class ElevatorSubsystem extends SubsystemBase {
     private double getFullPosition()
     {
         double pos = m_ElevatorEncoder.getPosition();
-        if (lastPos != -1.0) {
-            if (pos < lastPos-0.5) {
-                revolutions++;
+        if (m_firstPos) {
+            if (pos > 0.5) {
+                m_revolutions = -1;
             }
-            if (pos > lastPos+0.5) {
-                revolutions--;
+            m_firstPos = false;
+        }
+        if (m_lastPos != -1.0) {
+            if (pos < m_lastPos-0.5) {
+                m_revolutions++;
+            }
+            if (pos > m_lastPos+0.5) {
+                m_revolutions--;
             }
         }
-        lastPos = pos;
-        return revolutions+pos;
+        m_lastPos = pos;
+        return pos+m_revolutions;
     }
 }

@@ -64,7 +64,8 @@ public class IngestSubsystem extends SubsystemBase{
 
     public boolean getIngestHasCoral()
     {
-        return ! m_beamNotBroken.get();
+        return false;
+        //return ! m_beamNotBroken.get();
     }
 
     public void startIngesting()
@@ -93,7 +94,7 @@ public class IngestSubsystem extends SubsystemBase{
     public void periodic() {
         if (ticks++%50==0) System.out.println("INGEST: Position: " + m_PivotEncoder.getPosition() +
                                               " Target: " + m_PivotTargetPosition +
-                                              " beamNotBroken: " + m_beamNotBroken.get());
+                                              " hasCoral: " + getIngestHasCoral());
 
         setIngestMotorToTarget();
     }
