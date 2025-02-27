@@ -21,6 +21,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IngestSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem.ElevatorState;
 import frc.robot.subsystems.ArmSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -105,6 +106,17 @@ public class RobotContainer {
         m_ArmSubsystem.fingerStop();
     } else if (m_driverController.getStartButtonPressed()) {
         m_ArmSubsystem.fingerRelease();
+    }
+
+    int pov = m_driverController.getPOV();
+    if (pov == 0) {
+        m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL1);
+    } else if (pov == 90) {
+        m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL2);
+    } else if (pov == 180) {
+        m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL3);
+    } else if (pov == 270) {
+        m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL4);
     }
 }
 

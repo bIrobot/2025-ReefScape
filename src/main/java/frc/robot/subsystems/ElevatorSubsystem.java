@@ -23,17 +23,17 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     private int ticks = 0;
 
-    private enum ElevatorState {
+    private double lastPos = -1.0;  // illegal value
+    private int revolutions = 0;
+
+    public enum ElevatorState {
         STOP,
         UP,
-        DOWN
-        // XXX -- real state targets, not motions
-        //BOTTOM,
-        //HANDOFF,
-        //LEVEL1,
-        //LEVEL2,
-        //LEVEL3,
-        //LEVEL4
+        DOWN,
+        LEVEL1,
+        LEVEL2,
+        LEVEL3,
+        LEVEL4
     };
 
     public ElevatorSubsystem()
@@ -50,11 +50,15 @@ public class ElevatorSubsystem extends SubsystemBase {
         SparkMaxConfig configRight = new SparkMaxConfig();
         configRight.idleMode(IdleMode.kBrake);
         m_ElevatorMotorRight.configure(configRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+
+        // N.B. I don't believe we can use a PID controller because we drive Left/Right motors based on a single encoder
     }
 
     public void elevatorStop()
     {
-        m_currentElevatorState = ElevatorState.STOP;
+        if (m_currentElevatorState == ElevatorState.UP || m_currentElevatorState == ElevatorState.DOWN) {
+            m_currentElevatorState = ElevatorState.STOP;
+        }
     }
 
     public void elevatorUp()
@@ -67,9 +71,14 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_currentElevatorState = ElevatorState.DOWN;
     }
 
+    public void elevatorGoto(ElevatorState level)  // XXX -- horrible api to have illegal enum values!
+    {
+        m_currentElevatorState = level;
+    }
+
     @Override
     public void periodic() {
-        if (ticks++%50==0) System.out.println("ELEVATOR: Encoder: " + m_ElevatorEncoder.getPosition());
+        if (ticks++%50==0) System.out.println("ELEVATOR: Encoder: " + getFullPosition());
 
         setElevatorMotorToTarget();
     }
@@ -88,9 +97,70 @@ public class ElevatorSubsystem extends SubsystemBase {
                 m_ElevatorMotorLeft.set(-ElevatorConstants.kElevatorDownSpeed);
                 m_ElevatorMotorRight.set(ElevatorConstants.kElevatorDownSpeed);
                 break;
+            case LEVEL1:
+                setMotorsLevel(ElevatorConstants.kElevatorLevel1);
+                break;
+            case LEVEL2:
+                setMotorsLevel(ElevatorConstants.kElevatorLevel2);
+                break;
+            case LEVEL3:
+                setMotorsLevel(ElevatorConstants.kElevatorLevel3);
+                break;
+            case LEVEL4:
+                setMotorsLevel(ElevatorConstants.kElevatorLevel4);
+                break;
             default:
                 assert(false);
                 break;
         }
+    }
+
+    // poor man's PID controller
+    private void setMotorsLevel(double pos) {
+        double sign;
+        double diff;
+
+        sign = pos-getFullPosition();
+        diff = Math.abs(sign);
+
+        if (diff < 0.02) {
+            m_ElevatorMotorLeft.set(0.0);
+            m_ElevatorMotorRight.set(0.0);
+        } else if (diff < 0.2) {
+            if (sign < 0) {
+                // down slow
+                m_ElevatorMotorLeft.set(-ElevatorConstants.kElevatorDownSpeed/5);
+                m_ElevatorMotorRight.set(ElevatorConstants.kElevatorDownSpeed/5);
+            } else {
+                // up slow
+                m_ElevatorMotorLeft.set(ElevatorConstants.kElevatorUpSpeed/5);
+                m_ElevatorMotorRight.set(-ElevatorConstants.kElevatorUpSpeed/5);
+            }
+        } else {
+            if (sign < 0) {
+                // down
+                m_ElevatorMotorLeft.set(-ElevatorConstants.kElevatorDownSpeed);
+                m_ElevatorMotorRight.set(ElevatorConstants.kElevatorDownSpeed);
+            } else {
+                // up
+                m_ElevatorMotorLeft.set(ElevatorConstants.kElevatorUpSpeed);
+                m_ElevatorMotorRight.set(-ElevatorConstants.kElevatorUpSpeed);
+            }
+        }
+    }
+
+    private double getFullPosition()
+    {
+        double pos = m_ElevatorEncoder.getPosition();
+        if (lastPos != -1.0) {
+            if (pos < lastPos-0.5) {
+                revolutions++;
+            }
+            if (pos > lastPos+0.5) {
+                revolutions--;
+            }
+        }
+        lastPos = pos;
+        return revolutions+pos;
     }
 }

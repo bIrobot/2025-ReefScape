@@ -69,9 +69,11 @@ public class IngestSubsystem extends SubsystemBase{
 
     public void startIngesting()
     {
-        m_currentIngestState = IngestState.FORWARD;
-        m_PivotTargetPosition = IngestConstants.k_pivotAngleGroundFraction;
-        m_PivotController.setReference(m_PivotTargetPosition, ControlType.kPosition);
+        if (! getIngestHasCoral()) {
+            m_currentIngestState = IngestState.FORWARD;
+            m_PivotTargetPosition = IngestConstants.k_pivotAngleGroundFraction;
+            m_PivotController.setReference(m_PivotTargetPosition, ControlType.kPosition);
+        }
     }
 
     public void stopIngesting()

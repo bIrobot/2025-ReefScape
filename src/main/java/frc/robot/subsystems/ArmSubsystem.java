@@ -75,6 +75,8 @@ public class ArmSubsystem extends SubsystemBase{
         SparkMaxConfig configHand = new SparkMaxConfig();
         configHand.idleMode(IdleMode.kBrake);
         m_handMotor.configure(configHand, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+
+        // N.B. I don't believe we can use a PID controller because we drive Left/Right motors based on a single encoder
     }
 
     public double getArmEncoderFraction()

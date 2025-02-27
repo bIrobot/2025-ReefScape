@@ -48,6 +48,11 @@ public final class Constants {
   public static final class ElevatorConstants {
     public static final double kElevatorUpSpeed = 0.5;
     public static final double kElevatorDownSpeed = 0.4;
+
+    public static final double kElevatorLevel1 = 1.95;
+    public static final double kElevatorLevel2 = 2.95;
+    public static final double kElevatorLevel3 = 3.42;
+    public static final double kElevatorLevel4 = 4.27;
   }
   
   public static final class IngestConstants {
