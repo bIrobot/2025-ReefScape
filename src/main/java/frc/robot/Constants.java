@@ -26,15 +26,17 @@ public final class Constants {
     public static final double kArmUpSpeed = 0.08;
     public static final double kArmDownSpeed = 0.06;
 
-    public static final double kArmLevel1 = 0.20;
-    public static final double kArmLevel2 = 0.16;
-    public static final double kArmLevel3 = 0.14;
-    public static final double kArmLevel4 = 0.12;
+    public static final double kArmLevel1 = 0.10;
+    public static final double kArmLevel2 = 0.09;
+    public static final double kArmLevel3 = 0.08;
+    public static final double kArmLevel4 = 0.07;
+    public static final double kArmLevelTop = 0.00;
 
     public static final double kHandLevel1 = 0.20;
     public static final double kHandLevel2 = 0.30;
     public static final double kHandLevel3 = 0.40;
     public static final double kHandLevel4 = 0.50;
+    public static final double kHandLevelStraight = 0.42;
 
     public static final double kHandUpSpeed = 0.5;
     public static final double kHandDownSpeed = 0.4;
@@ -43,16 +45,6 @@ public final class Constants {
     public static final double kFingerReleaseSpeed = 0.5;
 
     public static final double k_reverseNsec = 100000000;
-
-    // Arm set point encodings; readings are from 0..1(not inclusive).
-    // Any values above Wrap are considered Ground; any values between Stow and Wrap are considered Stow.
-    public static final double k_armAngleStowFraction = 0.00;  // MUST BE 0 -- zero absolute encoder here!
-    public static final double k_armAngleHandoffFraction = 0.10;
-    public static final double k_armAngleLowFraction = 0.50;
-    public static final double k_armAngleMaxFraction = 0.50;  // MUST BE MAX
-    // from Max to Wrap is treated as Max; from Wrap to 1 is treated as 0
-    public static final double k_armAngleWrapFraction = k_armAngleMaxFraction + (1-k_armAngleMaxFraction)/2;
-    public static final double k_armFractionResolution = 0.02;  // "close enough" for target seeking
   }
 
   public static final class ElevatorConstants {
@@ -63,6 +55,7 @@ public final class Constants {
     public static final double kElevatorLevel2 = 2.00;
     public static final double kElevatorLevel3 = 2.50;
     public static final double kElevatorLevel4 = 3.00;
+    public static final double kElevatorLevelBottom = 0.00;
   }
   
   public static final class IngestConstants {
@@ -75,6 +68,7 @@ public final class Constants {
 
     // Pivot set point encodings; readings are from 0..1(not inclusive).
     public static final double k_pivotAngleGroundFraction = 0.00;  // MUST BE 0 -- zero absolute encoder here!
+    public static final double k_pivotAngleSafeFraction = 0.20;
     public static final double k_pivotAngleMoveFraction = 0.38;
     public static final double k_pivotAngleHandoffFraction = 0.38;
     public static final double k_pivotAngleStowFraction = 0.38;

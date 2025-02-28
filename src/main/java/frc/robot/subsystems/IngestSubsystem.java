@@ -37,6 +37,7 @@ public class IngestSubsystem extends SubsystemBase{
 
     private enum IngestState {
         STOP,
+        SAFE,
         FORWARD,
         REVERSE
     };
@@ -95,6 +96,13 @@ public class IngestSubsystem extends SubsystemBase{
     {
         m_IngestTime = System.nanoTime();
         m_currentIngestState = IngestState.REVERSE;
+    }
+
+    public void safeIngesting()
+    {
+        m_currentIngestState = IngestState.SAFE;
+        m_PivotTargetPosition = IngestConstants.k_pivotAngleSafeFraction;
+        m_PivotController.setReference(m_PivotTargetPosition, ControlType.kPosition);
     }
 
     @Override

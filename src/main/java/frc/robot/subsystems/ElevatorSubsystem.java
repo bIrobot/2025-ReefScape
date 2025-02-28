@@ -33,7 +33,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         LEVEL1,
         LEVEL2,
         LEVEL3,
-        LEVEL4
+        LEVEL4,
+        BOTTOM
     };
 
     public ElevatorSubsystem()
@@ -119,6 +120,9 @@ public class ElevatorSubsystem extends SubsystemBase {
                 break;
             case LEVEL4:
                 setMotorsLevel(ElevatorConstants.kElevatorLevel4);
+                break;
+            case BOTTOM:
+                setMotorsLevel(ElevatorConstants.kElevatorLevelBottom);
                 break;
             default:
                 assert(false);

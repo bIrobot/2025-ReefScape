@@ -66,7 +66,8 @@ public class ArmSubsystem extends SubsystemBase{
         LEVEL1,
         LEVEL2,
         LEVEL3,
-        LEVEL4
+        LEVEL4,
+        TOP
     };
   
     public enum HandState {
@@ -76,7 +77,8 @@ public class ArmSubsystem extends SubsystemBase{
         LEVEL1,
         LEVEL2,
         LEVEL3,
-        LEVEL4
+        LEVEL4,
+        STRAIGHT
     };
 
     private enum FingerState {
@@ -183,6 +185,9 @@ public class ArmSubsystem extends SubsystemBase{
             case LEVEL4:
                 m_ArmController.setReference(ArmConstants.kArmLevel4, ControlType.kPosition);
                 break;
+            case TOP:
+                m_ArmController.setReference(ArmConstants.kArmLevelTop, ControlType.kPosition);
+                break;
             default:
                 assert(false);
                 break;
@@ -224,6 +229,9 @@ public class ArmSubsystem extends SubsystemBase{
                 break;
             case LEVEL4:
                 m_HandController.setReference(ArmConstants.kHandLevel4, ControlType.kPosition);
+                break;
+            case STRAIGHT:
+                m_HandController.setReference(ArmConstants.kHandLevelStraight, ControlType.kPosition);
                 break;
             default:
                 assert(false);
