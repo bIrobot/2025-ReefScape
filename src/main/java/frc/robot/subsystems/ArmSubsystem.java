@@ -15,6 +15,8 @@ import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+// XXX - rename hand to wrist
+
 public class ArmSubsystem extends SubsystemBase{
     private final SparkMax m_ArmMotorLeft;
     private SparkAbsoluteEncoder m_ArmEncoder;
@@ -24,6 +26,7 @@ public class ArmSubsystem extends SubsystemBase{
 
     private final SparkMax m_handMotor;
     private SparkAbsoluteEncoder m_handEncoder;
+    private SparkClosedLoopController m_HandController;
 
     private final SparkMax m_fingerMotor;
 
@@ -44,6 +47,16 @@ public class ArmSubsystem extends SubsystemBase{
     private static final double k_armMotorI1 = 0.0;
     private static final double k_armMotorD1 = 8.0;
 
+    // slot 0 for position control
+    private static final double k_handMotorP = 4.0;
+    private static final double k_handMotorI = 0.0;
+    private static final double k_handMotorD = 2.0;
+
+    // slot 1 for velocity control
+    private static final double k_handMotorP1 = 1.0;
+    private static final double k_handMotorI1 = 0.0;
+    private static final double k_handMotorD1 = 2.0;
+
     private int ticks = 0;
 
     public enum ArmState {  // XXX -- should be private!
@@ -56,11 +69,14 @@ public class ArmSubsystem extends SubsystemBase{
         LEVEL4
     };
   
-    private enum HandState {
+    public enum HandState {
         STOP,
         UP,
-        DOWN
-        // XXX -- real state targets, not motions
+        DOWN,
+        LEVEL1,
+        LEVEL2,
+        LEVEL3,
+        LEVEL4
     };
 
     private enum FingerState {
@@ -79,6 +95,7 @@ public class ArmSubsystem extends SubsystemBase{
 
         m_handMotor = new SparkMax(13, MotorType.kBrushless);  // XXX Constants
         m_handEncoder = m_handMotor.getAbsoluteEncoder();
+        m_HandController = m_handMotor.getClosedLoopController();
 
         m_fingerMotor = new SparkMax(14, MotorType.kBrushless);  // XXX Constants
 
@@ -99,12 +116,20 @@ public class ArmSubsystem extends SubsystemBase{
                       .follow(11, true);  // XXX Constants
         m_ArmMotorRight.configure(configArmRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
-        // initial pivot position
+        // initial arm position
         //m_ArmController.setReference(ArmConstants.kArmLevel1, ControlType.kPosition);
 
         SparkMaxConfig configHand = new SparkMaxConfig();
+        configHand.inverted(true);
+        configHand.closedLoop.pid(k_handMotorP, k_handMotorI, k_handMotorD)
+                             .pid(k_handMotorP1, k_handMotorI1, k_handMotorD1, ClosedLoopSlot.kSlot1)
+                             .outputRange(-ArmConstants.kHandUpSpeed, ArmConstants.kHandDownSpeed)
+                             .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
         configHand.idleMode(IdleMode.kBrake);
         m_handMotor.configure(configHand, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+
+        // initial hand position
+        //m_HandController.setReference(ArmConstants.kHandLevel1, ControlType.kPosition);
     }
 
     public void armCoast()
@@ -125,8 +150,8 @@ public class ArmSubsystem extends SubsystemBase{
     public void armStop()
     {
         if (m_currentArmState == ArmState.UP || m_currentArmState == ArmState.DOWN) {
-            m_ArmController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
             m_currentArmState = ArmState.STOP;
+            m_ArmController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
         }
     }
 
@@ -166,17 +191,44 @@ public class ArmSubsystem extends SubsystemBase{
 
     public void handStop()
     {
-        m_currentHandState = HandState.STOP;
+        if (m_currentHandState == HandState.UP || m_currentHandState == HandState.DOWN) {
+            m_currentHandState = HandState.STOP;
+            m_HandController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+        }
     }
 
     public void handUp()
     {
         m_currentHandState = HandState.UP;
+        m_HandController.setReference(ArmConstants.kHandUpSpeed, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
     }
 
     public void handDown()
     {
         m_currentHandState = HandState.DOWN;
+        m_HandController.setReference(-ArmConstants.kHandDownSpeed, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+    }
+
+    public void handGoto(HandState level)  // XXX -- horrible api to have illegal enum values!
+    {
+        m_currentHandState = level;
+        switch (level) {
+            case LEVEL1:
+                m_HandController.setReference(ArmConstants.kHandLevel1, ControlType.kPosition);
+                break;
+            case LEVEL2:
+                m_HandController.setReference(ArmConstants.kHandLevel2, ControlType.kPosition);
+                break;
+            case LEVEL3:
+                m_HandController.setReference(ArmConstants.kHandLevel3, ControlType.kPosition);
+                break;
+            case LEVEL4:
+                m_HandController.setReference(ArmConstants.kHandLevel4, ControlType.kPosition);
+                break;
+            default:
+                assert(false);
+                break;
+        }
     }
 
     public void fingerStop()
@@ -201,25 +253,7 @@ public class ArmSubsystem extends SubsystemBase{
         if (ticks++%50==0) System.out.println("ARM: Arm Encoder: " + m_ArmEncoder.getPosition() +
                                               " Hand Encoder: " + m_handEncoder.getPosition());
 
-        setHandMotorToTarget();
         setFingerMotorToTarget();
-    }
-
-    private void setHandMotorToTarget() {
-        switch (m_currentHandState){
-            case STOP:
-                m_handMotor.set(0.0);
-                break;
-            case UP:
-                m_handMotor.set(-ArmConstants.kHandUpSpeed);
-                break;
-            case DOWN:
-                m_handMotor.set(ArmConstants.kHandDownSpeed);
-                break;
-            default:
-                assert(false);
-                break;
-        }
     }
 
     private void setFingerMotorToTarget() {

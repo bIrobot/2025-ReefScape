@@ -31,6 +31,11 @@ public final class Constants {
     public static final double kArmLevel3 = 0.14;
     public static final double kArmLevel4 = 0.12;
 
+    public static final double kHandLevel1 = 0.20;
+    public static final double kHandLevel2 = 0.30;
+    public static final double kHandLevel3 = 0.40;
+    public static final double kHandLevel4 = 0.50;
+
     public static final double kHandUpSpeed = 0.5;
     public static final double kHandDownSpeed = 0.4;
 

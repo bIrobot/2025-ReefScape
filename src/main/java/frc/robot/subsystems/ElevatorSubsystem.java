@@ -51,7 +51,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         configRight.idleMode(IdleMode.kBrake);
         m_ElevatorMotorRight.configure(configRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
-        // N.B. I don't believe we can use a PID controller because we drive Left/Right motors based on a single encoder
+        // N.B. I don't believe we can use a PID controller because we manually add revolutions to our encoder?
     }
 
     public void elevatorCoast()
