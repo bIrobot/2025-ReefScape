@@ -106,6 +106,8 @@ public class ArmSubsystem extends SubsystemBase{
         configArmLeft.inverted(true);
         configArmLeft.closedLoop.pid(k_armMotorP, k_armMotorI, k_armMotorD)
                                 .pid(k_armMotorP1, k_armMotorI1, k_armMotorD1, ClosedLoopSlot.kSlot1)
+                                .positionWrappingEnabled(true)
+                                .positionWrappingInputRange(0, 1)
                                 .outputRange(-ArmConstants.kArmUpSpeed, ArmConstants.kArmDownSpeed)
                                 .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
         configArmLeft.idleMode(IdleMode.kBrake);
@@ -125,6 +127,8 @@ public class ArmSubsystem extends SubsystemBase{
         configHand.inverted(true);
         configHand.closedLoop.pid(k_handMotorP, k_handMotorI, k_handMotorD)
                              .pid(k_handMotorP1, k_handMotorI1, k_handMotorD1, ClosedLoopSlot.kSlot1)
+                             .positionWrappingEnabled(true)
+                             .positionWrappingInputRange(0, 1)
                              .outputRange(-ArmConstants.kHandUpSpeed, ArmConstants.kHandDownSpeed)
                              .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
         configHand.idleMode(IdleMode.kBrake);

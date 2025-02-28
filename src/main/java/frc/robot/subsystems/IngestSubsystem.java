@@ -23,7 +23,7 @@ public class IngestSubsystem extends SubsystemBase{
     private SparkAbsoluteEncoder m_PivotEncoder;
     private SparkClosedLoopController m_PivotController;
 
-    private double m_PivotTargetPosition = IngestConstants.k_pivotAngleStowFraction;  // initial pivot position
+    private double m_PivotTargetPosition = IngestConstants.k_pivotAngleSafeFraction;  // initial pivot position
     private IngestState m_currentIngestState = IngestState.STOP;
     private double m_IngestTime = 0;
 

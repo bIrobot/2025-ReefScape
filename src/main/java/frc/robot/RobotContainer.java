@@ -102,21 +102,21 @@ public class RobotContainer {
     int pov = m_driverController.getPOV();
     if (pov != lastPov) {
         if (pov == 0) {
-            //m_ArmSubsystem.armGoto(ArmState.LEVEL1);
+            m_ArmSubsystem.armGoto(ArmState.LEVEL1);
             m_ArmSubsystem.handGoto(HandState.LEVEL1);
-            //m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL1);
+            m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL1);
         } else if (pov == 90) {
-            //m_ArmSubsystem.armGoto(ArmState.LEVEL2);
+            m_ArmSubsystem.armGoto(ArmState.LEVEL2);
             m_ArmSubsystem.handGoto(HandState.LEVEL2);
-            //m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL2);
+            m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL2);
         } else if (pov == 180) {
-            //m_ArmSubsystem.armGoto(ArmState.LEVEL3);
+            m_ArmSubsystem.armGoto(ArmState.LEVEL3);
             m_ArmSubsystem.handGoto(HandState.LEVEL3);
-            //m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL3);
+            m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL3);
         } else if (pov == 270) {
-            //m_ArmSubsystem.armGoto(ArmState.LEVEL4);
+            m_ArmSubsystem.armGoto(ArmState.LEVEL4);
             m_ArmSubsystem.handGoto(HandState.LEVEL4);
-            //m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL4);
+            m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL4);
         }
         lastPov = pov;
     }
