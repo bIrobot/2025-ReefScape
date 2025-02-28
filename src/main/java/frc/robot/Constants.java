@@ -26,10 +26,10 @@ public final class Constants {
     public static final double kArmUpSpeed = 0.1;
     public static final double kArmDownSpeed = 0.08;
 
-    public static final double kArmLevel1 = 0.23;
-    public static final double kArmLevel2 = 0.13;
-    public static final double kArmLevel3 = 0.08;
-    public static final double kArmLevel4 = 0.12;
+    public static final double kArmLevel1 = 0.22;
+    public static final double kArmLevel2 = 0.20;
+    public static final double kArmLevel3 = 0.18;
+    public static final double kArmLevel4 = 0.16;
 
     public static final double kHandUpSpeed = 0.5;
     public static final double kHandDownSpeed = 0.4;
@@ -54,10 +54,10 @@ public final class Constants {
     public static final double kElevatorUpSpeed = 0.5;
     public static final double kElevatorDownSpeed = 0.4;
 
-    public static final double kElevatorLevel1 = 1.95;
-    public static final double kElevatorLevel2 = 2.95;
-    public static final double kElevatorLevel3 = 3.42;
-    public static final double kElevatorLevel4 = 4.27;
+    public static final double kElevatorLevel1 = 1.50;
+    public static final double kElevatorLevel2 = 2.00;
+    public static final double kElevatorLevel3 = 2.50;
+    public static final double kElevatorLevel4 = 3.00;
   }
   
   public static final class IngestConstants {

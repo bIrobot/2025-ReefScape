@@ -18,6 +18,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 public class IngestSubsystem extends SubsystemBase{
     private final SparkMax m_ingestMotorLeft;
     private final SparkMax m_ingestMotorRight;
+
     private SparkMax m_PivotMotor;
     private SparkAbsoluteEncoder m_PivotEncoder;
     private SparkClosedLoopController m_PivotController;
@@ -59,7 +60,7 @@ public class IngestSubsystem extends SubsystemBase{
         m_PivotMotor.configure(configPivot, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         // initial pivot position
-        m_PivotController.setReference(m_PivotTargetPosition, ControlType.kPosition);
+        //m_PivotController.setReference(m_PivotTargetPosition, ControlType.kPosition);
     }
 
     public void ingestCoast()

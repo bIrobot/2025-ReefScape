@@ -2,22 +2,24 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.IngestConstants;
-import frc.robot.subsystems.ElevatorSubsystem.ElevatorState;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 public class ArmSubsystem extends SubsystemBase{
     private final SparkMax m_ArmMotorLeft;
-    private final SparkMax m_ArmMotorRight;
     private SparkAbsoluteEncoder m_ArmEncoder;
+    private SparkClosedLoopController m_ArmController;
+
+    private final SparkMax m_ArmMotorRight;
 
     private final SparkMax m_handMotor;
     private SparkAbsoluteEncoder m_handEncoder;
@@ -30,6 +32,10 @@ public class ArmSubsystem extends SubsystemBase{
     private double m_HandTime = 0;
     private FingerState m_currentFingerState = FingerState.STOP;
     private double m_FingerTime = 0;
+
+    private static final double k_armMotorP = 2.0;
+    private static final double k_armMotorI = 0.0;
+    private static final double k_armMotorD = 0.0;
 
     private int ticks = 0;
 
@@ -60,6 +66,7 @@ public class ArmSubsystem extends SubsystemBase{
     {
         m_ArmMotorLeft = new SparkMax(11, MotorType.kBrushless);  // XXX Constants
         m_ArmEncoder = m_ArmMotorLeft.getAbsoluteEncoder();
+        m_ArmController = m_ArmMotorLeft.getClosedLoopController();
 
         m_ArmMotorRight = new SparkMax(12, MotorType.kBrushless);  // XXX Constants
 
@@ -68,31 +75,25 @@ public class ArmSubsystem extends SubsystemBase{
 
         m_fingerMotor = new SparkMax(14, MotorType.kBrushless);  // XXX Constants
 
+        // left motor has encoder and controller
         SparkMaxConfig configArmLeft = new SparkMaxConfig();
+        configArmLeft.inverted(true);
+        configArmLeft.closedLoop.pid(k_armMotorP, k_armMotorI, k_armMotorD)
+                                .outputRange(-0.4, 0.4)
+                                .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
         configArmLeft.idleMode(IdleMode.kBrake);
         m_ArmMotorLeft.configure(configArmLeft, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
+        // right motor follows left motor with inverted direction
         SparkMaxConfig configArmRight = new SparkMaxConfig();
-        configArmRight.idleMode(IdleMode.kBrake);
+        configArmRight.inverted(true);
+        configArmRight.idleMode(IdleMode.kBrake)
+                      .follow(11, true);  // XXX Constants
         m_ArmMotorRight.configure(configArmRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         SparkMaxConfig configHand = new SparkMaxConfig();
         configHand.idleMode(IdleMode.kBrake);
         m_handMotor.configure(configHand, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-
-        // N.B. I don't believe we can use a PID controller because we drive Left/Right motors based on a single encoder
-    }
-
-    public double getArmEncoderFraction()
-    {
-        double value = m_ArmEncoder.getPosition();
-        if (value > ArmConstants.k_armAngleWrapFraction) {
-            return 0;
-        }
-        if (value > ArmConstants.k_armAngleMaxFraction) {
-            return ArmConstants.k_armAngleMaxFraction;
-        }
-        return value;
     }
 
     public void armCoast()
@@ -113,6 +114,7 @@ public class ArmSubsystem extends SubsystemBase{
     public void armStop()
     {
         if (m_currentArmState == ArmState.UP || m_currentArmState == ArmState.DOWN) {
+            m_ArmController.setReference(0, ControlType.kVelocity);
             m_currentArmState = ArmState.STOP;
         }
     }
@@ -120,16 +122,35 @@ public class ArmSubsystem extends SubsystemBase{
     public void armUp()
     {
         m_currentArmState = ArmState.UP;
+        m_ArmController.setReference(-ArmConstants.kArmUpSpeed, ControlType.kVelocity);
     }
 
     public void armDown()
     {
         m_currentArmState = ArmState.DOWN;
+        m_ArmController.setReference(ArmConstants.kArmDownSpeed, ControlType.kVelocity);
     }
 
     public void armGoto(ArmState level)  // XXX -- horrible api to have illegal enum values!
     {
         m_currentArmState = level;
+        switch (level) {
+            case LEVEL1:
+                m_ArmController.setReference(ArmConstants.kArmLevel1, ControlType.kPosition);
+                break;
+            case LEVEL2:
+                m_ArmController.setReference(ArmConstants.kArmLevel2, ControlType.kPosition);
+                break;
+            case LEVEL3:
+                m_ArmController.setReference(ArmConstants.kArmLevel3, ControlType.kPosition);
+                break;
+            case LEVEL4:
+                m_ArmController.setReference(ArmConstants.kArmLevel4, ControlType.kPosition);
+                break;
+            default:
+                assert(false);
+                break;
+        }
     }
 
     public void handStop()
@@ -169,81 +190,8 @@ public class ArmSubsystem extends SubsystemBase{
         if (ticks++%50==0) System.out.println("ARM: Arm Encoder: " + m_ArmEncoder.getPosition() +
                                               " Hand Encoder: " + m_handEncoder.getPosition());
 
-        setArmMotorToTarget();
         setHandMotorToTarget();
         setFingerMotorToTarget();
-    }
-
-    private void setArmMotorToTarget() {
-        switch (m_currentArmState){
-            case STOP:
-                m_ArmMotorLeft.set(0.0);
-                m_ArmMotorRight.set(0.0);
-                break;
-            case UP:
-                m_ArmMotorLeft.set(ArmConstants.kArmUpSpeed);
-                m_ArmMotorRight.set(-ArmConstants.kArmUpSpeed);
-                break;
-            case DOWN:
-                m_ArmMotorLeft.set(-ArmConstants.kArmDownSpeed);
-                m_ArmMotorRight.set(ArmConstants.kArmDownSpeed);
-                break;
-            case LEVEL1:
-                setMotorsLevel(ArmConstants.kArmLevel1);
-                break;
-            case LEVEL2:
-                setMotorsLevel(ArmConstants.kArmLevel2);
-                break;
-            case LEVEL3:
-                setMotorsLevel(ArmConstants.kArmLevel3);
-                break;
-            case LEVEL4:
-                setMotorsLevel(ArmConstants.kArmLevel4);
-                break;
-            default:
-                assert(false);
-                break;
-        }
-    }
-
-    // poor man's PID controller
-    private void setMotorsLevel(double pos) {
-        double sign;
-        double diff;
-
-        sign = pos-getArmEncoderFraction();
-        diff = Math.abs(sign);
-
-        if (diff < 0.02) {
-            if (pos < 0.1) {
-                m_ArmMotorLeft.set(0.0);
-                m_ArmMotorRight.set(0.0);
-            } else {
-                // resist gravity
-                m_ArmMotorLeft.set(ArmConstants.kArmUpSpeed/4);
-                m_ArmMotorRight.set(-ArmConstants.kArmUpSpeed/4);
-            }
-    } else if (diff < 0.2) {
-            if (sign > 0) {
-                // down slow
-                m_ArmMotorLeft.set(-ArmConstants.kArmDownSpeed/2);
-                m_ArmMotorRight.set(ArmConstants.kArmDownSpeed/2);
-            } else {
-                // up slow
-                m_ArmMotorLeft.set(ArmConstants.kArmUpSpeed/2);
-                m_ArmMotorRight.set(-ArmConstants.kArmUpSpeed/2);
-            }
-        } else {
-            if (sign > 0) {
-                // down
-                m_ArmMotorLeft.set(-ArmConstants.kArmDownSpeed);
-                m_ArmMotorRight.set(ArmConstants.kArmDownSpeed);
-            } else {
-                // up
-                m_ArmMotorLeft.set(ArmConstants.kArmUpSpeed);
-                m_ArmMotorRight.set(-ArmConstants.kArmUpSpeed);
-            }
-        }
     }
 
     private void setHandMotorToTarget() {

@@ -5,18 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.PS4Controller.Button;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IngestSubsystem;
@@ -26,9 +15,7 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.ArmState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import java.util.List;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -115,16 +102,16 @@ public class RobotContainer {
     if (pov != lastPov) {
         if (pov == 0) {
             m_ArmSubsystem.armGoto(ArmState.LEVEL1);
-            m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL1);
+            //m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL1);
         } else if (pov == 90) {
             m_ArmSubsystem.armGoto(ArmState.LEVEL2);
-            m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL2);
+            //m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL2);
         } else if (pov == 180) {
             m_ArmSubsystem.armGoto(ArmState.LEVEL3);
-            m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL3);
+            //m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL3);
         } else if (pov == 270) {
             m_ArmSubsystem.armGoto(ArmState.LEVEL4);
-            m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL4);
+            //m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL4);
         }
         lastPov = pov;
     }
