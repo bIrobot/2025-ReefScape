@@ -23,13 +23,13 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   public static final class ArmConstants {
-    public static final double kArmUpSpeed = 0.1;
-    public static final double kArmDownSpeed = 0.08;
+    public static final double kArmUpSpeed = 0.08;
+    public static final double kArmDownSpeed = 0.06;
 
-    public static final double kArmLevel1 = 0.22;
-    public static final double kArmLevel2 = 0.20;
-    public static final double kArmLevel3 = 0.18;
-    public static final double kArmLevel4 = 0.16;
+    public static final double kArmLevel1 = 0.20;
+    public static final double kArmLevel2 = 0.16;
+    public static final double kArmLevel3 = 0.14;
+    public static final double kArmLevel4 = 0.12;
 
     public static final double kHandUpSpeed = 0.5;
     public static final double kHandDownSpeed = 0.4;

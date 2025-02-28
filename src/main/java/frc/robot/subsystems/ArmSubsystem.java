@@ -11,6 +11,7 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
@@ -33,9 +34,15 @@ public class ArmSubsystem extends SubsystemBase{
     private FingerState m_currentFingerState = FingerState.STOP;
     private double m_FingerTime = 0;
 
-    private static final double k_armMotorP = 2.0;
+    // slot 0 for position control
+    private static final double k_armMotorP = 8.0;
     private static final double k_armMotorI = 0.0;
-    private static final double k_armMotorD = 0.0;
+    private static final double k_armMotorD = 2.0;
+
+    // slot 1 for velocity control
+    private static final double k_armMotorP1 = 1.0;
+    private static final double k_armMotorI1 = 0.0;
+    private static final double k_armMotorD1 = 8.0;
 
     private int ticks = 0;
 
@@ -79,7 +86,8 @@ public class ArmSubsystem extends SubsystemBase{
         SparkMaxConfig configArmLeft = new SparkMaxConfig();
         configArmLeft.inverted(true);
         configArmLeft.closedLoop.pid(k_armMotorP, k_armMotorI, k_armMotorD)
-                                .outputRange(-0.4, 0.4)
+                                .pid(k_armMotorP1, k_armMotorI1, k_armMotorD1, ClosedLoopSlot.kSlot1)
+                                .outputRange(-ArmConstants.kArmUpSpeed, ArmConstants.kArmDownSpeed)
                                 .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
         configArmLeft.idleMode(IdleMode.kBrake);
         m_ArmMotorLeft.configure(configArmLeft, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -90,6 +98,9 @@ public class ArmSubsystem extends SubsystemBase{
         configArmRight.idleMode(IdleMode.kBrake)
                       .follow(11, true);  // XXX Constants
         m_ArmMotorRight.configure(configArmRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+
+        // initial pivot position
+        //m_ArmController.setReference(ArmConstants.kArmLevel1, ControlType.kPosition);
 
         SparkMaxConfig configHand = new SparkMaxConfig();
         configHand.idleMode(IdleMode.kBrake);
@@ -114,7 +125,7 @@ public class ArmSubsystem extends SubsystemBase{
     public void armStop()
     {
         if (m_currentArmState == ArmState.UP || m_currentArmState == ArmState.DOWN) {
-            m_ArmController.setReference(0, ControlType.kVelocity);
+            m_ArmController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
             m_currentArmState = ArmState.STOP;
         }
     }
@@ -122,13 +133,13 @@ public class ArmSubsystem extends SubsystemBase{
     public void armUp()
     {
         m_currentArmState = ArmState.UP;
-        m_ArmController.setReference(-ArmConstants.kArmUpSpeed, ControlType.kVelocity);
+        m_ArmController.setReference(-ArmConstants.kArmUpSpeed, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
     }
 
     public void armDown()
     {
         m_currentArmState = ArmState.DOWN;
-        m_ArmController.setReference(ArmConstants.kArmDownSpeed, ControlType.kVelocity);
+        m_ArmController.setReference(ArmConstants.kArmDownSpeed, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
     }
 
     public void armGoto(ArmState level)  // XXX -- horrible api to have illegal enum values!
