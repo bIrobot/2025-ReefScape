@@ -55,6 +55,17 @@ public class ElevatorSubsystem extends SubsystemBase {
         // N.B. I don't believe we can use a PID controller because we drive Left/Right motors based on a single encoder
     }
 
+    public void elevatorCoast()
+    {
+        SparkMaxConfig configLeft = new SparkMaxConfig();
+        configLeft.idleMode(IdleMode.kCoast);
+        m_ElevatorMotorLeft.configure(configLeft, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+
+        SparkMaxConfig configRight = new SparkMaxConfig();
+        configRight.idleMode(IdleMode.kCoast);
+        m_ElevatorMotorRight.configure(configRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    }
+
     public void elevatorStop()
     {
         if (m_currentElevatorState == ElevatorState.UP || m_currentElevatorState == ElevatorState.DOWN) {

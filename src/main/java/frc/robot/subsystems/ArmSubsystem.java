@@ -95,6 +95,21 @@ public class ArmSubsystem extends SubsystemBase{
         return value;
     }
 
+    public void armCoast()
+    {
+        SparkMaxConfig configArmLeft = new SparkMaxConfig();
+        configArmLeft.idleMode(IdleMode.kCoast);
+        m_ArmMotorLeft.configure(configArmLeft, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+
+        SparkMaxConfig configArmRight = new SparkMaxConfig();
+        configArmRight.idleMode(IdleMode.kCoast);
+        m_ArmMotorRight.configure(configArmRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+
+        SparkMaxConfig configHand = new SparkMaxConfig();
+        configHand.idleMode(IdleMode.kBrake);
+        m_handMotor.configure(configHand, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    }
+
     public void armStop()
     {
         if (m_currentArmState == ArmState.UP || m_currentArmState == ArmState.DOWN) {

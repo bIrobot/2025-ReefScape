@@ -62,10 +62,16 @@ public class IngestSubsystem extends SubsystemBase{
         m_PivotController.setReference(m_PivotTargetPosition, ControlType.kPosition);
     }
 
+    public void ingestCoast()
+    {
+        SparkMaxConfig configPivot = new SparkMaxConfig();
+        configPivot.idleMode(IdleMode.kCoast);
+        m_PivotMotor.configure(configPivot, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    }
+
     public boolean getIngestHasCoral()
     {
-        return false;
-        //return ! m_beamNotBroken.get();
+        return ! m_beamNotBroken.get();
     }
 
     public void startIngesting()
