@@ -88,7 +88,7 @@ public class IngestSubsystem extends SubsystemBase{
     public void stopIngesting()
     {
         m_currentIngestState = IngestState.STOP;
-        m_PivotTargetPosition = IngestConstants.k_pivotAngleHandoffFraction;
+        m_PivotTargetPosition = IngestConstants.k_pivotAngleSafeFraction;
         m_PivotController.setReference(m_PivotTargetPosition, ControlType.kPosition);
     }
 
