@@ -25,7 +25,6 @@ public class IngestSubsystem extends SubsystemBase{
     private SparkAbsoluteEncoder m_PivotEncoder;
     private SparkClosedLoopController m_PivotController;
 
-    private double m_PivotTargetPosition = IngestConstants.k_pivotAngleSafeFraction;  // initial pivot position
     private IngestState m_currentIngestState = IngestState.STOP;
     private double m_IngestTime = 0;
 
@@ -63,7 +62,7 @@ public class IngestSubsystem extends SubsystemBase{
         m_PivotMotor.configure(configPivot, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         // initial pivot position
-        //m_PivotController.setReference(m_PivotTargetPosition, ControlType.kPosition);
+        m_PivotController.setReference(m_PivotEncoder.getPosition(), ControlType.kPosition);
     }
 
     public void ingestCoast()
@@ -82,16 +81,14 @@ public class IngestSubsystem extends SubsystemBase{
     {
         if (! getIngestHasCoral()) {
             m_currentIngestState = IngestState.FORWARD;
-            m_PivotTargetPosition = IngestConstants.k_pivotAngleGroundFraction;
-            m_PivotController.setReference(m_PivotTargetPosition, ControlType.kPosition);
+            m_PivotController.setReference(IngestConstants.k_pivotAngleGroundFraction, ControlType.kPosition);
         }
     }
 
     public void stopIngesting()
     {
         m_currentIngestState = IngestState.STOP;
-        m_PivotTargetPosition = IngestConstants.k_pivotAngleSafeFraction;
-        m_PivotController.setReference(m_PivotTargetPosition, ControlType.kPosition);
+        m_PivotController.setReference(IngestConstants.k_pivotAngleSafeFraction, ControlType.kPosition);
     }
 
     public void reverseIngesting()
@@ -103,17 +100,16 @@ public class IngestSubsystem extends SubsystemBase{
     public void safeIngesting()
     {
         m_currentIngestState = IngestState.SAFE;
-        m_PivotTargetPosition = IngestConstants.k_pivotAngleSafeFraction;
-        m_PivotController.setReference(m_PivotTargetPosition, ControlType.kPosition);
+        m_PivotController.setReference(IngestConstants.k_pivotAngleSafeFraction, ControlType.kPosition);
     }
 
     @Override
     public void periodic() {
         if (ticks++%50==0) System.out.println("INGEST: Position: " + m_PivotEncoder.getPosition() +
-                                              " Target: " + m_PivotTargetPosition +
                                               " hasCoral: " + getIngestHasCoral());
 
         if (DriverStation.isTest() && DriverStation.isEnabled()) {
+            if (ticks++%50==0) System.out.println("INGEST STOP/COAST");
             m_PivotController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
             m_ingestMotorLeft.set(0.0);
             m_ingestMotorRight.set(0.0);

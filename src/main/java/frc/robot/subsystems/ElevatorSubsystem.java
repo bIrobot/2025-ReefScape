@@ -119,14 +119,15 @@ public class ElevatorSubsystem extends SubsystemBase {
                                                " rockBottom:" + elevatorRockBottom() +
                                                " rockTop:" + elevatorRockTop());
 
-        if (elevatorCalibrationFailed) {
+        if (DriverStation.isTest() && DriverStation.isEnabled()) {
+            if (ticks++%50==0) System.out.println("ELEVATOR STOP/COAST");
             stopElevator();
+            elevatorCoast();
             return;
         }
 
-        if (DriverStation.isTest() && DriverStation.isEnabled()) {
+        if (elevatorCalibrationFailed) {
             stopElevator();
-            elevatorCoast();
             return;
         }
 

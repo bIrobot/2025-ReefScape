@@ -39,8 +39,8 @@ public final class Constants {
     public static final double kHandLevel4 = 0.50;
 
     public static final double kHandLevelStraight = 0.42;
-    public static final double kHandLevelBottom = 0.00;  // soft limit
-    public static final double kHandLevelTop = 0.84;  // soft limit
+    public static final double kHandLevelBottom = 0.4;//0.00;  // soft limit
+    public static final double kHandLevelTop = 0.5;//0.84;  // soft limit
 
     public static final double kHandUpSpeed = 0.5;
     public static final double kHandDownSpeed = 0.4;

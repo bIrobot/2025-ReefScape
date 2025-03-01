@@ -162,38 +162,44 @@ public class ArmSubsystem extends SubsystemBase{
 
     public void armUp()
     {
-        m_currentArmState = ArmState.UP;
-        m_ArmController.setReference(-ArmConstants.kArmUpSpeed, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+        if (m_currentArmState != ArmState.UP) {
+            m_currentArmState = ArmState.UP;
+            m_ArmController.setReference(-ArmConstants.kArmUpSpeed, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+        }
     }
 
     public void armDown()
     {
-        m_currentArmState = ArmState.DOWN;
-        m_ArmController.setReference(ArmConstants.kArmDownSpeed, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+        if (m_currentArmState != ArmState.DOWN) {
+            m_currentArmState = ArmState.DOWN;
+            m_ArmController.setReference(ArmConstants.kArmDownSpeed, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+        }
     }
 
     public void armGoto(ArmState level)  // XXX -- horrible api to have illegal enum values!
     {
-        m_currentArmState = level;
-        switch (level) {
-            case LEVEL1:
-                m_ArmController.setReference(ArmConstants.kArmLevel1, ControlType.kPosition);
-                break;
-            case LEVEL2:
-                m_ArmController.setReference(ArmConstants.kArmLevel2, ControlType.kPosition);
-                break;
-            case LEVEL3:
-                m_ArmController.setReference(ArmConstants.kArmLevel3, ControlType.kPosition);
-                break;
-            case LEVEL4:
-                m_ArmController.setReference(ArmConstants.kArmLevel4, ControlType.kPosition);
-                break;
-            case TOP:
-                m_ArmController.setReference(ArmConstants.kArmLevelTop, ControlType.kPosition);
-                break;
-            default:
-                assert(false);
-                break;
+        if (m_currentArmState != level) {
+            m_currentArmState = level;
+            switch (level) {
+                case LEVEL1:
+                    m_ArmController.setReference(ArmConstants.kArmLevel1, ControlType.kPosition);
+                    break;
+                case LEVEL2:
+                    m_ArmController.setReference(ArmConstants.kArmLevel2, ControlType.kPosition);
+                    break;
+                case LEVEL3:
+                    m_ArmController.setReference(ArmConstants.kArmLevel3, ControlType.kPosition);
+                    break;
+                case LEVEL4:
+                    m_ArmController.setReference(ArmConstants.kArmLevel4, ControlType.kPosition);
+                    break;
+                case TOP:
+                    m_ArmController.setReference(ArmConstants.kArmLevelTop, ControlType.kPosition);
+                    break;
+                default:
+                    assert(false);
+                    break;
+            }
         }
     }
 
@@ -207,38 +213,44 @@ public class ArmSubsystem extends SubsystemBase{
 
     public void handUp()
     {
-        m_currentHandState = HandState.UP;
-        m_HandController.setReference(ArmConstants.kHandUpSpeed, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+        if (m_currentHandState != HandState.UP) {
+            m_currentHandState = HandState.UP;
+            m_HandController.setReference(ArmConstants.kHandUpSpeed, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+        }
     }
 
     public void handDown()
     {
-        m_currentHandState = HandState.DOWN;
-        m_HandController.setReference(-ArmConstants.kHandDownSpeed, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+        if (m_currentHandState != HandState.DOWN) {
+            m_currentHandState = HandState.DOWN;
+            m_HandController.setReference(-ArmConstants.kHandDownSpeed, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+        }
     }
 
     public void handGoto(HandState level)  // XXX -- horrible api to have illegal enum values!
     {
-        m_currentHandState = level;
-        switch (level) {
-            case LEVEL1:
-                m_HandController.setReference(ArmConstants.kHandLevel1, ControlType.kPosition);
-                break;
-            case LEVEL2:
-                m_HandController.setReference(ArmConstants.kHandLevel2, ControlType.kPosition);
-                break;
-            case LEVEL3:
-                m_HandController.setReference(ArmConstants.kHandLevel3, ControlType.kPosition);
-                break;
-            case LEVEL4:
-                m_HandController.setReference(ArmConstants.kHandLevel4, ControlType.kPosition);
-                break;
-            case STRAIGHT:
-                m_HandController.setReference(ArmConstants.kHandLevelStraight, ControlType.kPosition);
-                break;
-            default:
-                assert(false);
-                break;
+        if (m_currentHandState != level) {
+            m_currentHandState = level;
+            switch (level) {
+                case LEVEL1:
+                    m_HandController.setReference(ArmConstants.kHandLevel1, ControlType.kPosition);
+                    break;
+                case LEVEL2:
+                    m_HandController.setReference(ArmConstants.kHandLevel2, ControlType.kPosition);
+                    break;
+                case LEVEL3:
+                    m_HandController.setReference(ArmConstants.kHandLevel3, ControlType.kPosition);
+                    break;
+                case LEVEL4:
+                    m_HandController.setReference(ArmConstants.kHandLevel4, ControlType.kPosition);
+                    break;
+                case STRAIGHT:
+                    m_HandController.setReference(ArmConstants.kHandLevelStraight, ControlType.kPosition);
+                    break;
+                default:
+                    assert(false);
+                    break;
+            }
         }
     }
 
@@ -265,6 +277,7 @@ public class ArmSubsystem extends SubsystemBase{
                                               " Hand Encoder: " + m_handEncoder.getPosition());
 
         if (DriverStation.isTest() && DriverStation.isEnabled()) {
+            if (ticks++%50==0) System.out.println("ARM STOP/COAST");
             m_ArmController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
             m_HandController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
             m_fingerMotor.set(0);
@@ -272,7 +285,19 @@ public class ArmSubsystem extends SubsystemBase{
             return;
         }
 
-        if (m_handEncoder.getPosition() < ArmConstants.kHandLevelBottom || m_handEncoder.getPosition() > ArmConstants.kHandLevelTop) {
+        // arm limit safety
+        if (m_ArmEncoder.getPosition() < ArmConstants.kArmLevelBottom && m_currentArmState != ArmState.UP) {
+            m_ArmController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+        }
+        if (m_ArmEncoder.getPosition() > ArmConstants.kArmLevelTop && m_currentArmState != ArmState.DOWN) {
+            m_ArmController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+        }
+
+        // hand limit safety
+        if (m_handEncoder.getPosition() < ArmConstants.kHandLevelBottom && m_currentHandState != HandState.UP) {
+            m_HandController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+        }
+        if (m_handEncoder.getPosition() > ArmConstants.kHandLevelTop && m_currentHandState != HandState.DOWN) {
             m_HandController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
         }
 
