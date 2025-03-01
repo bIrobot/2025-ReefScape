@@ -30,13 +30,17 @@ public final class Constants {
     public static final double kArmLevel2 = 0.09;
     public static final double kArmLevel3 = 0.08;
     public static final double kArmLevel4 = 0.07;
-    public static final double kArmLevelTop = 0.00;
+    public static final double kArmLevelBottom = 0.24;  // soft limit
+    public static final double kArmLevelTop = 0.00;  // soft limit
 
     public static final double kHandLevel1 = 0.42;  // Straight
     public static final double kHandLevel2 = 0.30;
     public static final double kHandLevel3 = 0.40;
     public static final double kHandLevel4 = 0.50;
+
     public static final double kHandLevelStraight = 0.42;
+    public static final double kHandLevelBottom = 0.00;  // soft limit
+    public static final double kHandLevelTop = 0.84;  // soft limit
 
     public static final double kHandUpSpeed = 0.5;
     public static final double kHandDownSpeed = 0.4;
@@ -55,7 +59,9 @@ public final class Constants {
     public static final double kElevatorLevel2 = 2.00;
     public static final double kElevatorLevel3 = 2.50;
     public static final double kElevatorLevel4 = 3.00;
-    public static final double kElevatorLevelBottom = 0.00;
+
+    public static final double kElevatorLevelBottom = 0.00;  // soft limit
+    public static final double kElevatorLevelTop = 4.00;  // soft limit
   }
   
   public static final class IngestConstants {

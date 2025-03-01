@@ -1,7 +1,9 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.LimelightHelpers;
 import frc.robot.Constants.ElevatorConstants;
 
 import com.revrobotics.spark.SparkMax;
@@ -18,7 +20,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private SparkAbsoluteEncoder m_ElevatorEncoder;
 
     private ElevatorState m_currentElevatorState = ElevatorState.STOP;
-    private double m_ElevatorTime = 0;
+    private double m_elevatorStopPos = 0.20;  // XXX revisit
 
     private final DigitalInput m_beamNotBroken = new DigitalInput(1);
     private final DigitalInput m_limitSwitch = new DigitalInput(2);
@@ -55,6 +57,11 @@ public class ElevatorSubsystem extends SubsystemBase {
         configRight.idleMode(IdleMode.kBrake);
         m_ElevatorMotorRight.configure(configRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
+        if (! elevatorRockBottom()) {
+            LimelightHelpers.setLEDMode_ForceBlink("");
+            assert(elevatorRockBottom());
+        }
+
         // N.B. I don't believe we can use a PID controller because we manually add revolutions to our encoder?
     }
 
@@ -82,6 +89,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void elevatorStop()
     {
         if (m_currentElevatorState == ElevatorState.UP || m_currentElevatorState == ElevatorState.DOWN) {
+            m_elevatorStopPos = getFullPosition();
             m_currentElevatorState = ElevatorState.STOP;
         }
     }
@@ -107,22 +115,60 @@ public class ElevatorSubsystem extends SubsystemBase {
                                                " rockBottom:" + elevatorRockBottom() +
                                                " rockTop:" + elevatorRockTop());
 
+        if (DriverStation.isTest()) {
+            return;
+        }
+
         setElevatorMotorToTarget();
     }
 
+    private void stopElevator()
+    {
+        m_ElevatorMotorLeft.set(0);
+        m_ElevatorMotorRight.set(0);
+    }
+
+    private void moveElevatorUp(boolean slow)
+    {
+        if (! elevatorRockTop() && getFullPosition() < ElevatorConstants.kElevatorLevelTop) {
+            // up
+            m_ElevatorMotorLeft.set(ElevatorConstants.kElevatorUpSpeed/(slow?5:1));
+            m_ElevatorMotorRight.set(-ElevatorConstants.kElevatorUpSpeed/(slow?5:1));
+        }
+    }
+
+    private void moveElevatorDown(boolean slow)
+    {
+        if (! elevatorRockBottom() && getFullPosition() > ElevatorConstants.kElevatorLevelBottom) {
+            // down
+            m_ElevatorMotorLeft.set(-ElevatorConstants.kElevatorDownSpeed/(slow?5:1));
+            m_ElevatorMotorRight.set(ElevatorConstants.kElevatorDownSpeed/(slow?5:1));
+        }
+    }
+
     private void setElevatorMotorToTarget() {
+        // if we are at bottom and still going down...
+        if (elevatorRockBottom() && m_ElevatorMotorLeft.get() < 0) {
+            stopElevator();
+            System.out.println("ROCK BOTTOM!");
+            return;
+        }
+        if (elevatorRockTop() && m_ElevatorMotorLeft.get() > 0) {
+            stopElevator();
+            System.out.println("ROCK TOP!");
+            return;
+        }
+
         switch (m_currentElevatorState){
             case STOP:
-                m_ElevatorMotorLeft.set(0.0);
-                m_ElevatorMotorRight.set(0.0);
+                // hold position
+                setMotorsLevel(m_elevatorStopPos);
                 break;
             case UP:
-                m_ElevatorMotorLeft.set(ElevatorConstants.kElevatorUpSpeed);
-                m_ElevatorMotorRight.set(-ElevatorConstants.kElevatorUpSpeed);
+                moveElevatorUp(false);
                 break;
             case DOWN:
-                m_ElevatorMotorLeft.set(-ElevatorConstants.kElevatorDownSpeed);
-                m_ElevatorMotorRight.set(ElevatorConstants.kElevatorDownSpeed);
+                moveElevatorDown(false);
                 break;
             case LEVEL1:
                 setMotorsLevel(ElevatorConstants.kElevatorLevel1);
@@ -154,27 +200,24 @@ public class ElevatorSubsystem extends SubsystemBase {
         diff = Math.abs(sign);
 
         if (diff < 0.02) {
+            // close enough
             m_ElevatorMotorLeft.set(0.0);
             m_ElevatorMotorRight.set(0.0);
         } else if (diff < 0.2) {
             if (sign < 0) {
                 // down slow
-                m_ElevatorMotorLeft.set(-ElevatorConstants.kElevatorDownSpeed/5);
-                m_ElevatorMotorRight.set(ElevatorConstants.kElevatorDownSpeed/5);
+                moveElevatorDown(true);
             } else {
                 // up slow
-                m_ElevatorMotorLeft.set(ElevatorConstants.kElevatorUpSpeed/5);
-                m_ElevatorMotorRight.set(-ElevatorConstants.kElevatorUpSpeed/5);
+                moveElevatorUp(true);
             }
         } else {
             if (sign < 0) {
                 // down
-                m_ElevatorMotorLeft.set(-ElevatorConstants.kElevatorDownSpeed);
-                m_ElevatorMotorRight.set(ElevatorConstants.kElevatorDownSpeed);
-            } else {
+                moveElevatorDown(false);
+            } else if (! elevatorRockTop()) {
                 // up
-                m_ElevatorMotorLeft.set(ElevatorConstants.kElevatorUpSpeed);
-                m_ElevatorMotorRight.set(-ElevatorConstants.kElevatorUpSpeed);
+                moveElevatorUp(false);
             }
         }
     }

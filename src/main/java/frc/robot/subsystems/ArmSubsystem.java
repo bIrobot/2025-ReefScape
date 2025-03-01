@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
 
@@ -121,7 +122,7 @@ public class ArmSubsystem extends SubsystemBase{
         m_ArmMotorRight.configure(configArmRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         // initial arm position
-        //m_ArmController.setReference(ArmConstants.kArmLevel1, ControlType.kPosition);
+        m_ArmController.setReference(m_ArmEncoder.getPosition(), ControlType.kPosition);
 
         SparkMaxConfig configHand = new SparkMaxConfig();
         configHand.inverted(true);
@@ -135,7 +136,7 @@ public class ArmSubsystem extends SubsystemBase{
         m_handMotor.configure(configHand, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         // initial hand position
-        //m_HandController.setReference(ArmConstants.kHandLevel1, ControlType.kPosition);
+        m_HandController.setReference(m_handEncoder.getPosition(), ControlType.kPosition);
     }
 
     public void armCoast()
@@ -264,6 +265,14 @@ public class ArmSubsystem extends SubsystemBase{
     public void periodic() {
         if (ticks++%50==0) System.out.println("ARM: Arm Encoder: " + m_ArmEncoder.getPosition() +
                                               " Hand Encoder: " + m_handEncoder.getPosition());
+
+        if (DriverStation.isTest()) {
+            return;
+        }
+
+        if (m_handEncoder.getPosition() < ArmConstants.kHandLevelBottom || m_handEncoder.getPosition() > ArmConstants.kHandLevelTop) {
+            m_HandController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+        }
 
         setFingerMotorToTarget();
     }

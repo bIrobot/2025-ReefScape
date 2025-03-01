@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IngestConstants;
 
@@ -110,6 +111,10 @@ public class IngestSubsystem extends SubsystemBase{
         if (ticks++%50==0) System.out.println("INGEST: Position: " + m_PivotEncoder.getPosition() +
                                               " Target: " + m_PivotTargetPosition +
                                               " hasCoral: " + getIngestHasCoral());
+
+        if (DriverStation.isTest()) {
+            return;
+        }
 
         setIngestMotorToTarget();
     }
