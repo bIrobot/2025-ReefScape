@@ -126,9 +126,6 @@ public class RobotContainer {
 
 public void testRunning()
 {
-  m_ArmSubsystem.armCoast();
-  m_ElevatorSubsystem.elevatorCoast();
-  m_IngestSubsystem.ingestCoast();
 }
 
 /**

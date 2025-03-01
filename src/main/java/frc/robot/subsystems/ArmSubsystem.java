@@ -265,6 +265,10 @@ public class ArmSubsystem extends SubsystemBase{
                                               " Hand Encoder: " + m_handEncoder.getPosition());
 
         if (DriverStation.isTest()) {
+            m_ArmController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+            m_HandController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+            m_fingerMotor.set(0);
+            armCoast();
             return;
         }
 
