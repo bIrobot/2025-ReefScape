@@ -113,7 +113,7 @@ public class IngestSubsystem extends SubsystemBase{
                                               " Target: " + m_PivotTargetPosition +
                                               " hasCoral: " + getIngestHasCoral());
 
-        if (DriverStation.isTest()) {
+        if (DriverStation.isTest() && DriverStation.isEnabled()) {
             m_PivotController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
             m_ingestMotorLeft.set(0.0);
             m_ingestMotorRight.set(0.0);

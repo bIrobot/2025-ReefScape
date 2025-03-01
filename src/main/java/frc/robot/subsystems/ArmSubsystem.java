@@ -264,7 +264,7 @@ public class ArmSubsystem extends SubsystemBase{
         if (ticks++%50==0) System.out.println("ARM: Arm Encoder: " + m_ArmEncoder.getPosition() +
                                               " Hand Encoder: " + m_handEncoder.getPosition());
 
-        if (DriverStation.isTest()) {
+        if (DriverStation.isTest() && DriverStation.isEnabled()) {
             m_ArmController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
             m_HandController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
             m_fingerMotor.set(0);

@@ -124,7 +124,7 @@ public class ElevatorSubsystem extends SubsystemBase {
             return;
         }
 
-        if (DriverStation.isTest()) {
+        if (DriverStation.isTest() && DriverStation.isEnabled()) {
             stopElevator();
             elevatorCoast();
             return;
