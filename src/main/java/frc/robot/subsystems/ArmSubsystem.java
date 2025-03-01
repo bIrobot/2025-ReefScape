@@ -284,21 +284,20 @@ public class ArmSubsystem extends SubsystemBase{
             armCoast();
             return;
         }
-
         // arm limit safety
-        if (m_ArmEncoder.getPosition() < ArmConstants.kArmLevelBottom && m_currentArmState != ArmState.UP) {
-            m_ArmController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+        if (m_ArmEncoder.getPosition() > ArmConstants.kArmLevelBottom && m_currentArmState != ArmState.UP) {
+            m_ArmController.setReference(m_ArmEncoder.getPosition(), ControlType.kPosition);
         }
-        if (m_ArmEncoder.getPosition() > ArmConstants.kArmLevelTop && m_currentArmState != ArmState.DOWN) {
-            m_ArmController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+        if (m_ArmEncoder.getPosition() < ArmConstants.kArmLevelTop && m_currentArmState != ArmState.DOWN) {
+            m_ArmController.setReference(m_ArmEncoder.getPosition(), ControlType.kPosition);
         }
 
         // hand limit safety
         if (m_handEncoder.getPosition() < ArmConstants.kHandLevelBottom && m_currentHandState != HandState.UP) {
-            m_HandController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+            m_HandController.setReference(m_handEncoder.getPosition(), ControlType.kPosition);
         }
         if (m_handEncoder.getPosition() > ArmConstants.kHandLevelTop && m_currentHandState != HandState.DOWN) {
-            m_HandController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+            m_HandController.setReference(m_handEncoder.getPosition(), ControlType.kPosition);
         }
 
         setFingerMotorToTarget();
