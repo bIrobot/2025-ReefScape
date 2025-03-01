@@ -126,6 +126,16 @@ public class ElevatorSubsystem extends SubsystemBase {
             return;
         }
 
+        // elevator safety
+        if (getFullPosition() < ElevatorConstants.kElevatorLevelBottom && m_currentElevatorState != ElevatorState.UP) {
+            m_ElevatorMotorLeft.set(0);
+            m_ElevatorMotorRight.set(0);
+            }
+        if (getFullPosition() > ElevatorConstants.kElevatorLevelTop && m_currentElevatorState != ElevatorState.DOWN) {
+            m_ElevatorMotorLeft.set(0);
+            m_ElevatorMotorRight.set(0);
+        }
+
         if (elevatorCalibrationFailed) {
             stopElevator();
             return;

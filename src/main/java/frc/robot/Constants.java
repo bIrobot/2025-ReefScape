@@ -23,8 +23,8 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   public static final class ArmConstants {
-    public static final double kArmUpSpeed = 0.08;
-    public static final double kArmDownSpeed = 0.06;
+    public static final double kArmUpSpeed = 0.14;
+    public static final double kArmDownSpeed = 0.12;
 
     public static final double kArmLevel1 = 0.02;  // near Top
     public static final double kArmLevel2 = 0.09;
@@ -60,8 +60,8 @@ public final class Constants {
     public static final double kElevatorLevel3 = 2.50;
     public static final double kElevatorLevel4 = 3.00;
 
-    public static final double kElevatorLevelBottom = 0.00;  // soft limit
-    public static final double kElevatorLevelTop = 4.00;  // soft limit
+    public static final double kElevatorLevelBottom = 1.00;  // soft limit
+    public static final double kElevatorLevelTop = 3.00;  // soft limit
   }
   
   public static final class IngestConstants {
