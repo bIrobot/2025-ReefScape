@@ -157,7 +157,7 @@ public class ArmSubsystem extends SubsystemBase{
     {
         if (m_currentArmState == ArmState.UP || m_currentArmState == ArmState.DOWN) {
             m_currentArmState = ArmState.STOP;
-            m_ArmController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+            m_ArmController.setReference(m_ArmEncoder.getPosition(), ControlType.kPosition);
         }
     }
 
@@ -202,7 +202,7 @@ public class ArmSubsystem extends SubsystemBase{
     {
         if (m_currentHandState == HandState.UP || m_currentHandState == HandState.DOWN) {
             m_currentHandState = HandState.STOP;
-            m_HandController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+            m_HandController.setReference(m_handEncoder.getPosition(), ControlType.kPosition);
         }
     }
 
