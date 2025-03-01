@@ -32,9 +32,7 @@ public class ArmSubsystem extends SubsystemBase{
     private final SparkMax m_fingerMotor;
 
     private ArmState m_currentArmState = ArmState.STOP;
-    private double m_ArmTime = 0;
     private HandState m_currentHandState = HandState.STOP;
-    private double m_HandTime = 0;
     private FingerState m_currentFingerState = FingerState.STOP;
     private double m_FingerTime = 0;
 

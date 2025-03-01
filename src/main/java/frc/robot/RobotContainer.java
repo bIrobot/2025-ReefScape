@@ -31,8 +31,6 @@ public class RobotContainer {
   private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
   private final ArmSubsystem m_ArmSubsystem = new ArmSubsystem();
 
-  private int ticks = 0;
-
   private int lastPov = -1;
 
   // The driver's controller
