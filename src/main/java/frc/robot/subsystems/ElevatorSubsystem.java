@@ -31,6 +31,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     private double m_lastPos = -1.0;  // illegal value
     private int m_revolutions = 0;
 
+    public boolean elevatorCalibrationFailed = false;
+
     public enum ElevatorState {  // XXX -- should be private!
         STOP,
         UP,
@@ -59,7 +61,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         if (! elevatorRockBottom()) {
             LimelightHelpers.setLEDMode_ForceBlink("");
-            assert(elevatorRockBottom());
+            elevatorCalibrationFailed = true;
+        } else {
+            LimelightHelpers.setLEDMode_ForceOn("");
         }
 
         // N.B. I don't believe we can use a PID controller because we manually add revolutions to our encoder?
@@ -115,6 +119,11 @@ public class ElevatorSubsystem extends SubsystemBase {
                                                " rockBottom:" + elevatorRockBottom() +
                                                " rockTop:" + elevatorRockTop());
 
+        if (elevatorCalibrationFailed) {
+            stopElevator();
+            return;
+        }
+
         if (DriverStation.isTest()) {
             return;
         }
@@ -147,12 +156,19 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     private void setElevatorMotorToTarget() {
+        if (elevatorCalibrationFailed) {
+            stopElevator();
+            return;
+        }
+
         // if we are at bottom and still going down...
         if (elevatorRockBottom() && m_ElevatorMotorLeft.get() < 0) {
             stopElevator();
             System.out.println("ROCK BOTTOM!");
             return;
         }
+
+        // if we are at top and still going up...
         if (elevatorRockTop() && m_ElevatorMotorLeft.get() > 0) {
             stopElevator();
             System.out.println("ROCK TOP!");

@@ -59,6 +59,10 @@ public class RobotContainer {
   }
 
   public void teleopRunning() {
+    if (m_ElevatorSubsystem.elevatorCalibrationFailed) {
+        return;
+    }
+
     if (m_driverController.getXButtonPressed()) {
         m_IngestSubsystem.startIngesting();
     } else if (m_driverController.getXButtonReleased()){
