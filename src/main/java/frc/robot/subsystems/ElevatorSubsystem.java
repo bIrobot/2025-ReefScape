@@ -20,6 +20,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     private ElevatorState m_currentElevatorState = ElevatorState.STOP;
     private double m_ElevatorTime = 0;
 
+    private final DigitalInput m_beamNotBroken = new DigitalInput(1);
+    private final DigitalInput m_limitSwitch = new DigitalInput(2);
+
     private int ticks = 0;
 
     private boolean m_firstPos = true;
@@ -66,6 +69,16 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_ElevatorMotorRight.configure(configRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
+    public boolean elevatorRockBottom()
+    {
+        return ! m_beamNotBroken.get();
+    }
+
+    public boolean elevatorRockTop()
+    {
+        return ! m_limitSwitch.get();
+    }
+
     public void elevatorStop()
     {
         if (m_currentElevatorState == ElevatorState.UP || m_currentElevatorState == ElevatorState.DOWN) {
@@ -90,7 +103,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (ticks++%50==0) System.out.println("ELEVATOR: Encoder: " + getFullPosition());
+        if (ticks++%50==0) System.out.println("ELEVATOR: Encoder: " + getFullPosition() +
+                                               " rockBottom:" + elevatorRockBottom() +
+                                               " rockTop:" + elevatorRockTop());
 
         setElevatorMotorToTarget();
     }
