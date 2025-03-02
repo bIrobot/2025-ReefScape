@@ -335,23 +335,11 @@ public class ArmSubsystem extends SubsystemBase{
 
     private double getArmPosition()
     {
-        double pos;
-        pos = m_ArmEncoder.getPosition();
-        if (pos > 0.9) {
-            // must be bad calibration
-            pos = pos-1;
-        }
-        return pos;
+        return m_ArmEncoder.getPosition();
     }
 
     private double getHandPosition()
     {
-        double pos;
-        pos = m_handEncoder.getPosition();
-        if (pos > 0.9) {
-            // must be bad calibration
-            pos = pos-1;
-        }
-        return pos;
+        return m_handEncoder.getPosition();
     }
 }

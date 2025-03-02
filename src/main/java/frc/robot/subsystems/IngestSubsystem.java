@@ -2,7 +2,10 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.IngestConstants;
 
 import com.revrobotics.spark.SparkMax;
@@ -61,7 +64,10 @@ public class IngestSubsystem extends SubsystemBase{
         m_PivotMotor.configure(configPivot, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         // initial pivot position
-        m_PivotController.setReference(getPivotPosition(), ControlType.kPosition);
+        (new SequentialCommandGroup(new WaitCommand(1),
+                                    new InstantCommand(
+                                        () -> m_PivotController.setReference(getPivotPosition(), ControlType.kPosition), this
+                                    ))).schedule();
     }
 
     public void ingestCoast()
@@ -149,11 +155,9 @@ public class IngestSubsystem extends SubsystemBase{
 
     private double getPivotPosition()
     {
-        double pos;
-        pos = m_PivotEncoder.getPosition();
-        if (pos > 0.9) {
-            // must be bad calibration
-            pos = pos-1;
+        double pos = m_PivotEncoder.getPosition();
+        if (pos == 0.0) {
+            pos = IngestConstants.k_pivotAngleSafeFraction;
         }
         return pos;
     }
