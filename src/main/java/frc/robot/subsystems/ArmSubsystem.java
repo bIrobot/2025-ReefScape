@@ -37,7 +37,7 @@ public class ArmSubsystem extends SubsystemBase{
     private double m_FingerTime = 0;
 
     // slot 0 for position control
-    private static final double k_armMotorP = 10.0;
+    private static final double k_armMotorP = 5.0;
     private static final double k_armMotorI = 0.0;
     private static final double k_armMotorD = 10.0;
 
