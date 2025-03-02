@@ -64,10 +64,7 @@ public class IngestSubsystem extends SubsystemBase{
         m_PivotMotor.configure(configPivot, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         // initial pivot position
-        (new SequentialCommandGroup(new WaitCommand(1),
-                                    new InstantCommand(
-                                        () -> m_PivotController.setReference(getPivotPosition(), ControlType.kPosition), this
-                                    ))).schedule();
+        m_PivotController.setReference(getPivotPosition(), ControlType.kPosition);
     }
 
     public void ingestCoast()

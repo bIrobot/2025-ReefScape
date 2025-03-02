@@ -335,11 +335,19 @@ public class ArmSubsystem extends SubsystemBase{
 
     private double getArmPosition()
     {
-        return m_ArmEncoder.getPosition();
+        double pos = m_ArmEncoder.getPosition();
+        if (pos == 0) {
+            pos = ArmConstants.kArmLevelSafe;
+        }
+        return pos;
     }
 
     private double getHandPosition()
     {
-        return m_handEncoder.getPosition();
+        double pos = m_handEncoder.getPosition();
+        if (pos == 0.0) {
+            pos = ArmConstants.kHandLevelSafe;
+        }
+        return pos;
     }
 }

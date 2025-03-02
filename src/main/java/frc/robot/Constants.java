@@ -63,8 +63,8 @@ public final class Constants {
     public static final double kElevatorLevel4 = 3.00;
 
     public static final double kElevatorLevelSafe = 3.00;
-    public static final double kElevatorLevelBottom = 0.05;  // soft limit NOT 0
-    public static final double kElevatorLevelTop = 4.00;  // soft limit
+    public static final double kElevatorLevelBottom = 1.0;//0.05;  // soft limit NOT 0
+    public static final double kElevatorLevelTop = 3.0;//4.00;  // soft limit
   }
   
   public static final class IngestConstants {
