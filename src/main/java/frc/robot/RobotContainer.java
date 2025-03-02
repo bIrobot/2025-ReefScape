@@ -15,7 +15,11 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.ArmState;
 import frc.robot.subsystems.ArmSubsystem.HandState;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /*
@@ -103,25 +107,52 @@ public class RobotContainer {
 
     int pov = m_driverController.getPOV();
     if (pov != lastPov) {
+        ArmState armState;
+        HandState handState;
+        ElevatorState elevatorState;
+        int armDelay, elevatorDelay;
         if (pov == 0) {
-            m_ArmSubsystem.armGoto(ArmState.LEVEL1);
-            m_ArmSubsystem.handGoto(HandState.LEVEL1);
-            m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL1);
+            armState = ArmState.LEVEL1;
+            handState = HandState.LEVEL1;
+            elevatorState = ElevatorState.LEVEL1;
         } else if (pov == 90) {
-            m_ArmSubsystem.armGoto(ArmState.LEVEL2);
-            m_ArmSubsystem.handGoto(HandState.LEVEL2);
-            m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL2);
+            armState = ArmState.LEVEL2;
+            handState = HandState.LEVEL2;
+            elevatorState = ElevatorState.LEVEL2;
         } else if (pov == 180) {
-            m_ArmSubsystem.armGoto(ArmState.LEVEL3);
-            m_ArmSubsystem.handGoto(HandState.LEVEL3);
-            m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL3);
+            armState = ArmState.LEVEL3;
+            handState = HandState.LEVEL3;
+            elevatorState = ElevatorState.LEVEL3;
         } else if (pov == 270) {
-            m_ArmSubsystem.armGoto(ArmState.LEVEL4);
-            m_ArmSubsystem.handGoto(HandState.LEVEL4);
-            m_ElevatorSubsystem.elevatorGoto(ElevatorState.LEVEL4);
+            armState = ArmState.LEVEL4;
+            handState = HandState.LEVEL4;
+            elevatorState = ElevatorState.LEVEL4;
+        } else {
+            return;
         }
+        if (m_ElevatorSubsystem.willElevatorGoUp(elevatorState)) {
+            // going up -- move elevator first!
+            armDelay = 5;
+            elevatorDelay = 0;
+        } else {
+            // going down -- move arm first!
+            armDelay = 0;
+            elevatorDelay = 5;
+        }
+        m_ArmSubsystem.armHold();
+        m_ElevatorSubsystem.elevatorHold();
+        ParallelCommandGroup commands = new ParallelCommandGroup(
+            new SequentialCommandGroup(new WaitCommand(armDelay),
+                                       new InstantCommand(() -> { m_ArmSubsystem.armGoto(armState); m_ArmSubsystem.handGoto(handState); }, m_ArmSubsystem)),
+
+            new SequentialCommandGroup(new WaitCommand(elevatorDelay),
+                                       new InstantCommand(() -> m_ElevatorSubsystem.elevatorGoto(elevatorState), m_ElevatorSubsystem))
+        );
+        commands.schedule();
         lastPov = pov;
     }
+
+    // BEWARE RETURN ABOVE!
 }
 
 public void testRunning()

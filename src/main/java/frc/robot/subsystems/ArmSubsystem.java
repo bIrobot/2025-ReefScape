@@ -66,7 +66,7 @@ public class ArmSubsystem extends SubsystemBase{
         LEVEL2,
         LEVEL3,
         LEVEL4,
-        TOP
+        SAFE
     };
   
     public enum HandState {
@@ -77,7 +77,7 @@ public class ArmSubsystem extends SubsystemBase{
         LEVEL2,
         LEVEL3,
         LEVEL4,
-        STRAIGHT
+        SAFE
     };
 
     private enum FingerState {
@@ -120,7 +120,7 @@ public class ArmSubsystem extends SubsystemBase{
         m_ArmMotorRight.configure(configArmRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         // initial arm position
-        m_ArmController.setReference(m_ArmEncoder.getPosition(), ControlType.kPosition);
+        armHold();
 
         SparkMaxConfig configHand = new SparkMaxConfig();
         configHand.inverted(true);
@@ -134,7 +134,7 @@ public class ArmSubsystem extends SubsystemBase{
         m_handMotor.configure(configHand, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         // initial hand position
-        m_HandController.setReference(m_handEncoder.getPosition(), ControlType.kPosition);
+        handHold();
     }
 
     public void armCoast()
@@ -152,11 +152,16 @@ public class ArmSubsystem extends SubsystemBase{
         m_handMotor.configure(configHand, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
+    public void armHold()
+    {
+        m_ArmController.setReference(m_ArmEncoder.getPosition(), ControlType.kPosition);
+    }
+
     public void armStop()
     {
         if (m_currentArmState == ArmState.UP || m_currentArmState == ArmState.DOWN) {
             m_currentArmState = ArmState.STOP;
-            m_ArmController.setReference(m_ArmEncoder.getPosition(), ControlType.kPosition);
+            armHold();
         }
     }
 
@@ -193,8 +198,8 @@ public class ArmSubsystem extends SubsystemBase{
                 case LEVEL4:
                     m_ArmController.setReference(ArmConstants.kArmLevel4, ControlType.kPosition);
                     break;
-                case TOP:
-                    m_ArmController.setReference(ArmConstants.kArmLevelTop, ControlType.kPosition);
+                case SAFE:
+                    m_ArmController.setReference(ArmConstants.kArmLevelSafe, ControlType.kPosition);
                     break;
                 default:
                     assert(false);
@@ -203,11 +208,16 @@ public class ArmSubsystem extends SubsystemBase{
         }
     }
 
+    public void handHold()
+    {
+        m_HandController.setReference(m_handEncoder.getPosition(), ControlType.kPosition);
+    }
+
     public void handStop()
     {
         if (m_currentHandState == HandState.UP || m_currentHandState == HandState.DOWN) {
             m_currentHandState = HandState.STOP;
-            m_HandController.setReference(m_handEncoder.getPosition(), ControlType.kPosition);
+            handHold();
         }
     }
 
@@ -244,8 +254,8 @@ public class ArmSubsystem extends SubsystemBase{
                 case LEVEL4:
                     m_HandController.setReference(ArmConstants.kHandLevel4, ControlType.kPosition);
                     break;
-                case STRAIGHT:
-                    m_HandController.setReference(ArmConstants.kHandLevelStraight, ControlType.kPosition);
+                case SAFE:
+                    m_HandController.setReference(ArmConstants.kHandLevelSafe, ControlType.kPosition);
                     break;
                 default:
                     assert(false);
@@ -284,20 +294,21 @@ public class ArmSubsystem extends SubsystemBase{
             armCoast();
             return;
         }
+
         // arm limit safety
         if (m_ArmEncoder.getPosition() > ArmConstants.kArmLevelBottom && m_currentArmState != ArmState.UP) {
-            m_ArmController.setReference(m_ArmEncoder.getPosition(), ControlType.kPosition);
+            armHold();
         }
         if (m_ArmEncoder.getPosition() < ArmConstants.kArmLevelTop && m_currentArmState != ArmState.DOWN) {
-            m_ArmController.setReference(m_ArmEncoder.getPosition(), ControlType.kPosition);
+            armHold();
         }
 
         // hand limit safety
         if (m_handEncoder.getPosition() < ArmConstants.kHandLevelBottom && m_currentHandState != HandState.UP) {
-            m_HandController.setReference(m_handEncoder.getPosition(), ControlType.kPosition);
+            handHold();
         }
         if (m_handEncoder.getPosition() > ArmConstants.kHandLevelTop && m_currentHandState != HandState.DOWN) {
-            m_HandController.setReference(m_handEncoder.getPosition(), ControlType.kPosition);
+            handHold();
         }
 
         setFingerMotorToTarget();

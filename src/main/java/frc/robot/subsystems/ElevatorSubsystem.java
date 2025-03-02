@@ -20,7 +20,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     private SparkAbsoluteEncoder m_ElevatorEncoder;
 
     private ElevatorState m_currentElevatorState = ElevatorState.STOP;
-    private double m_elevatorStopPos = 0.20;  // XXX revisit
 
     private final DigitalInput m_beamNotBroken = new DigitalInput(1);
     private final DigitalInput m_limitSwitch = new DigitalInput(2);
@@ -40,8 +39,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         LEVEL1,
         LEVEL2,
         LEVEL3,
-        LEVEL4,
-        BOTTOM
+        LEVEL4
     };
 
     public ElevatorSubsystem()
@@ -90,11 +88,15 @@ public class ElevatorSubsystem extends SubsystemBase {
         return ! m_limitSwitch.get();
     }
 
+    public void elevatorHold()
+    {
+        m_currentElevatorState = ElevatorState.STOP;
+    }
+
     public void elevatorStop()
     {
         if (m_currentElevatorState == ElevatorState.UP || m_currentElevatorState == ElevatorState.DOWN) {
-            m_elevatorStopPos = getFullPosition();
-            m_currentElevatorState = ElevatorState.STOP;
+            elevatorHold();
         }
     }
 
@@ -130,7 +132,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         if (getFullPosition() < ElevatorConstants.kElevatorLevelBottom && m_currentElevatorState != ElevatorState.UP) {
             m_ElevatorMotorLeft.set(0);
             m_ElevatorMotorRight.set(0);
-            }
+        }
         if (getFullPosition() > ElevatorConstants.kElevatorLevelTop && m_currentElevatorState != ElevatorState.DOWN) {
             m_ElevatorMotorLeft.set(0);
             m_ElevatorMotorRight.set(0);
@@ -168,6 +170,28 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
     }
 
+    private double getElevatorMotorTarget(ElevatorState state)
+    {
+        switch (state) {
+            case LEVEL1:
+                return ElevatorConstants.kElevatorLevel1;
+            case LEVEL2:
+                return ElevatorConstants.kElevatorLevel2;
+            case LEVEL3:
+                return ElevatorConstants.kElevatorLevel3;
+            case LEVEL4:
+                return ElevatorConstants.kElevatorLevel4;
+            default:
+                assert(false);
+                return ElevatorConstants.kElevatorLevelSafe;
+        }
+    }
+
+    public boolean willElevatorGoUp(ElevatorState state)
+    {
+        return getElevatorMotorTarget(state) > getFullPosition();
+    }
+
     private void setElevatorMotorToTarget() {
         if (elevatorCalibrationFailed) {
             stopElevator();
@@ -191,7 +215,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         switch (m_currentElevatorState){
             case STOP:
                 // hold position
-                setMotorsLevel(m_elevatorStopPos);
+                setMotorsLevel(getFullPosition());
                 break;
             case UP:
                 moveElevatorUp(false);
@@ -200,19 +224,10 @@ public class ElevatorSubsystem extends SubsystemBase {
                 moveElevatorDown(false);
                 break;
             case LEVEL1:
-                setMotorsLevel(ElevatorConstants.kElevatorLevel1);
-                break;
             case LEVEL2:
-                setMotorsLevel(ElevatorConstants.kElevatorLevel2);
-                break;
             case LEVEL3:
-                setMotorsLevel(ElevatorConstants.kElevatorLevel3);
-                break;
             case LEVEL4:
-                setMotorsLevel(ElevatorConstants.kElevatorLevel4);
-                break;
-            case BOTTOM:
-                setMotorsLevel(ElevatorConstants.kElevatorLevelBottom);
+                setMotorsLevel(getElevatorMotorTarget(m_currentElevatorState));
                 break;
             default:
                 assert(false);
@@ -225,7 +240,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         double sign;
         double diff;
 
-        sign = pos-getFullPosition();
+        sign = pos - getFullPosition();
         diff = Math.abs(sign);
 
         if (diff < 0.02) {
