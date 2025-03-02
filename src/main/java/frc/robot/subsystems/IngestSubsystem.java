@@ -54,15 +54,14 @@ public class IngestSubsystem extends SubsystemBase{
 
         SparkMaxConfig configPivot = new SparkMaxConfig();
         configPivot.closedLoop.pid(k_pivotMotorP, k_pivotMotorI, k_pivotMotorD)
-                              .positionWrappingEnabled(true)
-                              .positionWrappingInputRange(0, 1)
+                              .positionWrappingEnabled(false)
                               .outputRange(-0.2, 0.2)
                               .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
         configPivot.idleMode(IdleMode.kBrake);
         m_PivotMotor.configure(configPivot, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         // initial pivot position
-        m_PivotController.setReference(m_PivotEncoder.getPosition(), ControlType.kPosition);
+        m_PivotController.setReference(getPivotPosition(), ControlType.kPosition);
     }
 
     public void ingestCoast()
@@ -146,5 +145,16 @@ public class IngestSubsystem extends SubsystemBase{
                 assert(false);
                 break;
         }
+    }
+
+    private double getPivotPosition()
+    {
+        double pos;
+        pos = m_PivotEncoder.getPosition();
+        if (pos > 0.9) {
+            // must be bad calibration
+            pos = pos-1;
+        }
+        return pos;
     }
 }

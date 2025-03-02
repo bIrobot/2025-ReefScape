@@ -105,8 +105,7 @@ public class ArmSubsystem extends SubsystemBase{
         configArmLeft.inverted(true);
         configArmLeft.closedLoop.pid(k_armMotorP, k_armMotorI, k_armMotorD)
                                 .pid(k_armMotorP1, k_armMotorI1, k_armMotorD1, ClosedLoopSlot.kSlot1)
-                                .positionWrappingEnabled(true)
-                                .positionWrappingInputRange(0, 1)
+                                .positionWrappingEnabled(false)
                                 .outputRange(-ArmConstants.kArmUpSpeed, ArmConstants.kArmDownSpeed)
                                 .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
         configArmLeft.idleMode(IdleMode.kBrake);
@@ -126,8 +125,7 @@ public class ArmSubsystem extends SubsystemBase{
         configHand.inverted(true);
         configHand.closedLoop.pid(k_handMotorP, k_handMotorI, k_handMotorD)
                              .pid(k_handMotorP1, k_handMotorI1, k_handMotorD1, ClosedLoopSlot.kSlot1)
-                             .positionWrappingEnabled(true)
-                             .positionWrappingInputRange(0, 1)
+                             .positionWrappingEnabled(false)
                              .outputRange(-ArmConstants.kHandUpSpeed, ArmConstants.kHandDownSpeed)
                              .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
         configHand.idleMode(IdleMode.kBrake);
@@ -154,7 +152,7 @@ public class ArmSubsystem extends SubsystemBase{
 
     public void armHold()
     {
-        m_ArmController.setReference(m_ArmEncoder.getPosition(), ControlType.kPosition);
+        m_ArmController.setReference(getArmPosition(), ControlType.kPosition);
     }
 
     public void armStop()
@@ -210,7 +208,7 @@ public class ArmSubsystem extends SubsystemBase{
 
     public void handHold()
     {
-        m_HandController.setReference(m_handEncoder.getPosition(), ControlType.kPosition);
+        m_HandController.setReference(getHandPosition(), ControlType.kPosition);
     }
 
     public void handStop()
@@ -296,18 +294,18 @@ public class ArmSubsystem extends SubsystemBase{
         }
 
         // arm limit safety
-        if (m_ArmEncoder.getPosition() > ArmConstants.kArmLevelBottom && m_currentArmState != ArmState.UP) {
+        if (getArmPosition() > ArmConstants.kArmLevelBottom && m_currentArmState == ArmState.DOWN) {
             armHold();
         }
-        if (m_ArmEncoder.getPosition() < ArmConstants.kArmLevelTop && m_currentArmState != ArmState.DOWN) {
+        if (getArmPosition() < ArmConstants.kArmLevelTop && m_currentArmState == ArmState.UP) {
             armHold();
         }
 
         // hand limit safety
-        if (m_handEncoder.getPosition() < ArmConstants.kHandLevelBottom && m_currentHandState != HandState.UP) {
+        if (getHandPosition() < ArmConstants.kHandLevelBottom && m_currentHandState == HandState.DOWN) {
             handHold();
         }
-        if (m_handEncoder.getPosition() > ArmConstants.kHandLevelTop && m_currentHandState != HandState.DOWN) {
+        if (getHandPosition() > ArmConstants.kHandLevelTop && m_currentHandState == HandState.UP) {
             handHold();
         }
 
@@ -333,5 +331,27 @@ public class ArmSubsystem extends SubsystemBase{
                 assert(false);
                 break;
         }
+    }
+
+    private double getArmPosition()
+    {
+        double pos;
+        pos = m_ArmEncoder.getPosition();
+        if (pos > 0.9) {
+            // must be bad calibration
+            pos = pos-1;
+        }
+        return pos;
+    }
+
+    private double getHandPosition()
+    {
+        double pos;
+        pos = m_handEncoder.getPosition();
+        if (pos > 0.9) {
+            // must be bad calibration
+            pos = pos-1;
+        }
+        return pos;
     }
 }
