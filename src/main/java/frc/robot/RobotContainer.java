@@ -6,14 +6,13 @@ package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IngestSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem.ElevatorState;
 import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.ArmSubsystem.ArmState;
-import frc.robot.subsystems.ArmSubsystem.HandState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -107,30 +106,34 @@ public class RobotContainer {
 
     int pov = m_driverController.getPOV();
     if (pov != lastPov) {
-        ArmState armState;
-        HandState handState;
-        ElevatorState elevatorState;
+        double armPos;
+        double handPos;
+        double elevatorPos;
         int armDelay, elevatorDelay;
         if (pov == 0) {
-            armState = ArmState.LEVEL1;
-            handState = HandState.LEVEL1;
-            elevatorState = ElevatorState.LEVEL1;
+            // level 1
+            armPos = ArmConstants.kArmLevel1;
+            handPos = ArmConstants.kHandLevel1;
+            elevatorPos = ElevatorConstants.kElevatorLevel1;
         } else if (pov == 90) {
-            armState = ArmState.LEVEL2;
-            handState = HandState.LEVEL2;
-            elevatorState = ElevatorState.LEVEL2;
+            // level 2
+            armPos = ArmConstants.kArmLevel2;
+            handPos = ArmConstants.kHandLevel2;
+            elevatorPos = ElevatorConstants.kElevatorLevel2;
         } else if (pov == 180) {
-            armState = ArmState.LEVEL3;
-            handState = HandState.LEVEL3;
-            elevatorState = ElevatorState.LEVEL3;
+            // level 3
+            armPos = ArmConstants.kArmLevel3;
+            handPos = ArmConstants.kHandLevel3;
+            elevatorPos = ElevatorConstants.kElevatorLevel3;
         } else if (pov == 270) {
-            armState = ArmState.LEVEL4;
-            handState = HandState.LEVEL4;
-            elevatorState = ElevatorState.LEVEL4;
+            // level 4
+            armPos = ArmConstants.kArmLevel4;
+            handPos = ArmConstants.kHandLevel4;
+            elevatorPos = ElevatorConstants.kElevatorLevel4;
         } else {
             return;
         }
-        if (m_ElevatorSubsystem.willElevatorGoUp(elevatorState)) {
+        if (m_ElevatorSubsystem.willElevatorGoUp(elevatorPos)) {
             // going up -- move elevator first!
             armDelay = 5;
             elevatorDelay = 0;
@@ -143,10 +146,11 @@ public class RobotContainer {
         m_ElevatorSubsystem.elevatorHold();
         ParallelCommandGroup commands = new ParallelCommandGroup(
             new SequentialCommandGroup(new WaitCommand(armDelay),
-                                       new InstantCommand(() -> { m_ArmSubsystem.armGoto(armState); m_ArmSubsystem.handGoto(handState); }, m_ArmSubsystem)),
+                                       new InstantCommand(() -> { m_ArmSubsystem.armGoto(armPos);
+                                                                  m_ArmSubsystem.handGoto(handPos); }, m_ArmSubsystem)),
 
             new SequentialCommandGroup(new WaitCommand(elevatorDelay),
-                                       new InstantCommand(() -> m_ElevatorSubsystem.elevatorGoto(elevatorState), m_ElevatorSubsystem))
+                                       new InstantCommand(() -> m_ElevatorSubsystem.elevatorGoto(elevatorPos), m_ElevatorSubsystem))
         );
         commands.schedule();
         lastPov = pov;

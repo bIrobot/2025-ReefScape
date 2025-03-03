@@ -20,6 +20,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private SparkAbsoluteEncoder m_ElevatorEncoder;
 
     private ElevatorState m_currentElevatorState = ElevatorState.STOP;
+    private double m_currentElevatorGoto = ElevatorConstants.kElevatorLevelSafe;
 
     private final DigitalInput m_beamNotBroken = new DigitalInput(1);
     private final DigitalInput m_limitSwitch = new DigitalInput(2);
@@ -32,14 +33,11 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public boolean elevatorCalibrationFailed = false;
 
-    public enum ElevatorState {  // XXX -- should be private!
+    private enum ElevatorState {
         STOP,
         UP,
         DOWN,
-        LEVEL1,
-        LEVEL2,
-        LEVEL3,
-        LEVEL4
+        GOTO  // state in m_currentElevatorGoto
     };
 
     public ElevatorSubsystem()
@@ -110,14 +108,15 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_currentElevatorState = ElevatorState.DOWN;
     }
 
-    public void elevatorGoto(ElevatorState level)  // XXX -- horrible api to have illegal enum values!
+    public void elevatorGoto(double elevatorPos)
     {
-        m_currentElevatorState = level;
+        m_currentElevatorGoto = elevatorPos;
+        m_currentElevatorState = ElevatorState.GOTO;
     }
 
     @Override
     public void periodic() {
-        if (ticks++%50==0) System.out.println("ELEVATOR: Encoder: " + getFullPosition() +
+        if (ticks++%50==0) System.out.println("ELEVATOR: Encoder: " + getFullElevatorPosition() +
                                                " rockBottom:" + elevatorRockBottom() +
                                                " rockTop:" + elevatorRockTop());
 
@@ -129,11 +128,11 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
 
         // elevator safety
-        if (getFullPosition() < ElevatorConstants.kElevatorLevelBottom && m_currentElevatorState == ElevatorState.DOWN) {
+        if (getFullElevatorPosition() < ElevatorConstants.kElevatorLevelBottom && m_currentElevatorState == ElevatorState.DOWN) {
             m_ElevatorMotorLeft.set(0);
             m_ElevatorMotorRight.set(0);
         }
-        if (getFullPosition() > ElevatorConstants.kElevatorLevelTop && m_currentElevatorState == ElevatorState.UP) {
+        if (getFullElevatorPosition() > ElevatorConstants.kElevatorLevelTop && m_currentElevatorState == ElevatorState.UP) {
             m_ElevatorMotorLeft.set(0);
             m_ElevatorMotorRight.set(0);
         }
@@ -154,7 +153,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     private void moveElevatorUp(boolean slow)
     {
-        if (! elevatorRockTop() && getFullPosition() < ElevatorConstants.kElevatorLevelTop) {
+        if (! elevatorRockTop() && getFullElevatorPosition() < ElevatorConstants.kElevatorLevelTop) {
             // up
             m_ElevatorMotorLeft.set(ElevatorConstants.kElevatorUpSpeed/(slow?5:1));
             m_ElevatorMotorRight.set(-ElevatorConstants.kElevatorUpSpeed/(slow?5:1));
@@ -163,33 +162,16 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     private void moveElevatorDown(boolean slow)
     {
-        if (! elevatorRockBottom() && getFullPosition() > ElevatorConstants.kElevatorLevelBottom) {
+        if (! elevatorRockBottom() && getFullElevatorPosition() > ElevatorConstants.kElevatorLevelBottom) {
             // down
             m_ElevatorMotorLeft.set(-ElevatorConstants.kElevatorDownSpeed/(slow?5:1));
             m_ElevatorMotorRight.set(ElevatorConstants.kElevatorDownSpeed/(slow?5:1));
         }
     }
 
-    private double getElevatorMotorTarget(ElevatorState state)
+    public boolean willElevatorGoUp(double elevatorPos)
     {
-        switch (state) {
-            case LEVEL1:
-                return ElevatorConstants.kElevatorLevel1;
-            case LEVEL2:
-                return ElevatorConstants.kElevatorLevel2;
-            case LEVEL3:
-                return ElevatorConstants.kElevatorLevel3;
-            case LEVEL4:
-                return ElevatorConstants.kElevatorLevel4;
-            default:
-                assert(false);
-                return ElevatorConstants.kElevatorLevelSafe;
-        }
-    }
-
-    public boolean willElevatorGoUp(ElevatorState state)
-    {
-        return getElevatorMotorTarget(state) > getFullPosition();
+        return elevatorPos > getFullElevatorPosition();
     }
 
     private void setElevatorMotorToTarget() {
@@ -215,7 +197,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         switch (m_currentElevatorState){
             case STOP:
                 // hold position
-                setMotorsLevel(getFullPosition());
+                setMotorsLevel(getFullElevatorPosition());
                 break;
             case UP:
                 moveElevatorUp(false);
@@ -223,11 +205,8 @@ public class ElevatorSubsystem extends SubsystemBase {
             case DOWN:
                 moveElevatorDown(false);
                 break;
-            case LEVEL1:
-            case LEVEL2:
-            case LEVEL3:
-            case LEVEL4:
-                setMotorsLevel(getElevatorMotorTarget(m_currentElevatorState));
+            case GOTO:
+                setMotorsLevel(m_currentElevatorGoto);
                 break;
             default:
                 assert(false);
@@ -236,11 +215,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     // poor man's PID controller
-    private void setMotorsLevel(double pos) {
+    private void setMotorsLevel(double elevatorPos) {
         double sign;
         double diff;
 
-        sign = pos - getFullPosition();
+        sign = elevatorPos - getFullElevatorPosition();
         diff = Math.abs(sign);
 
         if (diff < 0.02) {
@@ -266,24 +245,24 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
     }
 
-    private double getFullPosition()
+    private double getFullElevatorPosition()
     {
-        double pos = m_ElevatorEncoder.getPosition();
+        double elevatorPos = m_ElevatorEncoder.getPosition();
         if (m_firstPos) {
-            if (pos > 0.5) {
+            if (elevatorPos > 0.5) {
                 m_revolutions = -1;
             }
             m_firstPos = false;
         }
         if (m_lastPos != -1.0) {
-            if (pos < m_lastPos-0.5) {
+            if (elevatorPos < m_lastPos-0.5) {
                 m_revolutions++;
             }
-            if (pos > m_lastPos+0.5) {
+            if (elevatorPos > m_lastPos+0.5) {
                 m_revolutions--;
             }
         }
-        m_lastPos = pos;
-        return pos+m_revolutions;
+        m_lastPos = elevatorPos;
+        return elevatorPos + m_revolutions;
     }
 }

@@ -58,26 +58,18 @@ public class ArmSubsystem extends SubsystemBase{
 
     private int ticks = 0;
 
-    public enum ArmState {  // XXX -- should be private!
+    private enum ArmState {
         STOP,
         UP,
         DOWN,
-        LEVEL1,
-        LEVEL2,
-        LEVEL3,
-        LEVEL4,
-        SAFE
+        GOTO  // state in controller
     };
   
-    public enum HandState {
+    private enum HandState {
         STOP,
         UP,
         DOWN,
-        LEVEL1,
-        LEVEL2,
-        LEVEL3,
-        LEVEL4,
-        SAFE
+        GOTO  // state in controller
     };
 
     private enum FingerState {
@@ -179,31 +171,10 @@ public class ArmSubsystem extends SubsystemBase{
         }
     }
 
-    public void armGoto(ArmState level)  // XXX -- horrible api to have illegal enum values!
+    public void armGoto(double armPos)
     {
-        if (m_currentArmState != level) {
-            m_currentArmState = level;
-            switch (level) {
-                case LEVEL1:
-                    m_ArmController.setReference(ArmConstants.kArmLevel1, ControlType.kPosition);
-                    break;
-                case LEVEL2:
-                    m_ArmController.setReference(ArmConstants.kArmLevel2, ControlType.kPosition);
-                    break;
-                case LEVEL3:
-                    m_ArmController.setReference(ArmConstants.kArmLevel3, ControlType.kPosition);
-                    break;
-                case LEVEL4:
-                    m_ArmController.setReference(ArmConstants.kArmLevel4, ControlType.kPosition);
-                    break;
-                case SAFE:
-                    m_ArmController.setReference(ArmConstants.kArmLevelSafe, ControlType.kPosition);
-                    break;
-                default:
-                    assert(false);
-                    break;
-            }
-        }
+        m_currentArmState = ArmState.GOTO;
+        m_ArmController.setReference(armPos, ControlType.kPosition);
     }
 
     public void handHold()
@@ -235,31 +206,10 @@ public class ArmSubsystem extends SubsystemBase{
         }
     }
 
-    public void handGoto(HandState level)  // XXX -- horrible api to have illegal enum values!
+    public void handGoto(double handPos)
     {
-        if (m_currentHandState != level) {
-            m_currentHandState = level;
-            switch (level) {
-                case LEVEL1:
-                    m_HandController.setReference(ArmConstants.kHandLevel1, ControlType.kPosition);
-                    break;
-                case LEVEL2:
-                    m_HandController.setReference(ArmConstants.kHandLevel2, ControlType.kPosition);
-                    break;
-                case LEVEL3:
-                    m_HandController.setReference(ArmConstants.kHandLevel3, ControlType.kPosition);
-                    break;
-                case LEVEL4:
-                    m_HandController.setReference(ArmConstants.kHandLevel4, ControlType.kPosition);
-                    break;
-                case SAFE:
-                    m_HandController.setReference(ArmConstants.kHandLevelSafe, ControlType.kPosition);
-                    break;
-                default:
-                    assert(false);
-                    break;
-            }
-        }
+        m_currentHandState = HandState.GOTO;
+        m_HandController.setReference(handPos, ControlType.kPosition);
     }
 
     public void fingerStop()
@@ -335,19 +285,19 @@ public class ArmSubsystem extends SubsystemBase{
 
     private double getArmPosition()
     {
-        double pos = m_ArmEncoder.getPosition();
-        if (pos == 0) {
-            pos = ArmConstants.kArmLevelSafe;
+        double armPos = m_ArmEncoder.getPosition();
+        if (armPos == 0) {
+            armPos = ArmConstants.kArmLevelSafe;
         }
-        return pos;
+        return armPos;
     }
 
     private double getHandPosition()
     {
-        double pos = m_handEncoder.getPosition();
-        if (pos == 0.0) {
-            pos = ArmConstants.kHandLevelSafe;
+        double handPos = m_handEncoder.getPosition();
+        if (handPos == 0.0) {
+            handPos = ArmConstants.kHandLevelSafe;
         }
-        return pos;
+        return handPos;
     }
 }
