@@ -150,7 +150,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_ElevatorMotorRight.set(0);
     }
 
-    private void moveElevatorUp(boolean slow)
+    private void moveElevatorMotorsUp(boolean slow)
     {
         if (! elevatorRockTop()) {
             // up
@@ -159,7 +159,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
     }
 
-    private void moveElevatorDown(boolean slow)
+    private void moveElevatorMotorsDown(boolean slow)
     {
         if (! elevatorRockBottom()) {
             // down
@@ -199,10 +199,10 @@ public class ElevatorSubsystem extends SubsystemBase {
                 setMotorsLevel(getFullElevatorPosition());
                 break;
             case UP:
-                moveElevatorUp(false);
+                moveElevatorMotorsUp(false);
                 break;
             case DOWN:
-                moveElevatorDown(false);
+                moveElevatorMotorsDown(false);
                 break;
             case GOTO:
                 setMotorsLevel(m_currentElevatorGoto);
@@ -228,18 +228,18 @@ public class ElevatorSubsystem extends SubsystemBase {
         } else if (diff < 0.2) {
             if (sign < 0) {
                 // down slow
-                moveElevatorDown(true);
+                moveElevatorMotorsDown(true);
             } else {
                 // up slow
-                moveElevatorUp(true);
+                moveElevatorMotorsUp(true);
             }
         } else {
             if (sign < 0) {
                 // down
-                moveElevatorDown(false);
+                moveElevatorMotorsDown(false);
             } else if (! elevatorRockTop()) {
                 // up
-                moveElevatorUp(false);
+                moveElevatorMotorsUp(false);
             }
         }
     }

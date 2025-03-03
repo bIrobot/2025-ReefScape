@@ -173,8 +173,10 @@ public class ArmSubsystem extends SubsystemBase{
 
     public void armGoto(double armPos)
     {
-        m_currentArmState = ArmState.GOTO;
-        m_ArmController.setReference(armPos, ControlType.kPosition);
+        if (armPos >= ArmConstants.kArmLevelTop && armPos <= ArmConstants.kArmLevelBottom) {
+            m_currentArmState = ArmState.GOTO;
+            m_ArmController.setReference(armPos, ControlType.kPosition);
+        }
     }
 
     public void handHold()
@@ -208,8 +210,10 @@ public class ArmSubsystem extends SubsystemBase{
 
     public void handGoto(double handPos)
     {
-        m_currentHandState = HandState.GOTO;
-        m_HandController.setReference(handPos, ControlType.kPosition);
+        if (handPos >= ArmConstants.kHandLevelBottom && handPos <= ArmConstants.kHandLevelTop) {
+            m_currentHandState = HandState.GOTO;
+            m_HandController.setReference(handPos, ControlType.kPosition);
+        }
     }
 
     public void fingerStop()
