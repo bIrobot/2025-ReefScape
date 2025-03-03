@@ -16,7 +16,9 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 public class ElevatorSubsystem extends SubsystemBase {
     private final SparkMax m_ElevatorMotorLeft;
+    private final SparkMaxConfig m_configLeft = new SparkMaxConfig();
     private final SparkMax m_ElevatorMotorRight;
+    private final SparkMaxConfig m_configRight = new SparkMaxConfig();
     private SparkAbsoluteEncoder m_ElevatorEncoder;
 
     private ElevatorState m_currentElevatorState = ElevatorState.STOP;
@@ -26,6 +28,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private final DigitalInput m_limitSwitch = new DigitalInput(2);
 
     private int ticks = 0;
+    private boolean m_coast = false;
 
     private boolean m_firstPos = true;
     private double m_lastElevatorPos = -1.0;  // illegal value
@@ -47,13 +50,11 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         m_ElevatorMotorRight = new SparkMax(9, MotorType.kBrushless);  // XXX Constants
 
-        SparkMaxConfig configLeft = new SparkMaxConfig();
-        configLeft.idleMode(IdleMode.kBrake);
-        m_ElevatorMotorLeft.configure(configLeft, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        m_configLeft.idleMode(IdleMode.kBrake);
+        m_ElevatorMotorLeft.configure(m_configLeft, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
-        SparkMaxConfig configRight = new SparkMaxConfig();
-        configRight.idleMode(IdleMode.kBrake);
-        m_ElevatorMotorRight.configure(configRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        m_configRight.idleMode(IdleMode.kBrake);
+        m_ElevatorMotorRight.configure(m_configRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         if (! elevatorRockBottom()) {
             LimelightHelpers.setLEDMode_ForceBlink("");
@@ -65,15 +66,13 @@ public class ElevatorSubsystem extends SubsystemBase {
         // N.B. I don't believe we can use a PID controller because we manually add revolutions to our encoder?
     }
 
-    public void elevatorCoast()
+    public void elevatorCoast(boolean coast)
     {
-        SparkMaxConfig configLeft = new SparkMaxConfig();
-        configLeft.idleMode(IdleMode.kCoast);
-        m_ElevatorMotorLeft.configure(configLeft, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        m_configLeft.idleMode(coast ? IdleMode.kCoast : IdleMode.kBrake);
+        m_ElevatorMotorLeft.configure(m_configLeft, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
-        SparkMaxConfig configRight = new SparkMaxConfig();
-        configRight.idleMode(IdleMode.kCoast);
-        m_ElevatorMotorRight.configure(configRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        m_configRight.idleMode(coast ? IdleMode.kCoast : IdleMode.kBrake);
+        m_ElevatorMotorRight.configure(m_configRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
     public boolean elevatorRockBottom()
@@ -132,8 +131,14 @@ public class ElevatorSubsystem extends SubsystemBase {
         if (DriverStation.isTest() && DriverStation.isEnabled()) {
             if (ticks++%50==0) System.out.println("ELEVATOR STOP/COAST");
             stopElevatorMotors();
-            elevatorCoast();
+            if (! m_coast) {
+                elevatorCoast(true);
+                m_coast = true;
+            }
             return;
+        } else if (m_coast) {
+            elevatorCoast(false);
+            m_coast = false;
         }
 
         if (elevatorCalibrationFailed) {

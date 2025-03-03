@@ -24,7 +24,7 @@ public class IngestSubsystem extends SubsystemBase{
     private SparkMax m_PivotMotor;
     private SparkAbsoluteEncoder m_PivotEncoder;
     private SparkClosedLoopController m_PivotController;
-
+    private SparkMaxConfig m_configPivot = new SparkMaxConfig();
     private IngestState m_currentIngestState = IngestState.STOP;
     private double m_IngestTime = 0;
 
@@ -34,7 +34,8 @@ public class IngestSubsystem extends SubsystemBase{
 
     private final DigitalInput m_beamNotBroken = new DigitalInput(0);
 
-    private int ticks = 0;
+    private int m_ticks = 0;
+    private boolean m_coast = false;
 
     private enum IngestState {
         STOP,
@@ -53,23 +54,21 @@ public class IngestSubsystem extends SubsystemBase{
         m_PivotEncoder = m_PivotMotor.getAbsoluteEncoder();
         m_PivotController = m_PivotMotor.getClosedLoopController();
 
-        SparkMaxConfig configPivot = new SparkMaxConfig();
-        configPivot.closedLoop.pid(k_pivotMotorP, k_pivotMotorI, k_pivotMotorD)
+        m_configPivot.closedLoop.pid(k_pivotMotorP, k_pivotMotorI, k_pivotMotorD)
                               .positionWrappingEnabled(false)
                               .outputRange(-0.2, 0.2)
                               .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
-        configPivot.idleMode(IdleMode.kBrake);
-        m_PivotMotor.configure(configPivot, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        m_configPivot.idleMode(IdleMode.kBrake);
+        m_PivotMotor.configure(m_configPivot, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         // initial pivot position
         m_PivotController.setReference(getPivotPosition(), ControlType.kPosition);
     }
 
-    public void ingestCoast()
+    public void ingestCoast(boolean coast)
     {
-        SparkMaxConfig configPivot = new SparkMaxConfig();
-        configPivot.idleMode(IdleMode.kCoast);
-        m_PivotMotor.configure(configPivot, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        m_configPivot.idleMode(coast ? IdleMode.kCoast : IdleMode.kBrake);
+        m_PivotMotor.configure(m_configPivot, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
     public boolean getIngestHasCoral()
@@ -105,16 +104,22 @@ public class IngestSubsystem extends SubsystemBase{
 
     @Override
     public void periodic() {
-        if (ticks++%50==0) System.out.println("INGEST: Position: " + m_PivotEncoder.getPosition() +
+        if (m_ticks++%50==0) System.out.println("INGEST: Position: " + m_PivotEncoder.getPosition() +
                                               " hasCoral: " + getIngestHasCoral());
 
         if (DriverStation.isTest() && DriverStation.isEnabled()) {
-            if (ticks++%50==0) System.out.println("INGEST STOP/COAST");
+            if (m_ticks++%50==0) System.out.println("INGEST STOP/COAST");
             m_PivotController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
             m_ingestMotorLeft.set(0.0);
             m_ingestMotorRight.set(0.0);
-            ingestCoast();
+            if (! m_coast) {
+                ingestCoast(true);
+                m_coast = true;
+            }
             return;
+        } else if (m_coast) {
+            ingestCoast(false);
+            m_coast = false;
         }
 
         setIngestMotorToTarget();

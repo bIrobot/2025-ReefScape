@@ -20,12 +20,15 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 public class ArmSubsystem extends SubsystemBase{
     private final SparkMax m_ArmMotorLeft;
+    private final SparkMaxConfig m_configArmLeft = new SparkMaxConfig();
     private SparkAbsoluteEncoder m_ArmEncoder;
     private SparkClosedLoopController m_ArmController;
 
     private final SparkMax m_ArmMotorRight;
+    private final SparkMaxConfig m_configArmRight = new SparkMaxConfig();
 
     private final SparkMax m_handMotor;
+    private final SparkMaxConfig m_configHand = new SparkMaxConfig();
     private SparkAbsoluteEncoder m_handEncoder;
     private SparkClosedLoopController m_HandController;
 
@@ -57,6 +60,7 @@ public class ArmSubsystem extends SubsystemBase{
     private static final double k_handMotorD1 = 2.0;
 
     private int ticks = 0;
+    private boolean m_coast = false;
 
     private enum ArmState {
         STOP,
@@ -93,53 +97,47 @@ public class ArmSubsystem extends SubsystemBase{
         m_fingerMotor = new SparkMax(14, MotorType.kBrushless);  // XXX Constants
 
         // left motor has encoder and controller
-        SparkMaxConfig configArmLeft = new SparkMaxConfig();
-        configArmLeft.inverted(true);
-        configArmLeft.closedLoop.pid(k_armMotorP, k_armMotorI, k_armMotorD)
-                                .pid(k_armMotorP1, k_armMotorI1, k_armMotorD1, ClosedLoopSlot.kSlot1)
-                                .positionWrappingEnabled(false)
-                                .outputRange(-ArmConstants.kArmUpSpeed, ArmConstants.kArmDownSpeed)
-                                .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
-        configArmLeft.idleMode(IdleMode.kBrake);
-        m_ArmMotorLeft.configure(configArmLeft, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        m_configArmLeft.inverted(true);
+        m_configArmLeft.closedLoop.pid(k_armMotorP, k_armMotorI, k_armMotorD)
+                                  .pid(k_armMotorP1, k_armMotorI1, k_armMotorD1, ClosedLoopSlot.kSlot1)
+                                  .positionWrappingEnabled(false)
+                                  .outputRange(-ArmConstants.kArmUpSpeed, ArmConstants.kArmDownSpeed)
+                                  .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
+        m_configArmLeft.idleMode(IdleMode.kBrake);
+        m_ArmMotorLeft.configure(m_configArmLeft, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         // right motor follows left motor with inverted direction
-        SparkMaxConfig configArmRight = new SparkMaxConfig();
-        configArmRight.inverted(true);
-        configArmRight.idleMode(IdleMode.kBrake)
-                      .follow(11, true);  // XXX Constants
-        m_ArmMotorRight.configure(configArmRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        m_configArmRight.inverted(true);
+        m_configArmRight.idleMode(IdleMode.kBrake)
+                        .follow(11, true);  // XXX Constants
+        m_ArmMotorRight.configure(m_configArmRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         // initial arm position
         armHold();
 
-        SparkMaxConfig configHand = new SparkMaxConfig();
-        configHand.inverted(true);
-        configHand.closedLoop.pid(k_handMotorP, k_handMotorI, k_handMotorD)
-                             .pid(k_handMotorP1, k_handMotorI1, k_handMotorD1, ClosedLoopSlot.kSlot1)
-                             .positionWrappingEnabled(false)
-                             .outputRange(-ArmConstants.kHandUpSpeed, ArmConstants.kHandDownSpeed)
-                             .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
-        configHand.idleMode(IdleMode.kBrake);
-        m_handMotor.configure(configHand, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        m_configHand.inverted(true);
+        m_configHand.closedLoop.pid(k_handMotorP, k_handMotorI, k_handMotorD)
+                               .pid(k_handMotorP1, k_handMotorI1, k_handMotorD1, ClosedLoopSlot.kSlot1)
+                               .positionWrappingEnabled(false)
+                               .outputRange(-ArmConstants.kHandUpSpeed, ArmConstants.kHandDownSpeed)
+                               .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
+        m_configHand.idleMode(IdleMode.kBrake);
+        m_handMotor.configure(m_configHand, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         // initial hand position
         handHold();
     }
 
-    public void armCoast()
+    public void armCoast(boolean coast)
     {
-        SparkMaxConfig configArmLeft = new SparkMaxConfig();
-        configArmLeft.idleMode(IdleMode.kCoast);
-        m_ArmMotorLeft.configure(configArmLeft, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        m_configArmLeft.idleMode(coast ? IdleMode.kCoast : IdleMode.kBrake);
+        m_ArmMotorLeft.configure(m_configArmLeft, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
-        SparkMaxConfig configArmRight = new SparkMaxConfig();
-        configArmRight.idleMode(IdleMode.kCoast);
-        m_ArmMotorRight.configure(configArmRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        m_configArmRight.idleMode(coast ? IdleMode.kCoast : IdleMode.kBrake);
+        m_ArmMotorRight.configure(m_configArmRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
-        SparkMaxConfig configHand = new SparkMaxConfig();
-        configHand.idleMode(IdleMode.kCoast);
-        m_handMotor.configure(configHand, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        m_configHand.idleMode(coast ? IdleMode.kCoast : IdleMode.kBrake);
+        m_handMotor.configure(m_configHand, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
     public void armHold()
@@ -247,8 +245,14 @@ public class ArmSubsystem extends SubsystemBase{
             m_ArmController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
             m_HandController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
             m_fingerMotor.set(0);
-            armCoast();
+            if (! m_coast) {
+                armCoast(true);
+                m_coast = true;
+            }
             return;
+        } else if (m_coast) {
+            armCoast(false);
+            m_coast = false;
         }
 
         //if (elevatorCalibrationFailed) {
