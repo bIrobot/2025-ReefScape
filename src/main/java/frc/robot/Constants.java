@@ -58,7 +58,7 @@ public final class Constants {
     public static final double kElevatorDownSpeed = 0.4;
 
     public static final double kElevatorLevel1 = 0.00;  // drive
-    public static final double kElevatorLevel2 = 3.28;  // handoff
+    public static final double kElevatorLevel2 = 2.90;  // handoff
     public static final double kElevatorLevel3 = 2.50;
     public static final double kElevatorLevel4 = 3.00;
 

@@ -88,13 +88,14 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public void elevatorHold()
     {
-        m_currentElevatorState = ElevatorState.STOP;
+        m_currentElevatorGoto = getFullElevatorPosition();
+        m_currentElevatorState = ElevatorState.GOTO;
     }
 
     public void elevatorStop()
     {
         if (m_currentElevatorState == ElevatorState.UP || m_currentElevatorState == ElevatorState.DOWN) {
-            elevatorHold();
+            m_currentElevatorState = ElevatorState.STOP;
         }
     }
 
@@ -151,7 +152,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     private void moveElevatorUp(boolean slow)
     {
-        if (! elevatorRockTop() && getFullElevatorPosition() < ElevatorConstants.kElevatorLevelTop) {
+        if (! elevatorRockTop()) {
             // up
             m_ElevatorMotorLeft.set(ElevatorConstants.kElevatorUpSpeed/(slow?5:1));
             m_ElevatorMotorRight.set(-ElevatorConstants.kElevatorUpSpeed/(slow?5:1));
@@ -160,7 +161,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     private void moveElevatorDown(boolean slow)
     {
-        if (! elevatorRockBottom() && getFullElevatorPosition() > ElevatorConstants.kElevatorLevelBottom) {
+        if (! elevatorRockBottom()) {
             // down
             m_ElevatorMotorLeft.set(-ElevatorConstants.kElevatorDownSpeed/(slow?5:1));
             m_ElevatorMotorRight.set(ElevatorConstants.kElevatorDownSpeed/(slow?5:1));
