@@ -28,7 +28,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private int ticks = 0;
 
     private boolean m_firstPos = true;
-    private double m_lastPos = -1.0;  // illegal value
+    private double m_lastElevatorPos = -1.0;  // illegal value
     private int m_revolutions = 0;
 
     public boolean elevatorCalibrationFailed = false;
@@ -254,15 +254,15 @@ public class ElevatorSubsystem extends SubsystemBase {
             }
             m_firstPos = false;
         }
-        if (m_lastPos != -1.0) {
-            if (elevatorPos < m_lastPos-0.5) {
+        if (m_lastElevatorPos != -1.0) {
+            if (elevatorPos < m_lastElevatorPos-0.5) {
                 m_revolutions++;
             }
-            if (elevatorPos > m_lastPos+0.5) {
+            if (elevatorPos > m_lastElevatorPos+0.5) {
                 m_revolutions--;
             }
         }
-        m_lastPos = elevatorPos;
+        m_lastElevatorPos = elevatorPos;
         return elevatorPos + m_revolutions;
     }
 }
