@@ -138,7 +138,7 @@ public class ArmSubsystem extends SubsystemBase{
         m_ArmMotorRight.configure(configArmRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         SparkMaxConfig configHand = new SparkMaxConfig();
-        configHand.idleMode(IdleMode.kBrake);
+        configHand.idleMode(IdleMode.kCoast);
         m_handMotor.configure(configHand, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
