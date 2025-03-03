@@ -101,12 +101,16 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public void elevatorUp()
     {
-        m_currentElevatorState = ElevatorState.UP;
+        if (m_currentElevatorState != ElevatorState.UP && getFullElevatorPosition() < ElevatorConstants.kElevatorLevelTop) {
+            m_currentElevatorState = ElevatorState.UP;
+        }
     }
 
     public void elevatorDown()
     {
-        m_currentElevatorState = ElevatorState.DOWN;
+        if (m_currentElevatorState != ElevatorState.DOWN && getFullElevatorPosition() > ElevatorConstants.kElevatorLevelBottom) {
+            m_currentElevatorState = ElevatorState.DOWN;
+        }
     }
 
     public void elevatorGoto(double elevatorPos)
@@ -200,16 +204,16 @@ public class ElevatorSubsystem extends SubsystemBase {
         switch (m_currentElevatorState){
             case STOP:
                 // hold position
-                setMotorsLevel(getFullElevatorPosition());
+                setElevatorMotorsLevel(getFullElevatorPosition());
                 break;
             case UP:
-                moveElevatorMotorsUp(false);
+                setElevatorMotorsLevel(ElevatorConstants.kElevatorLevelTop);
                 break;
             case DOWN:
-                moveElevatorMotorsDown(false);
+                setElevatorMotorsLevel(ElevatorConstants.kElevatorLevelBottom);
                 break;
             case GOTO:
-                setMotorsLevel(m_currentElevatorGoto);
+                setElevatorMotorsLevel(m_currentElevatorGoto);
                 break;
             default:
                 assert(false);
@@ -218,7 +222,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     // poor man's PID controller
-    private void setMotorsLevel(double elevatorPos) {
+    private void setElevatorMotorsLevel(double elevatorPos) {
         double sign;
         double diff;
 

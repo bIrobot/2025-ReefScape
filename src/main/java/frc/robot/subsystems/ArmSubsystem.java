@@ -157,7 +157,7 @@ public class ArmSubsystem extends SubsystemBase{
 
     public void armUp()
     {
-        if (m_currentArmState != ArmState.UP) {
+        if (m_currentArmState != ArmState.UP && getArmPosition() >= ArmConstants.kArmLevelTop) {
             m_currentArmState = ArmState.UP;
             m_ArmController.setReference(-ArmConstants.kArmUpSpeed, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
         }
@@ -165,7 +165,7 @@ public class ArmSubsystem extends SubsystemBase{
 
     public void armDown()
     {
-        if (m_currentArmState != ArmState.DOWN) {
+        if (m_currentArmState != ArmState.DOWN && getArmPosition() <= ArmConstants.kArmLevelBottom) {
             m_currentArmState = ArmState.DOWN;
             m_ArmController.setReference(ArmConstants.kArmDownSpeed, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
         }
@@ -196,7 +196,7 @@ public class ArmSubsystem extends SubsystemBase{
 
     public void handUp()
     {
-        if (m_currentHandState != HandState.UP) {
+        if (m_currentHandState != HandState.UP && getHandPosition() < ArmConstants.kHandLevelTop) {
             m_currentHandState = HandState.UP;
             m_HandController.setReference(ArmConstants.kHandUpSpeed, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
         }
@@ -204,7 +204,7 @@ public class ArmSubsystem extends SubsystemBase{
 
     public void handDown()
     {
-        if (m_currentHandState != HandState.DOWN) {
+        if (m_currentHandState != HandState.DOWN && getHandPosition() >= ArmConstants.kHandLevelBottom) {
             m_currentHandState = HandState.DOWN;
             m_HandController.setReference(-ArmConstants.kHandDownSpeed, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
         }
