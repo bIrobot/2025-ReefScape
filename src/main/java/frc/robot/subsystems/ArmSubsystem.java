@@ -176,6 +176,8 @@ public class ArmSubsystem extends SubsystemBase{
         if (armPos >= ArmConstants.kArmLevelTop && armPos <= ArmConstants.kArmLevelBottom) {
             m_currentArmState = ArmState.GOTO;
             m_ArmController.setReference(armPos, ControlType.kPosition);
+        } else {
+            System.out.println("BAD POSITION IGNORED: armGoto(): " + armPos);
         }
     }
 
@@ -213,6 +215,8 @@ public class ArmSubsystem extends SubsystemBase{
         if (handPos >= ArmConstants.kHandLevelBottom && handPos <= ArmConstants.kHandLevelTop) {
             m_currentHandState = HandState.GOTO;
             m_HandController.setReference(handPos, ControlType.kPosition);
+        } else {
+            System.out.println("BAD POSITION IGNORED: handGoto(): " + handPos);
         }
     }
 
