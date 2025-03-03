@@ -122,30 +122,28 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         if (DriverStation.isTest() && DriverStation.isEnabled()) {
             if (ticks++%50==0) System.out.println("ELEVATOR STOP/COAST");
-            stopElevator();
+            stopElevatorMotors();
             elevatorCoast();
             return;
         }
 
         // elevator safety
         if (getFullElevatorPosition() < ElevatorConstants.kElevatorLevelBottom && m_currentElevatorState == ElevatorState.DOWN) {
-            m_ElevatorMotorLeft.set(0);
-            m_ElevatorMotorRight.set(0);
+            stopElevatorMotors();
         }
         if (getFullElevatorPosition() > ElevatorConstants.kElevatorLevelTop && m_currentElevatorState == ElevatorState.UP) {
-            m_ElevatorMotorLeft.set(0);
-            m_ElevatorMotorRight.set(0);
+            stopElevatorMotors();
         }
 
         if (elevatorCalibrationFailed) {
-            stopElevator();
+            stopElevatorMotors();
             return;
         }
 
         setElevatorMotorToTarget();
     }
 
-    private void stopElevator()
+    private void stopElevatorMotors()
     {
         m_ElevatorMotorLeft.set(0);
         m_ElevatorMotorRight.set(0);
@@ -176,20 +174,20 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     private void setElevatorMotorToTarget() {
         if (elevatorCalibrationFailed) {
-            stopElevator();
+            stopElevatorMotors();
             return;
         }
 
         // if we are at bottom and still going down...
         if (elevatorRockBottom() && m_ElevatorMotorLeft.get() < 0) {
-            stopElevator();
+            stopElevatorMotors();
             System.out.println("ROCK BOTTOM!");
             return;
         }
 
         // if we are at top and still going up...
         if (elevatorRockTop() && m_ElevatorMotorLeft.get() > 0) {
-            stopElevator();
+            stopElevatorMotors();
             System.out.println("ROCK TOP!");
             return;
         }
