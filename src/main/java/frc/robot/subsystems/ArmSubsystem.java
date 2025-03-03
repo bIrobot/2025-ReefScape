@@ -251,6 +251,11 @@ public class ArmSubsystem extends SubsystemBase{
             return;
         }
 
+        //if (elevatorCalibrationFailed) {
+            // stop motors
+            //return;
+        //}
+
         // arm limit safety
         if (getArmPosition() > ArmConstants.kArmLevelBottom && m_currentArmState == ArmState.DOWN) {
             armHold();
