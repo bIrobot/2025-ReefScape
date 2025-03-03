@@ -37,7 +37,7 @@ public final class Constants {
 
     public static final double kHandLevel1 = 0.42;  // drive
     public static final double kHandLevel2 = 0.60;  // handoff
-    public static final double kHandLevel3 = 0.40;
+    public static final double kHandLevel3 = 0.50;
     public static final double kHandLevel4 = 0.30;
 
     public static final double kHandLevelSafe = 0.42;

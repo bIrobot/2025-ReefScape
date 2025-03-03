@@ -135,12 +135,12 @@ public class RobotContainer {
         }
         if (m_ElevatorSubsystem.willElevatorGoUp(elevatorPos)) {
             // going up -- move elevator first!
-            armDelay = 5;
+            armDelay = 2;
             elevatorDelay = 0;
         } else {
             // going down -- move arm first!
             armDelay = 0;
-            elevatorDelay = 5;
+            elevatorDelay = 2;
         }
         m_ArmSubsystem.armHold();
         m_ElevatorSubsystem.elevatorHold();
