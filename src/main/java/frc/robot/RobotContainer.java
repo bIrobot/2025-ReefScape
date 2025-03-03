@@ -159,10 +159,6 @@ public class RobotContainer {
     } while (false);
 }
 
-public void testRunning()
-{
-}
-
 /**
    * Use this method to define your button->command mappings. Buttons can be
    * created by
