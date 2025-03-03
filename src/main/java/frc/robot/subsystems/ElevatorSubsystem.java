@@ -229,7 +229,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         sign = elevatorPos - getFullElevatorPosition();
         diff = Math.abs(sign);
 
-        if (diff < 0.02) {
+        if (diff <= 0.01) {
             // close enough
             m_ElevatorMotorLeft.set(0.0);
             m_ElevatorMotorRight.set(0.0);
