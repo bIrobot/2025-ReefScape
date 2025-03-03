@@ -26,7 +26,7 @@ public final class Constants {
     public static final double kArmUpSpeed = 0.14;
     public static final double kArmDownSpeed = 0.12;
 
-    public static final double kArmLevel1 = 0.02;  // drive
+    public static final double kArmLevel1 = 0.05;  // drive
     public static final double kArmLevel2 = 0.40;  // handoff
     public static final double kArmLevel3 = 0.08;
     public static final double kArmLevel4 = 0.07;
