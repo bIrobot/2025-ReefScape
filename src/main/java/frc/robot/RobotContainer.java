@@ -97,6 +97,7 @@ public class RobotContainer {
     }
 
     if (m_driverController.getBackButton()) {
+        m_IngestSubsystem.handoffIngesting();  // XXX move this bring back for handoff
         m_ArmSubsystem.fingerGrab();
     } else if (m_driverController.getBackButtonReleased()) {
         m_ArmSubsystem.fingerStop();

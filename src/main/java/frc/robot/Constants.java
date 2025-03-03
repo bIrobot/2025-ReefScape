@@ -27,18 +27,18 @@ public final class Constants {
     public static final double kArmDownSpeed = 0.12;
 
     public static final double kArmLevel1 = 0.05;  // drive
-    public static final double kArmLevel2 = 0.40;  // handoff
-    public static final double kArmLevel3 = 0.20;
-    public static final double kArmLevel4 = 0.10;
+    public static final double kArmLevel2 = 0.42;  // handoff
+    public static final double kArmLevel3 = 0.43;
+    public static final double kArmLevel4 = 0.20;
 
     public static final double kArmLevelSafe = 0.10;
     public static final double kArmLevelBottom = 0.43;  // soft limit
     public static final double kArmLevelTop = 0.05;  // soft limit NOT 0
 
     public static final double kHandLevel1 = 0.42;  // drive
-    public static final double kHandLevel2 = 0.60;  // handoff
-    public static final double kHandLevel3 = 0.50;
-    public static final double kHandLevel4 = 0.30;
+    public static final double kHandLevel2 = 0.56;  // handoff
+    public static final double kHandLevel3 = 0.60;
+    public static final double kHandLevel4 = 0.60;
 
     public static final double kHandLevelSafe = 0.42;
     public static final double kHandLevelBottom = 0.30;  // soft limit NOT 0
@@ -58,9 +58,9 @@ public final class Constants {
     public static final double kElevatorDownSpeed = 0.4;
 
     public static final double kElevatorLevel1 = 0.00;  // drive
-    public static final double kElevatorLevel2 = 2.90;  // handoff
-    public static final double kElevatorLevel3 = 2.50;
-    public static final double kElevatorLevel4 = 3.00;
+    public static final double kElevatorLevel2 = 3.32;  // handoff
+    public static final double kElevatorLevel3 = 4.00;
+    public static final double kElevatorLevel4 = 4.00;
 
     public static final double kElevatorLevelSafe = 3.00;
     public static final double kElevatorLevelBottom = 0.00;  // soft limit (0 allowed)
@@ -77,9 +77,9 @@ public final class Constants {
 
     // Pivot set point encodings; readings are from 0..1(not inclusive).
     public static final double k_pivotAngleGroundFraction = 0.111;  // NOT 0
-    public static final double k_pivotAngleVerticalFraction = 0.388;
+    public static final double k_pivotAngleSafeFraction = 0.300;
+    public static final double k_pivotAngleVerticalFraction = 0.400;
     public static final double k_pivotAngleFrameFraction = 0.472;
-    public static final double k_pivotAngleSafeFraction = 0.388;
   }
   
   public static final class DriveConstants {
