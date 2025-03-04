@@ -25,12 +25,12 @@ public final class Constants {
   public static final class PoseConstants {
     public static final double[][] poses = {
       // [0]:armPos, [1]:handPos, [2]:elevatorPos
-      { 0.05, 0.42, 0.00 },  // pose 1
-      { 0.42, 0.56, 3.32 },  // pose 2
-      { 0.43, 0.60, 4.00 },  // pose 3
-      { 0.20, 0.60, 4.00 },  // pose 4
-      { ArmConstants.kArmLevelSafe, ArmConstants.kHandLevelSafe, ElevatorConstants.kElevatorLevelSafe},  // pose 5
-      { ArmConstants.kArmLevelSafe, ArmConstants.kHandLevelSafe, ElevatorConstants.kElevatorLevelSafe},  // pose 6
+      { 0.05, 0.42, 0.00 },  // [0]:pose 1 -- drive
+      { 0.42, 0.56, 3.32 },  // [1]:pose 2 -- handoff
+      { 0.43, 0.60, 4.00 },  // [2]:pose 3
+      { 0.20, 0.30, 3.00 },  // [3]:pose 4
+      { ArmConstants.kArmLevelSafe, ArmConstants.kHandLevelSafe, ElevatorConstants.kElevatorLevelSafe},  // [4]:pose 5
+      { ArmConstants.kArmLevelSafe, ArmConstants.kHandLevelSafe, ElevatorConstants.kElevatorLevelSafe},  // [5]:pose 6
     };
   };
 
@@ -38,26 +38,16 @@ public final class Constants {
     public static final double kArmUpSpeed = 0.14;
     public static final double kArmDownSpeed = 0.12;
 
-    public static final double kArmLevel1 = 0.05;  // drive
-    public static final double kArmLevel2 = 0.42;  // handoff
-    public static final double kArmLevel3 = 0.43;
-    public static final double kArmLevel4 = 0.20;
-
     public static final double kArmLevelSafe = 0.10;
     public static final double kArmLevelBottom = 0.43;  // soft limit
     public static final double kArmLevelTop = 0.05;  // soft limit NOT 0
 
-    public static final double kHandLevel1 = 0.42;  // drive
-    public static final double kHandLevel2 = 0.56;  // handoff
-    public static final double kHandLevel3 = 0.60;
-    public static final double kHandLevel4 = 0.60;
+    public static final double kHandUpSpeed = 0.5;
+    public static final double kHandDownSpeed = 0.4;
 
     public static final double kHandLevelSafe = 0.42;
     public static final double kHandLevelBottom = 0.30;  // soft limit NOT 0
     public static final double kHandLevelTop = 0.60;  // soft limit
-
-    public static final double kHandUpSpeed = 0.5;
-    public static final double kHandDownSpeed = 0.4;
 
     public static final double kFingerGrabSpeed = 1.0;
     public static final double kFingerReleaseSpeed = 0.5;
@@ -68,11 +58,6 @@ public final class Constants {
   public static final class ElevatorConstants {
     public static final double kElevatorUpSpeed = 0.5;
     public static final double kElevatorDownSpeed = 0.4;
-
-    public static final double kElevatorLevel1 = 0.00;  // drive
-    public static final double kElevatorLevel2 = 3.32;  // handoff
-    public static final double kElevatorLevel3 = 4.00;
-    public static final double kElevatorLevel4 = 4.00;
 
     public static final double kElevatorLevelSafe = 3.00;
     public static final double kElevatorLevelBottom = 0.00;  // soft limit (0 allowed)

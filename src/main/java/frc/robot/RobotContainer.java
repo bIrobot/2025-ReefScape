@@ -113,55 +113,26 @@ public class RobotContainer {
             double armPos;
             double handPos;
             double elevatorPos;
-            int armDelay, elevatorDelay;
-            if (pov == 0) {
-                // level 1
-                pose = 0;
-                armPos = ArmConstants.kArmLevel1;
-                handPos = ArmConstants.kHandLevel1;
-                elevatorPos = ElevatorConstants.kElevatorLevel1;
-            } else if (pov == 90) {
-                // level 2
-                pose = 1;
-                armPos = ArmConstants.kArmLevel2;
-                handPos = ArmConstants.kHandLevel2;
-                elevatorPos = ElevatorConstants.kElevatorLevel2;
-            } else if (pov == 180) {
-                // level 3
-                pose = 2;
-                armPos = ArmConstants.kArmLevel3;
-                handPos = ArmConstants.kHandLevel3;
-                elevatorPos = ElevatorConstants.kElevatorLevel3;
-            } else if (pov == 270) {
-                // level 4
-                pose = 3;
-                armPos = ArmConstants.kArmLevel4;
-                handPos = ArmConstants.kHandLevel4;
-                elevatorPos = ElevatorConstants.kElevatorLevel4;
-            } else {
+            int armDelay = 0;
+            int elevatorDelay = 0;
+
+            if (pov%90 != 0) {
                 break;
             }
+            pose = pov/90;
 
-            if (PoseConstants.poses[pose][0] != armPos) {
-                System.err.println("ARM POSE MISMATCH: " + PoseConstants.poses[pose][0] + " != " + armPos);
-            } else if (PoseConstants.poses[pose][1] != handPos) {
-                System.err.println("HAND POSE MISMATCH: " + PoseConstants.poses[pose][1] + " != " + handPos);
-            } else if (PoseConstants.poses[pose][2] != elevatorPos) {
-                System.err.println("ELEVATOR POSE MISMATCH: " + PoseConstants.poses[pose][2] + " != " + elevatorPos);
-            } else {
-                System.out.println("POSES MATCH: " + pose);
-            }
+            armPos = PoseConstants.poses[pose][0];
+            handPos = PoseConstants.poses[pose][1];
+            elevatorPos = PoseConstants.poses[pose][2];
 
-            /*
             if (m_ElevatorSubsystem.willElevatorGoUp(elevatorPos)) {
                 // going up -- move elevator first!
                 armDelay = 2;
-                elevatorDelay = 0;
             } else {
                 // going down -- move arm first!
-                armDelay = 0;
                 elevatorDelay = 2;
             }
+
             m_ArmSubsystem.armHold();
             m_ElevatorSubsystem.elevatorHold();
             ParallelCommandGroup commands = new ParallelCommandGroup(
@@ -173,7 +144,7 @@ public class RobotContainer {
                                         new InstantCommand(() -> m_ElevatorSubsystem.elevatorGoto(elevatorPos), m_ElevatorSubsystem))
             );
             commands.schedule();
-            */
+
             lastPov = pov;
         }
     } while (false);
