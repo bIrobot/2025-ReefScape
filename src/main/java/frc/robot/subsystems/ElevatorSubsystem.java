@@ -245,7 +245,7 @@ public class ElevatorSubsystem extends SubsystemBase {
             // close enough
             m_ElevatorMotorLeft.set(0.0);
             m_ElevatorMotorRight.set(0.0);
-        } else if (diff < 0.2) {
+        } else if (diff < 0.1) {
             if (sign < 0) {
                 // down slow
                 moveElevatorMotorsDown(true);
