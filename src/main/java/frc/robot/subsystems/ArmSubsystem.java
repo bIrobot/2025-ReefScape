@@ -240,25 +240,22 @@ public class ArmSubsystem extends SubsystemBase{
         if (ticks++%50==0) System.out.println("ARM: Arm Encoder: " + m_ArmEncoder.getPosition() +
                                               " Hand Encoder: " + m_handEncoder.getPosition());
 
-        if (DriverStation.isTest() && DriverStation.isEnabled()) {
-            if (ticks++%50==0) System.out.println("ARM STOP/COAST");
-            m_ArmController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
-            m_HandController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
-            m_fingerMotor.set(0);
-            if (! m_coast) {
-                armCoast(true);
-                m_coast = true;
+        if (DriverStation.isTest()) {
+            if (DriverStation.isEnabled()) {
+                if (ticks++%50==0) System.out.println("ARM STOP/COAST");
+                if (! m_coast) {
+                    m_ArmController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+                    m_HandController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+                    m_fingerMotor.set(0);
+                    armCoast(true);
+                    m_coast = true;
+                }
             }
             return;
         } else if (m_coast) {
             armCoast(false);
             m_coast = false;
         }
-
-        //if (elevatorCalibrationFailed) {
-            // stop motors
-            //return;
-        //}
 
         // arm limit safety
         if (getArmPosition() > ArmConstants.kArmLevelBottom && m_currentArmState == ArmState.DOWN) {

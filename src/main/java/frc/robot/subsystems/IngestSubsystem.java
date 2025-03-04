@@ -107,14 +107,16 @@ public class IngestSubsystem extends SubsystemBase{
         if (m_ticks++%50==0) System.out.println("INGEST: Position: " + m_PivotEncoder.getPosition() +
                                               " hasCoral: " + getIngestHasCoral());
 
-        if (DriverStation.isTest() && DriverStation.isEnabled()) {
-            if (m_ticks++%50==0) System.out.println("INGEST STOP/COAST");
-            m_PivotController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
-            m_ingestMotorLeft.set(0.0);
-            m_ingestMotorRight.set(0.0);
-            if (! m_coast) {
-                ingestCoast(true);
-                m_coast = true;
+        if (DriverStation.isTest()) {
+            if (DriverStation.isEnabled()) {
+                if (m_ticks++%50==0) System.out.println("INGEST STOP/COAST");
+                if (! m_coast) {
+                    m_PivotController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+                    m_ingestMotorLeft.set(0.0);
+                    m_ingestMotorRight.set(0.0);
+                    ingestCoast(true);
+                    m_coast = true;
+                }
             }
             return;
         } else if (m_coast) {
