@@ -276,6 +276,7 @@ public class ArmSubsystem extends SubsystemBase{
             handHold();
         }
 
+        // seek motor targets
         setFingerMotorToTarget();
     }
 
@@ -304,6 +305,7 @@ public class ArmSubsystem extends SubsystemBase{
     {
         double armPos = m_ArmEncoder.getPosition();
         if (armPos == 0) {
+            // 0 is illegal value; make it safe
             armPos = ArmConstants.kArmLevelSafe;
         }
         return armPos;
@@ -313,6 +315,7 @@ public class ArmSubsystem extends SubsystemBase{
     {
         double handPos = m_handEncoder.getPosition();
         if (handPos == 0.0) {
+            // 0 is illegal value; make it safe
             handPos = ArmConstants.kHandLevelSafe;
         }
         return handPos;

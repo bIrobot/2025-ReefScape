@@ -160,6 +160,7 @@ public class ElevatorSubsystem extends SubsystemBase {
             stopElevatorMotors();
         }
 
+        // seek motor targets
         setElevatorMotorToTarget();
     }
 

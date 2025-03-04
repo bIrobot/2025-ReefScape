@@ -126,6 +126,7 @@ public class IngestSubsystem extends SubsystemBase{
             m_coast = false;
         }
 
+        // seek motor targets
         setIngestMotorToTarget();
     }
 
@@ -161,6 +162,7 @@ public class IngestSubsystem extends SubsystemBase{
     {
         double pos = m_PivotEncoder.getPosition();
         if (pos == 0.0) {
+            // 0 is illegal value; make it safe
             pos = IngestConstants.k_pivotAngleSafeFraction;
         }
         return pos;
