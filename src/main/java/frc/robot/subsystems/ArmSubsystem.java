@@ -171,12 +171,12 @@ public class ArmSubsystem extends SubsystemBase{
 
     public void armGoto(double armPos)
     {
-        if (armPos >= ArmConstants.kArmLevelTop && armPos <= ArmConstants.kArmLevelBottom) {
-            m_currentArmState = ArmState.GOTO;
-            m_ArmController.setReference(armPos, ControlType.kPosition);
-        } else {
+        if (! (armPos >= ArmConstants.kArmLevelTop && armPos <= ArmConstants.kArmLevelBottom)) {
+            armPos = ArmConstants.kArmLevelSafe;
             System.out.println("BAD POSITION IGNORED: armGoto(): " + armPos);
         }
+        m_currentArmState = ArmState.GOTO;
+        m_ArmController.setReference(armPos, ControlType.kPosition);
     }
 
     public void handHold()
@@ -210,12 +210,12 @@ public class ArmSubsystem extends SubsystemBase{
 
     public void handGoto(double handPos)
     {
-        if (handPos >= ArmConstants.kHandLevelBottom && handPos <= ArmConstants.kHandLevelTop) {
-            m_currentHandState = HandState.GOTO;
-            m_HandController.setReference(handPos, ControlType.kPosition);
-        } else {
+        if (! (handPos >= ArmConstants.kHandLevelBottom && handPos <= ArmConstants.kHandLevelTop)) {
+            handPos = ArmConstants.kHandLevelSafe;
             System.out.println("BAD POSITION IGNORED: handGoto(): " + handPos);
         }
+        m_currentHandState = HandState.GOTO;
+        m_HandController.setReference(handPos, ControlType.kPosition);
     }
 
     public void fingerStop()

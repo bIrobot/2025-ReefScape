@@ -114,12 +114,12 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public void elevatorGoto(double elevatorPos)
     {
-        if (elevatorPos >= ElevatorConstants.kElevatorLevelBottom && elevatorPos <= ElevatorConstants.kElevatorLevelTop) {
-            m_currentElevatorGoto = elevatorPos;
-            m_currentElevatorState = ElevatorState.GOTO;
-        } else {
+        if (! (elevatorPos >= ElevatorConstants.kElevatorLevelBottom && elevatorPos <= ElevatorConstants.kElevatorLevelTop)) {
+            elevatorPos = ElevatorConstants.kElevatorLevelSafe;
             System.out.println("BAD POSITION IGNORED: alevatorGoto(): " + elevatorPos);
         }
+        m_currentElevatorGoto = elevatorPos;
+        m_currentElevatorState = ElevatorState.GOTO;
     }
 
     @Override
