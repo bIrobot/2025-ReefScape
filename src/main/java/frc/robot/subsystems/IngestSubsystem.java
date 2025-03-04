@@ -130,7 +130,7 @@ public class IngestSubsystem extends SubsystemBase{
     }
 
     private void setIngestMotorToTarget() {
-        switch (m_currentIngestState){
+        switch (m_currentIngestState) {
             case FORWARD:
                 if (getIngestHasCoral()) {
                     stopIngesting();

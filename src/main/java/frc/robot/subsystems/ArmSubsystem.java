@@ -280,7 +280,7 @@ public class ArmSubsystem extends SubsystemBase{
     }
 
     private void setFingerMotorToTarget() {
-        switch (m_currentFingerState){
+        switch (m_currentFingerState) {
             case STOP:
                 m_fingerMotor.set(0.0);
                 break;

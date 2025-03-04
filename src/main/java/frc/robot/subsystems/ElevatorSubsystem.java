@@ -212,7 +212,7 @@ public class ElevatorSubsystem extends SubsystemBase {
             return;
         }
 
-        switch (m_currentElevatorState){
+        switch (m_currentElevatorState) {
             case STOP:
                 // hold position
                 setElevatorMotorsLevel(getFullElevatorPosition());
