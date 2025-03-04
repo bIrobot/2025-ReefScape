@@ -22,6 +22,18 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static final class PoseConstants {
+    public static final double[][] poses = {
+      // [0]:armPos, [1]:handPos, [2]:elevatorPos
+      { 0.05, 0.42, 0.00 },  // pose 1
+      { 0.42, 0.56, 3.32 },  // pose 2
+      { 0.43, 0.60, 4.00 },  // pose 3
+      { 0.20, 0.60, 4.00 },  // pose 4
+      { ArmConstants.kArmLevelSafe, ArmConstants.kHandLevelSafe, ElevatorConstants.kElevatorLevelSafe},  // pose 5
+      { ArmConstants.kArmLevelSafe, ArmConstants.kHandLevelSafe, ElevatorConstants.kElevatorLevelSafe},  // pose 6
+    };
+  };
+
   public static final class ArmConstants {
     public static final double kArmUpSpeed = 0.14;
     public static final double kArmDownSpeed = 0.12;

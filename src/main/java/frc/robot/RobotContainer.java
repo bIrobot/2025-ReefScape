@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.PoseConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IngestSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -108,33 +109,50 @@ public class RobotContainer {
     int pov = m_driverController.getPOV();
     do {
         if (pov != lastPov) {
+            int pose;
             double armPos;
             double handPos;
             double elevatorPos;
             int armDelay, elevatorDelay;
             if (pov == 0) {
                 // level 1
+                pose = 0;
                 armPos = ArmConstants.kArmLevel1;
                 handPos = ArmConstants.kHandLevel1;
                 elevatorPos = ElevatorConstants.kElevatorLevel1;
             } else if (pov == 90) {
                 // level 2
+                pose = 1;
                 armPos = ArmConstants.kArmLevel2;
                 handPos = ArmConstants.kHandLevel2;
                 elevatorPos = ElevatorConstants.kElevatorLevel2;
             } else if (pov == 180) {
                 // level 3
+                pose = 2;
                 armPos = ArmConstants.kArmLevel3;
                 handPos = ArmConstants.kHandLevel3;
                 elevatorPos = ElevatorConstants.kElevatorLevel3;
             } else if (pov == 270) {
                 // level 4
+                pose = 3;
                 armPos = ArmConstants.kArmLevel4;
                 handPos = ArmConstants.kHandLevel4;
                 elevatorPos = ElevatorConstants.kElevatorLevel4;
             } else {
                 break;
             }
+
+            if (PoseConstants.poses[pose][0] != armPos) {
+                System.err.println("ARM POSE MISMATCH: " + PoseConstants.poses[pose][0] + " != " + armPos);
+            } else if (PoseConstants.poses[pose][1] != handPos) {
+                System.err.println("HAND POSE MISMATCH: " + PoseConstants.poses[pose][1] + " != " + handPos);
+            } else if (PoseConstants.poses[pose][2] != elevatorPos) {
+                System.err.println("ELEVATOR POSE MISMATCH: " + PoseConstants.poses[pose][2] + " != " + elevatorPos);
+            } else {
+                System.out.println("POSES MATCH: " + pose);
+            }
+
+            /*
             if (m_ElevatorSubsystem.willElevatorGoUp(elevatorPos)) {
                 // going up -- move elevator first!
                 armDelay = 2;
@@ -155,6 +173,7 @@ public class RobotContainer {
                                         new InstantCommand(() -> m_ElevatorSubsystem.elevatorGoto(elevatorPos), m_ElevatorSubsystem))
             );
             commands.schedule();
+            */
             lastPov = pov;
         }
     } while (false);
