@@ -112,9 +112,6 @@ public class ArmSubsystem extends SubsystemBase{
                         .follow(11, true);  // XXX Constants
         m_ArmMotorRight.configure(m_configArmRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
-        // initial arm position
-        armHold();
-
         // hand motor has encoder and controller
         m_configHand.inverted(true);
         m_configHand.closedLoop.pid(k_handMotorP, k_handMotorI, k_handMotorD)
@@ -124,9 +121,6 @@ public class ArmSubsystem extends SubsystemBase{
                                .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
         m_configHand.idleMode(IdleMode.kBrake);
         m_handMotor.configure(m_configHand, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-
-        // initial hand position
-        handHold();
     }
 
     // set the arm motors to coast or brake mode
@@ -304,7 +298,7 @@ public class ArmSubsystem extends SubsystemBase{
     private double getArmPosition()
     {
         double armPos = m_ArmEncoder.getPosition();
-        if (armPos == 0) {
+        if (Math.round(armPos*100.0)/100.0 == 0.0) {
             // 0 is illegal value; make it safe
             armPos = ArmConstants.kArmLevelSafe;
         }
@@ -314,7 +308,7 @@ public class ArmSubsystem extends SubsystemBase{
     private double getHandPosition()
     {
         double handPos = m_handEncoder.getPosition();
-        if (handPos == 0.0) {
+        if (Math.round(handPos*100.0)/100.0 == 0.0) {
             // 0 is illegal value; make it safe
             handPos = ArmConstants.kHandLevelSafe;
         }

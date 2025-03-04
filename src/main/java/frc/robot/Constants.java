@@ -42,14 +42,14 @@ public final class Constants {
     public static final double kArmUpSpeed = 0.14;
     public static final double kArmDownSpeed = 0.12;
 
-    public static final double kArmLevelSafe = 0.10;
+    public static final double kArmLevelSafe = 0.11;
     public static final double kArmLevelBottom = 0.43;  // soft limit
     public static final double kArmLevelTop = 0.05;  // soft limit NOT 0
 
     public static final double kHandUpSpeed = 0.5;
     public static final double kHandDownSpeed = 0.4;
 
-    public static final double kHandLevelSafe = 0.42;
+    public static final double kHandLevelSafe = 0.45;
     public static final double kHandLevelBottom = 0.30;  // soft limit NOT 0
     public static final double kHandLevelTop = 0.60;  // soft limit
 

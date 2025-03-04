@@ -60,9 +60,6 @@ public class IngestSubsystem extends SubsystemBase{
                               .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
         m_configPivot.idleMode(IdleMode.kBrake);
         m_PivotMotor.configure(m_configPivot, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-
-        // initial pivot position
-        m_PivotController.setReference(getPivotPosition(), ControlType.kPosition);
     }
 
     // set the ingest motors to coast or brake mode
@@ -76,6 +73,11 @@ public class IngestSubsystem extends SubsystemBase{
     public boolean getIngestHasCoral()
     {
         return ! m_beamNotBroken.get();
+    }
+
+    public void ingestHold()
+    {
+        m_PivotController.setReference(getPivotPosition(), ControlType.kPosition);
     }
 
     public void startIngesting()
@@ -161,7 +163,7 @@ public class IngestSubsystem extends SubsystemBase{
     private double getPivotPosition()
     {
         double pos = m_PivotEncoder.getPosition();
-        if (pos == 0.0) {
+        if (Math.round(pos*100.0)/100.0 == 0.0) {
             // 0 is illegal value; make it safe
             pos = IngestConstants.k_pivotAngleSafeFraction;
         }
