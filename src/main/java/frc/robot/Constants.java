@@ -24,9 +24,10 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
   public static final class PoseConstants {
     public static final double[][] poses = {
-      // armPos: bottom = 0.43; top = 0.05
+      // armPos: bottom = 0.43; top = 0.05 -- note top is smaller number than bottom!
       // handPos: bottom = 0.30; top = 0.60
       // elevatorPos: bottom = 0.00; top = 4.00
+      //
       // [0]:armPos, [1]:handPos, [2]:elevatorPos
       { 0.05, 0.42, 0.00 },  // [0]:pose 1 -- drive
       { 0.42, 0.56, 3.32 },  // [1]:pose 2 -- handoff
