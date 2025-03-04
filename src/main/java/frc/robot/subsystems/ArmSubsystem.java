@@ -115,6 +115,7 @@ public class ArmSubsystem extends SubsystemBase{
         // initial arm position
         armHold();
 
+        // hand motor has encoder and controller
         m_configHand.inverted(true);
         m_configHand.closedLoop.pid(k_handMotorP, k_handMotorI, k_handMotorD)
                                .pid(k_handMotorP1, k_handMotorI1, k_handMotorD1, ClosedLoopSlot.kSlot1)
@@ -128,6 +129,7 @@ public class ArmSubsystem extends SubsystemBase{
         handHold();
     }
 
+    // set the arm motors to coast or brake mode
     public void armCoast(boolean coast)
     {
         m_configArmLeft.idleMode(coast ? IdleMode.kCoast : IdleMode.kBrake);
@@ -140,6 +142,7 @@ public class ArmSubsystem extends SubsystemBase{
         m_handMotor.configure(m_configHand, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
+    // hold the current arm position
     public void armHold()
     {
         m_ArmController.setReference(getArmPosition(), ControlType.kPosition);

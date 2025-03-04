@@ -66,6 +66,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         // N.B. I don't believe we can use a PID controller because we manually add revolutions to our encoder?
     }
 
+    // set the elevator motors to coast or brake mode
     public void elevatorCoast(boolean coast)
     {
         m_configLeft.idleMode(coast ? IdleMode.kCoast : IdleMode.kBrake);
@@ -75,16 +76,19 @@ public class ElevatorSubsystem extends SubsystemBase {
         m_ElevatorMotorRight.configure(m_configRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
+    // return true if the elevator must not go lower!
     public boolean elevatorRockBottom()
     {
         return ! m_beamNotBroken.get();
     }
 
+    // return true if the elvator must not go higher!
     public boolean elevatorRockTop()
     {
         return ! m_limitSwitch.get();
     }
 
+    // hold the current elevator position
     public void elevatorHold()
     {
         m_currentElevatorGoto = getFullElevatorPosition();

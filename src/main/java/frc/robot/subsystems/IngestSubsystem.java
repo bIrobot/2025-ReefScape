@@ -65,12 +65,14 @@ public class IngestSubsystem extends SubsystemBase{
         m_PivotController.setReference(getPivotPosition(), ControlType.kPosition);
     }
 
+    // set the ingest motors to coast or brake mode
     public void ingestCoast(boolean coast)
     {
         m_configPivot.idleMode(coast ? IdleMode.kCoast : IdleMode.kBrake);
         m_PivotMotor.configure(m_configPivot, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
+    // return true if the ingest has captured a coral game piece
     public boolean getIngestHasCoral()
     {
         return ! m_beamNotBroken.get();
