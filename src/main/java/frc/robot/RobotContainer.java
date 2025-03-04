@@ -59,18 +59,25 @@ public class RobotContainer {
   }
 
   public void teleopRunning() {
+    // if elevator calibration failed...
     if (m_ElevatorSubsystem.elevatorCalibrationFailed) {
+        // don't take input from the controller
         return;
     }
 
+    // the X (blue, left) and B (red, right) buttons control ingest
     if (m_driverController.getXButtonPressed()) {
+        // start ingesting on X until either the beam breaks or the button is released
         m_IngestSubsystem.startIngesting();
-    } else if (m_driverController.getXButtonReleased()){
+    } else if (m_driverController.getXButtonReleased()) {
+        // stop ingesting wehen the button is released
         m_IngestSubsystem.stopIngesting();
     } else if (m_driverController.getBButtonPressed()) {
+        // reverse ingest on B for 1/10 second
         m_IngestSubsystem.reverseIngesting();
     }
 
+    // the elevator up/down is controlled by the left bumper/left trigger
     if (m_driverController.getLeftBumperButton()) {
         m_ElevatorSubsystem.elevatorUp();
     } else if (m_driverController.getLeftTriggerAxis() > .1) {
@@ -79,6 +86,7 @@ public class RobotContainer {
         m_ElevatorSubsystem.elevatorStop();
     }
 
+    // the arm up/down is controlled by the right bumper/right trigger
     if (m_driverController.getRightBumperButton()) {
         m_ArmSubsystem.armUp();
     } else if (m_driverController.getRightTriggerAxis() > .1) {
@@ -87,6 +95,7 @@ public class RobotContainer {
         m_ArmSubsystem.armStop();
     }
 
+    // the hand up/down is controlled by the Y (yellow, up) and A (green, down) buttons
     if (m_driverController.getYButton()) {
         m_ArmSubsystem.handUp();
     } else if (m_driverController.getAButton()) {
@@ -95,15 +104,20 @@ public class RobotContainer {
         m_ArmSubsystem.handStop();
     }
 
+    // the "back" (left) and "start" (right) buttons control the fingers
     if (m_driverController.getBackButton()) {
-        m_IngestSubsystem.handoffIngesting();  // XXX move this bring back for handoff
+        // start grabbing on "back" until the button is released (we need a beam break!)
+        m_IngestSubsystem.handoffIngesting();  // XXX move this -- bring back pivot for handoff
         m_ArmSubsystem.fingerGrab();
     } else if (m_driverController.getBackButtonReleased()) {
+        // stop grabbing wehen the button is released
         m_ArmSubsystem.fingerStop();
     } else if (m_driverController.getStartButtonPressed()) {
+        // reverse ingest on "start" for 1/10 second
         m_ArmSubsystem.fingerRelease();
     }
 
+    // the POV control selects preset poses 1 (north), 2 (east), 3 (south), 4 (west)
     int pov = m_driverController.getPOV();
     if (pov != lastPov) {
         if (pov%90 == 0) {
@@ -122,21 +136,25 @@ public void RobotGoto(int pose)
     int armDelay = 0;
     int elevatorDelay = 0;
 
+    // get position targets for arm, hand, and elevator
     armPos = PoseConstants.poses[pose][0];
     handPos = PoseConstants.poses[pose][1];
     elevatorPos = PoseConstants.poses[pose][2];
 
+    // if the elevator will go up...
     if (m_ElevatorSubsystem.willElevatorGoUp(elevatorPos)) {
         // going up -- move elevator first!
         armDelay = 2;
     } else {
-        // going down -- move arm first!
+        // going down -- move arm/hand first!
         elevatorDelay = 2;
     }
 
+    // cancel any previous targets
     m_ArmSubsystem.armHold();
     m_ElevatorSubsystem.elevatorHold();
 
+    // set new targets giving elevator or arm/hand a chance to move first
     ParallelCommandGroup commands = new ParallelCommandGroup(
         new SequentialCommandGroup(new WaitCommand(armDelay),
                                    new InstantCommand(() -> { m_ArmSubsystem.armGoto(armPos);
