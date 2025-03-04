@@ -105,47 +105,47 @@ public class RobotContainer {
     }
 
     int pov = m_driverController.getPOV();
-    do {
-        if (pov != lastPov) {
-            int pose;
-            double armPos;
-            double handPos;
-            double elevatorPos;
-            int armDelay = 0;
-            int elevatorDelay = 0;
-
-            if (pov%90 != 0) {
-                break;
-            }
-            pose = pov/90;
-
-            armPos = PoseConstants.poses[pose][0];
-            handPos = PoseConstants.poses[pose][1];
-            elevatorPos = PoseConstants.poses[pose][2];
-
-            if (m_ElevatorSubsystem.willElevatorGoUp(elevatorPos)) {
-                // going up -- move elevator first!
-                armDelay = 2;
-            } else {
-                // going down -- move arm first!
-                elevatorDelay = 2;
-            }
-
-            m_ArmSubsystem.armHold();
-            m_ElevatorSubsystem.elevatorHold();
-            ParallelCommandGroup commands = new ParallelCommandGroup(
-                new SequentialCommandGroup(new WaitCommand(armDelay),
-                                        new InstantCommand(() -> { m_ArmSubsystem.armGoto(armPos);
-                                                                    m_ArmSubsystem.handGoto(handPos); }, m_ArmSubsystem)),
-
-                new SequentialCommandGroup(new WaitCommand(elevatorDelay),
-                                        new InstantCommand(() -> m_ElevatorSubsystem.elevatorGoto(elevatorPos), m_ElevatorSubsystem))
-            );
-            commands.schedule();
-
-            lastPov = pov;
+    if (pov != lastPov) {
+        if (pov%90 == 0) {
+            int pose = pov/90;
+            RobotGoto(pose);
         }
-    } while (false);
+        lastPov = pov;
+    }
+}
+
+public void RobotGoto(int pose)
+{
+    double armPos;
+    double handPos;
+    double elevatorPos;
+    int armDelay = 0;
+    int elevatorDelay = 0;
+
+    armPos = PoseConstants.poses[pose][0];
+    handPos = PoseConstants.poses[pose][1];
+    elevatorPos = PoseConstants.poses[pose][2];
+
+    if (m_ElevatorSubsystem.willElevatorGoUp(elevatorPos)) {
+        // going up -- move elevator first!
+        armDelay = 2;
+    } else {
+        // going down -- move arm first!
+        elevatorDelay = 2;
+    }
+
+    m_ArmSubsystem.armHold();
+    m_ElevatorSubsystem.elevatorHold();
+
+    ParallelCommandGroup commands = new ParallelCommandGroup(
+        new SequentialCommandGroup(new WaitCommand(armDelay),
+                                   new InstantCommand(() -> { m_ArmSubsystem.armGoto(armPos);
+                                                              m_ArmSubsystem.handGoto(handPos); }, m_ArmSubsystem)),
+
+        new SequentialCommandGroup(new WaitCommand(elevatorDelay),
+                                   new InstantCommand(() -> m_ElevatorSubsystem.elevatorGoto(elevatorPos), m_ElevatorSubsystem))
+    );
+    commands.schedule();
 }
 
 /**
