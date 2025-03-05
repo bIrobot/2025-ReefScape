@@ -29,8 +29,8 @@ public final class Constants {
       // elevatorPos: bottom = 0.00; top = 4.00
       //
       // [0]:armPos, [1]:handPos, [2]:elevatorPos
-      { 0.27, 0.48, 2.36 },  // [0]:pose 1
-      { 0.19, 0.54, 1.08 },  // [1]:pose 2
+      { 0.27, 0.48, 2.24 },  // [0]:pose 1
+      { 0.20, 0.58, 0.99 },  // [1]:pose 2
       { 0.26, 0.65, 3.19 },  // [2]:pose 3
       { 0.11, 0.44, 4.20 },  // [3]:pose 4
       { 0.05, 0.42, 0.00 },  // [4]:pose 5 -- drive
