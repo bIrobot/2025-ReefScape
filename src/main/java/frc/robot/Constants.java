@@ -22,6 +22,14 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static final class TestPosition {
+    public enum TestState {
+      GOING_UP,
+      TARGET_ACHIEVED,
+      GOING_DOWN
+    };
+  }
+
   public static final class PoseConstants {
     public static final double[][] poses = {
       // armPos: bottom = 0.43; top = 0.05 -- note top is smaller number than bottom!
@@ -46,12 +54,16 @@ public final class Constants {
     public static final double kArmLevelBottom = 0.43;  // soft limit
     public static final double kArmLevelTop = 0.05;  // soft limit NOT 0
 
+    public static final double kArmTestClose = 0.01;
+
     public static final double kHandUpSpeed = 0.5;
     public static final double kHandDownSpeed = 0.4;
 
     public static final double kHandLevelSafe = 0.45;
     public static final double kHandLevelBottom = 0.20;  // soft limit NOT 0
     public static final double kHandLevelTop = 0.70;  // soft limit
+
+    public static final double kHandTestClose = 0.01;
 
     public static final double kFingerGrabSpeed = 1.0;
     public static final double kFingerReleaseSpeed = 0.5;
@@ -66,6 +78,8 @@ public final class Constants {
     public static final double kElevatorLevelSafe = 3.00;
     public static final double kElevatorLevelBottom = 0.00;  // soft limit (0 allowed)
     public static final double kElevatorLevelTop = 4.20;  // soft limit
+
+    public static final double kElevatorTestClose = 0.01;
   }
   
   public static final class IngestConstants {

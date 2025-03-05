@@ -8,6 +8,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PoseConstants;
+import frc.robot.Constants.TestPosition.TestState;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IngestSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -36,6 +37,8 @@ public class RobotContainer {
   private int m_lastPov = -1;
   private boolean m_lastHandoffReady = false;
 
+  private int ticks = 0;
+
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
 
@@ -60,6 +63,7 @@ public class RobotContainer {
   }
 
   public void teleopRunning() {
+    boolean test = false;
     boolean thisHandoffReady;
 
     // if elevator calibration failed...
@@ -142,8 +146,13 @@ public class RobotContainer {
     if (thisHandoffReady && ! m_lastHandoffReady) {
         // we just ingested coral; goto handoff position
         RobotGoto(5);
+        test = true;
     }
     m_lastHandoffReady = thisHandoffReady;
+
+    if (test) {
+        test = RobotTestMoving(5);
+    }
 }
 
 public void RobotGoto(int pose)
@@ -159,11 +168,12 @@ public void RobotGoto(int pose)
     handPos = PoseConstants.poses[pose][1];
     elevatorPos = PoseConstants.poses[pose][2];
 
-    // if the elevator will go up...
-    if (m_ElevatorSubsystem.willElevatorGoUp(elevatorPos)) {
+    // test the elevator target direction
+    TestState state = m_ElevatorSubsystem.testElevatorPosition(elevatorPos);
+    if (state == TestState.GOING_UP) {
         // going up -- move elevator first!
         armDelay = 2;
-    } else {
+    } else if (state == TestState.GOING_DOWN) {
         // going down -- move arm/hand first!
         elevatorDelay = 2;
     }
@@ -182,6 +192,32 @@ public void RobotGoto(int pose)
                                    new InstantCommand(() -> m_ElevatorSubsystem.elevatorGoto(elevatorPos), m_ElevatorSubsystem))
     );
     commands.schedule();
+}
+
+// return true if still moving
+public boolean RobotTestMoving(int pose)
+{
+    double armPos;
+    double handPos;
+    double elevatorPos;
+    TestState armState;
+    TestState handState;
+    TestState elevatorState;
+
+    // get position targets for arm, hand, and elevator
+    armPos = PoseConstants.poses[pose][0];
+    handPos = PoseConstants.poses[pose][1];
+    elevatorPos = PoseConstants.poses[pose][2];
+
+    armState = m_ArmSubsystem.testArmPosition(armPos);
+    handState = m_ArmSubsystem.testHandPosition(handPos);
+    elevatorState = m_ElevatorSubsystem.testElevatorPosition(elevatorPos);
+
+    if (ticks++%10==0) System.out.println("ELEVATOR: " + elevatorState +
+                                          " ARM: " + armState +
+                                          " HAND:"  + handState);
+
+    return elevatorState != TestState.TARGET_ACHIEVED || armState != TestState.TARGET_ACHIEVED || handState != TestState.TARGET_ACHIEVED;
 }
 
 /**

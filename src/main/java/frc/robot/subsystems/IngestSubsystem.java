@@ -175,14 +175,4 @@ public class IngestSubsystem extends SubsystemBase{
                 break;
         }
     }
-
-    private double getPivotPosition()
-    {
-        double pos = m_PivotEncoder.getPosition();
-        if (Math.round(pos*100.0)/100.0 == 0.0) {
-            // 0 is illegal value; make it safe
-            pos = IngestConstants.k_pivotAngleSafeFraction;
-        }
-        return pos;
-    }
 }

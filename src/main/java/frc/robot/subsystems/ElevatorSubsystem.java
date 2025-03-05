@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.TestPosition.TestState;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
@@ -149,9 +150,16 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
     }
 
-    public boolean willElevatorGoUp(double elevatorPos)
+    // return the direction of travel to the target
+    public TestState testElevatorPosition(double elevatorPos)
     {
-        return elevatorPos > getFullElevatorPosition();
+        double diff = elevatorPos - getFullElevatorPosition();
+        if (Math.abs(diff) <= ElevatorConstants.kElevatorTestClose) {
+            return TestState.TARGET_ACHIEVED;
+        } else if (diff > 0) {
+            return TestState.GOING_UP;
+        }
+        return TestState.GOING_DOWN;
     }
 
     private void setElevatorMotorToTarget() {
@@ -202,7 +210,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         sign = elevatorPos - getFullElevatorPosition();
         diff = Math.abs(sign);
 
-        if (diff <= 0.01) {
+        if (diff <= ElevatorConstants.kElevatorTestClose) {
             // close enough
             m_ElevatorMotorLeft.set(0.0);
             m_ElevatorMotorRight.set(0.0);

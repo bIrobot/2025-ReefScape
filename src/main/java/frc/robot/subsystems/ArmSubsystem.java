@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.TestPosition.TestState;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -236,6 +238,30 @@ public class ArmSubsystem extends SubsystemBase{
 
         // seek motor targets
         setFingerMotorToTarget();
+    }
+
+    // return the direction of travel to the target
+    public TestState testArmPosition(double armPos)
+    {
+        double diff = armPos - getArmPosition();
+        if (Math.abs(diff) <= ArmConstants.kArmTestClose) {
+            return TestState.TARGET_ACHIEVED;
+        } else if (diff > 0) {
+            return TestState.GOING_DOWN;
+        }
+        return TestState.GOING_UP;
+    }
+
+    // return the direction of travel to the target
+    public TestState testHandPosition(double handPos)
+    {
+        double diff = handPos - getHandPosition();
+        if (Math.abs(diff) <= ArmConstants.kHandTestClose) {
+            return TestState.TARGET_ACHIEVED;
+        } else if (diff > 0) {
+            return TestState.GOING_UP;
+        }
+        return TestState.GOING_DOWN;
     }
 
     private void setFingerMotorToTarget() {
