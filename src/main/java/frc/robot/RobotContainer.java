@@ -165,9 +165,13 @@ public class RobotContainer {
 
     if (m_handoffState == HandoffState.POSE) {
         if ((System.nanoTime() - m_handoffStateTime) > RobotConstants.k_poseNsec) {
-            m_handoffStateTime = System.nanoTime();
-            m_handoffState = HandoffState.PULSE;
-            m_IngestSubsystem.startIngesting();  // pulse
+            if (m_IngestSubsystem.getIngestHasCoral()) {
+                m_handoffStateTime = System.nanoTime();
+                m_handoffState = HandoffState.PULSE;
+                m_IngestSubsystem.startIngesting();  // pulse
+            } else {
+                m_handoffState = HandoffState.STOP;
+            }
         }
     }
 

@@ -48,8 +48,8 @@ public final class Constants {
   };
 
   public static final class ArmConstants {
-    public static final double kArmUpSpeed = 0.18;
-    public static final double kArmDownSpeed = 0.16;
+    public static final double kArmUpSpeed = 0.25;
+    public static final double kArmDownSpeed = 0.22;
 
     public static final double kArmLevelSafe = 0.11;
     public static final double kArmLevelBottom = 0.43;  // soft limit
@@ -88,24 +88,24 @@ public final class Constants {
     public static final double k_intakeSpeed = 1.0;
     public static final double k_ejectSpeed = 0.5;
     public static final double k_reverseNsec = 1000000000;
-    public static final double k_pulse1Nsec = 80000000;
-    public static final double k_pulse2Nsec = 200000000;
-    public static final double k_pulse3Nsec = 60000000;
+    public static final double k_pulse1Nsec = 30000000;
+    public static final double k_pulse2Nsec = 50000000;
+    public static final double k_pulse3Nsec = 40000000;
 
     public static final double k_pivotSpeed = 0.15;
 
     // Pivot set point encodings; readings are from 0..1(not inclusive).
     public static final double k_pivotAngleGroundFraction = 0.111;  // NOT 0
     public static final double k_pivotAngleSafeFraction = 0.300;
-    public static final double k_pivotAngleVerticalFraction = 0.400;
+    public static final double k_pivotAngleVerticalFraction = 0.420;
     public static final double k_pivotAngleFrameFraction = 0.472;
   }
 
   public static final class RobotConstants {
-    public static final double k_poseNsec = 10000000000.0;
-    public static final double k_pulseNsec = 1000000000.0;
-    public static final double k_feedNsec = 1000000000.0;
-    public static final double k_raiseNsec = 1000000000.0;
+    public static final double k_poseNsec = 4000000000.0;
+    public static final double k_pulseNsec = 500000000.0;
+    public static final double k_feedNsec = 500000000.0;
+    public static final double k_raiseNsec = 500000000.0;
   }
 
   public static final class DriveConstants {
