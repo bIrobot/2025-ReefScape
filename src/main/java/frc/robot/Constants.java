@@ -39,8 +39,8 @@ public final class Constants {
   };
 
   public static final class ArmConstants {
-    public static final double kArmUpSpeed = 0.14;
-    public static final double kArmDownSpeed = 0.12;
+    public static final double kArmUpSpeed = 0.18;
+    public static final double kArmDownSpeed = 0.16;
 
     public static final double kArmLevelSafe = 0.11;
     public static final double kArmLevelBottom = 0.43;  // soft limit
@@ -60,8 +60,8 @@ public final class Constants {
   }
 
   public static final class ElevatorConstants {
-    public static final double kElevatorUpSpeed = 0.5;
-    public static final double kElevatorDownSpeed = 0.4;
+    public static final double kElevatorUpSpeed = 0.7;
+    public static final double kElevatorDownSpeed = 0.6;
 
     public static final double kElevatorLevelSafe = 3.00;
     public static final double kElevatorLevelBottom = 0.00;  // soft limit (0 allowed)
