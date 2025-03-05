@@ -19,7 +19,9 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 public class IngestSubsystem extends SubsystemBase{
     private final SparkMax m_ingestMotorLeft;
+    private SparkMaxConfig m_configIngestLeft = new SparkMaxConfig();
     private final SparkMax m_ingestMotorRight;
+    private SparkMaxConfig m_configIngestRight = new SparkMaxConfig();
 
     private SparkMax m_PivotMotor;
     private SparkAbsoluteEncoder m_PivotEncoder;
@@ -27,6 +29,7 @@ public class IngestSubsystem extends SubsystemBase{
     private SparkMaxConfig m_configPivot = new SparkMaxConfig();
     private IngestState m_currentIngestState = IngestState.STOP;
     private double m_IngestTime = 0;
+    private double m_PulseTime = 0;
 
     private static final double k_pivotMotorP = 2.0;
     private static final double k_pivotMotorI = 0.0;
@@ -42,13 +45,18 @@ public class IngestSubsystem extends SubsystemBase{
         SAFE,
         HANDOFF,
         FORWARD,
-        REVERSE
+        REVERSE,
+        PULSE
     };
 
     public IngestSubsystem()
     {
         m_ingestMotorLeft = new SparkMax(17, MotorType.kBrushless);  // XXX Constants
+        m_configIngestLeft.idleMode(IdleMode.kBrake);
+        m_ingestMotorLeft.configure(m_configIngestLeft, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
         m_ingestMotorRight = new SparkMax(15, MotorType.kBrushless);  // XXX Constants
+        m_configIngestRight.idleMode(IdleMode.kBrake);
+        m_ingestMotorRight.configure(m_configIngestRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         m_PivotMotor = new SparkMax(16, MotorType.kBrushless);  // XXX Constants
         m_PivotEncoder = m_PivotMotor.getAbsoluteEncoder();
@@ -85,13 +93,20 @@ public class IngestSubsystem extends SubsystemBase{
         if (! getIngestHasCoral()) {
             m_currentIngestState = IngestState.FORWARD;
             m_PivotController.setReference(IngestConstants.k_pivotAngleGroundFraction, ControlType.kPosition);
+        } else {
+            m_PulseTime = System.nanoTime();
+            m_currentIngestState = IngestState.PULSE;
         }
     }
 
     public void stopIngesting()
     {
         m_currentIngestState = IngestState.STOP;
-        m_PivotController.setReference(IngestConstants.k_pivotAngleSafeFraction, ControlType.kPosition);
+        if (getIngestHasCoral()) {
+            m_PivotController.setReference(IngestConstants.k_pivotAngleSafeFraction, ControlType.kPosition);
+        } else {
+            m_PivotController.setReference(IngestConstants.k_pivotAngleVerticalFraction, ControlType.kPosition);
+        }
     }
 
     public void reverseIngesting()
@@ -148,6 +163,14 @@ public class IngestSubsystem extends SubsystemBase{
                 } else {
                     m_ingestMotorLeft.set(-IngestConstants.k_ejectSpeed);
                     m_ingestMotorRight.set(IngestConstants.k_ejectSpeed);
+                }
+                break;
+            case PULSE:
+                if (System.nanoTime() - m_PulseTime > IngestConstants.k_pulseNsec) {
+                    m_currentIngestState = IngestState.STOP;
+                } else {
+                    m_ingestMotorLeft.set(IngestConstants.k_intakeSpeed);
+                    m_ingestMotorRight.set(-IngestConstants.k_intakeSpeed);
                 }
                 break;
             case STOP:

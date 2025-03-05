@@ -30,7 +30,7 @@ public final class Constants {
       //
       // [0]:armPos, [1]:handPos, [2]:elevatorPos
       { 0.05, 0.42, 0.00 },  // [0]:pose 1 -- drive
-      { 0.42, 0.56, 3.32 },  // [1]:pose 2 -- handoff
+      { 0.42, 0.56, 3.20 },  // [1]:pose 2 -- handoff
       { 0.43, 0.60, 4.00 },  // [2]:pose 3
       { 0.20, 0.30, 3.00 },  // [3]:pose 4
       { ArmConstants.kArmLevelSafe, ArmConstants.kHandLevelSafe, ElevatorConstants.kElevatorLevelSafe},  // [4]:pose 5
@@ -50,13 +50,13 @@ public final class Constants {
     public static final double kHandDownSpeed = 0.4;
 
     public static final double kHandLevelSafe = 0.45;
-    public static final double kHandLevelBottom = 0.30;  // soft limit NOT 0
-    public static final double kHandLevelTop = 0.60;  // soft limit
+    public static final double kHandLevelBottom = 0.20;  // soft limit NOT 0
+    public static final double kHandLevelTop = 0.70;  // soft limit
 
     public static final double kFingerGrabSpeed = 1.0;
     public static final double kFingerReleaseSpeed = 0.5;
 
-    public static final double k_reverseNsec = 100000000;
+    public static final double k_reverseNsec = 40000000;
   }
 
   public static final class ElevatorConstants {
@@ -65,14 +65,15 @@ public final class Constants {
 
     public static final double kElevatorLevelSafe = 3.00;
     public static final double kElevatorLevelBottom = 0.00;  // soft limit (0 allowed)
-    public static final double kElevatorLevelTop = 4.00;  // soft limit
+    public static final double kElevatorLevelTop = 4.20;  // soft limit
   }
   
   public static final class IngestConstants {
     // Intake speeds
-    public static final double k_intakeSpeed = 0.25;
+    public static final double k_intakeSpeed = 1.0;
     public static final double k_ejectSpeed = 0.5;
-    public static final double k_reverseNsec = 100000000;
+    public static final double k_reverseNsec = 1000000000;
+    public static final double k_pulseNsec = 60000000;
 
     public static final double k_pivotSpeed = 0.15;
 

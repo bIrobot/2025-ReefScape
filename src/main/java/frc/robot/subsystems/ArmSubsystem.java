@@ -33,6 +33,7 @@ public class ArmSubsystem extends SubsystemBase{
     private SparkClosedLoopController m_HandController;
 
     private final SparkMax m_fingerMotor;
+    private final SparkMaxConfig m_configFinger = new SparkMaxConfig();
 
     private ArmState m_currentArmState = ArmState.STOP;
     private HandState m_currentHandState = HandState.STOP;
