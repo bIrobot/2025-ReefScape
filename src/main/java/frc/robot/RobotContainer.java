@@ -145,7 +145,6 @@ public class RobotContainer {
     if (thisHandoffReady && ! m_lastHandoffReady) {
         // we just ingested coral; goto handoff position
         RobotGoto(5);
-        test = true;
     }
     m_lastHandoffReady = thisHandoffReady;
 
