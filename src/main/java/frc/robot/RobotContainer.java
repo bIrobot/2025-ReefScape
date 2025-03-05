@@ -34,7 +34,7 @@ public class RobotContainer {
   private final ArmSubsystem m_ArmSubsystem = new ArmSubsystem();
 
   private int m_lastPov = -1;
-  private boolean m_lastCoral = false;
+  private boolean m_lastHandoffReady = false;
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -60,7 +60,7 @@ public class RobotContainer {
   }
 
   public void teleopRunning() {
-    boolean thisCoral;
+    boolean thisHandoffReady;
 
     // if elevator calibration failed...
     if (m_ElevatorSubsystem.elevatorCalibrationFailed) {
@@ -138,12 +138,12 @@ public class RobotContainer {
         m_lastPov = pov;
     }
 
-    thisCoral = m_IngestSubsystem.getIngestHasCoral();
-    if (thisCoral && ! m_lastCoral) {
+    thisHandoffReady = m_IngestSubsystem.getIngestHandoffReady();
+    if (thisHandoffReady && ! m_lastHandoffReady) {
         // we just ingested coral; goto handoff position
         RobotGoto(5);
     }
-    m_lastCoral = thisCoral;
+    m_lastHandoffReady = thisHandoffReady;
 }
 
 public void RobotGoto(int pose)

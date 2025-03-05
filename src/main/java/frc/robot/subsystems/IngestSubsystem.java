@@ -32,6 +32,8 @@ public class IngestSubsystem extends SubsystemBase{
 
     private final DigitalInput m_beamNotBroken = new DigitalInput(0);
 
+    private boolean m_handoffReady = false;
+
     private int m_ticks = 0;
 
     private enum IngestState {
@@ -67,14 +69,16 @@ public class IngestSubsystem extends SubsystemBase{
         return ! m_beamNotBroken.get();
     }
 
-    public void ingestHold()
+    // return true if we are ready for handoff
+    public boolean getIngestHandoffReady()
     {
-        m_PivotController.setReference(getPivotPosition(), ControlType.kPosition);
+        return m_handoffReady;
     }
 
     public void startIngesting()
     {
         if (! getIngestHasCoral()) {
+            m_handoffReady = false;
             m_currentIngestState = IngestState.FORWARD;
             m_PivotController.setReference(IngestConstants.k_pivotAngleGroundFraction, ControlType.kPosition);
         } else {
@@ -86,15 +90,18 @@ public class IngestSubsystem extends SubsystemBase{
     public void stopIngesting()
     {
         m_currentIngestState = IngestState.STOP;
-        if (getIngestHasCoral()) {
+        if (getIngestHasCoral() || m_handoffReady) {
+            m_handoffReady = true;
             m_PivotController.setReference(IngestConstants.k_pivotAngleSafeFraction, ControlType.kPosition);
         } else {
-            m_PivotController.setReference(IngestConstants.k_pivotAngleVerticalFraction, ControlType.kPosition);
+            m_handoffReady = false;
+            handoffIngesting();
         }
     }
 
     public void reverseIngesting()
     {
+        m_handoffReady = false;
         m_IngestTime = System.nanoTime();
         m_currentIngestState = IngestState.REVERSE;
     }
@@ -159,6 +166,7 @@ public class IngestSubsystem extends SubsystemBase{
                 }
                 break;
             case STOP:
+            case HANDOFF:
                 m_ingestMotorLeft.set(0.0);
                 m_ingestMotorRight.set(0.0);
                 break;
