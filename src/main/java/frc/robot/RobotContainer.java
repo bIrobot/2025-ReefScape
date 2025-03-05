@@ -121,7 +121,7 @@ public class RobotContainer {
         RobotGoto(5);
     }
 
-    if (m_driverController.getLeftStickButtonPressed()) {
+    if (m_driverController.getRightStickButtonPressed()) {
         RobotGoto(6);
     }
 
