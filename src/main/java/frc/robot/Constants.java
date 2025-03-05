@@ -29,12 +29,12 @@ public final class Constants {
       // elevatorPos: bottom = 0.00; top = 4.00
       //
       // [0]:armPos, [1]:handPos, [2]:elevatorPos
-      { 0.05, 0.42, 0.00 },  // [0]:pose 1 -- drive
-      { 0.42, 0.56, 3.20 },  // [1]:pose 2 -- handoff
-      { 0.43, 0.60, 4.00 },  // [2]:pose 3
-      { 0.20, 0.30, 3.00 },  // [3]:pose 4
-      { ArmConstants.kArmLevelSafe, ArmConstants.kHandLevelSafe, ElevatorConstants.kElevatorLevelSafe},  // [4]:pose 5
-      { ArmConstants.kArmLevelSafe, ArmConstants.kHandLevelSafe, ElevatorConstants.kElevatorLevelSafe},  // [5]:pose 6
+      { 0.27, 0.48, 2.36 },  // [0]:pose 1
+      { 0.19, 0.54, 1.08 },  // [1]:pose 2
+      { 0.26, 0.65, 3.19 },  // [2]:pose 3
+      { 0.11, 0.44, 4.20 },  // [3]:pose 4
+      { 0.05, 0.42, 0.00 },  // [4]:pose 5 -- drive
+      { 0.42, 0.56, 3.20 }  // [5]: pose 6 -- handoff
     };
   };
 
@@ -60,8 +60,8 @@ public final class Constants {
   }
 
   public static final class ElevatorConstants {
-    public static final double kElevatorUpSpeed = 0.7;
-    public static final double kElevatorDownSpeed = 0.6;
+    public static final double kElevatorUpSpeed = 1.0;
+    public static final double kElevatorDownSpeed = 1.0;
 
     public static final double kElevatorLevelSafe = 3.00;
     public static final double kElevatorLevelBottom = 0.00;  // soft limit (0 allowed)
