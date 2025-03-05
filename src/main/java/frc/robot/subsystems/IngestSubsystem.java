@@ -114,7 +114,7 @@ public class IngestSubsystem extends SubsystemBase{
 
     @Override
     public void periodic() {
-        if (m_ticks++%50==0) System.out.println("INGEST: Position: " + m_PivotEncoder.getPosition() +
+        if (m_ticks++%100==0) System.out.println("INGEST: Position: " + m_PivotEncoder.getPosition() +
                                               " hasCoral: " + getIngestHasCoral());
 
         // seek motor targets

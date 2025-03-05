@@ -63,7 +63,6 @@ public class RobotContainer {
   }
 
   public void teleopRunning() {
-    boolean test = false;
     boolean thisHandoffReady;
 
     // if elevator calibration failed...
@@ -150,9 +149,9 @@ public class RobotContainer {
     }
     m_lastHandoffReady = thisHandoffReady;
 
-    if (test) {
-        test = RobotTestMoving(5);
-    }
+    //RobotTestMoving(5);
+
+    if (ticks++%100==0) System.out.println("TELEOP RUNNING");
 }
 
 public void RobotGoto(int pose)
@@ -212,10 +211,6 @@ public boolean RobotTestMoving(int pose)
     armState = m_ArmSubsystem.testArmPosition(armPos);
     handState = m_ArmSubsystem.testHandPosition(handPos);
     elevatorState = m_ElevatorSubsystem.testElevatorPosition(elevatorPos);
-
-    if (ticks++%10==0) System.out.println("ELEVATOR: " + elevatorState +
-                                          " ARM: " + armState +
-                                          " HAND:"  + handState);
 
     return elevatorState != TestState.TARGET_ACHIEVED || armState != TestState.TARGET_ACHIEVED || handState != TestState.TARGET_ACHIEVED;
 }

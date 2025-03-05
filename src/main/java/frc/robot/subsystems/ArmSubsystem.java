@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.TestPosition.TestState;
 
 import com.revrobotics.spark.SparkMax;
@@ -217,7 +216,7 @@ public class ArmSubsystem extends SubsystemBase{
 
     @Override
     public void periodic() {
-        if (ticks++%50==0) System.out.println("ARM: Arm Encoder: " + m_ArmEncoder.getPosition() +
+        if (ticks++%100==0) System.out.println("ARM: Arm Encoder: " + m_ArmEncoder.getPosition() +
                                               " Hand Encoder: " + m_handEncoder.getPosition());
 
         // arm limit safety

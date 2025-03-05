@@ -105,7 +105,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (ticks++%50==0) System.out.println("ELEVATOR: Encoder: " + getFullElevatorPosition() +
+        if (ticks++%100==0) System.out.println("ELEVATOR: Encoder: " + getFullElevatorPosition() +
                                                " rockBottom:" + elevatorRockBottom() +
                                                " rockTop:" + elevatorRockTop());
 
