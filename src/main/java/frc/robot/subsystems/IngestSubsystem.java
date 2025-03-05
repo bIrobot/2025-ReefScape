@@ -1,27 +1,22 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IngestConstants;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 public class IngestSubsystem extends SubsystemBase{
     private final SparkMax m_ingestMotorLeft;
-    private SparkMaxConfig m_configIngestLeft = new SparkMaxConfig();
     private final SparkMax m_ingestMotorRight;
-    private SparkMaxConfig m_configIngestRight = new SparkMaxConfig();
 
     private SparkMax m_PivotMotor;
     private SparkAbsoluteEncoder m_PivotEncoder;
@@ -38,7 +33,6 @@ public class IngestSubsystem extends SubsystemBase{
     private final DigitalInput m_beamNotBroken = new DigitalInput(0);
 
     private int m_ticks = 0;
-    private boolean m_coast = false;
 
     private enum IngestState {
         STOP,
@@ -52,11 +46,7 @@ public class IngestSubsystem extends SubsystemBase{
     public IngestSubsystem()
     {
         m_ingestMotorLeft = new SparkMax(17, MotorType.kBrushless);  // XXX Constants
-        m_configIngestLeft.idleMode(IdleMode.kBrake);
-        m_ingestMotorLeft.configure(m_configIngestLeft, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
         m_ingestMotorRight = new SparkMax(15, MotorType.kBrushless);  // XXX Constants
-        m_configIngestRight.idleMode(IdleMode.kBrake);
-        m_ingestMotorRight.configure(m_configIngestRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         m_PivotMotor = new SparkMax(16, MotorType.kBrushless);  // XXX Constants
         m_PivotEncoder = m_PivotMotor.getAbsoluteEncoder();
@@ -66,14 +56,6 @@ public class IngestSubsystem extends SubsystemBase{
                               .positionWrappingEnabled(false)
                               .outputRange(-0.2, 0.2)
                               .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
-        m_configPivot.idleMode(IdleMode.kBrake);
-        m_PivotMotor.configure(m_configPivot, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-    }
-
-    // set the ingest motors to coast or brake mode
-    public void ingestCoast(boolean coast)
-    {
-        m_configPivot.idleMode(coast ? IdleMode.kCoast : IdleMode.kBrake);
         m_PivotMotor.configure(m_configPivot, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
@@ -125,23 +107,6 @@ public class IngestSubsystem extends SubsystemBase{
     public void periodic() {
         if (m_ticks++%50==0) System.out.println("INGEST: Position: " + m_PivotEncoder.getPosition() +
                                               " hasCoral: " + getIngestHasCoral());
-
-        if (DriverStation.isTest()) {
-            if (DriverStation.isEnabled()) {
-                if (m_ticks++%50==0) System.out.println("INGEST STOP/COAST");
-                if (! m_coast) {
-                    m_PivotController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
-                    m_ingestMotorLeft.set(0.0);
-                    m_ingestMotorRight.set(0.0);
-                    ingestCoast(true);
-                    m_coast = true;
-                }
-            }
-            return;
-        } else if (m_coast) {
-            ingestCoast(false);
-            m_coast = false;
-        }
 
         // seek motor targets
         setIngestMotorToTarget();

@@ -118,11 +118,11 @@ public class RobotContainer {
     }
 
     if (m_driverController.getLeftStickButtonPressed()) {
-        RobotGoto(5);
+        RobotGoto(4);
     }
 
     if (m_driverController.getRightStickButtonPressed()) {
-        RobotGoto(6);
+        RobotGoto(5);
     }
 
     // the POV control selects preset poses 1 (north), 2 (east), 3 (south), 4 (west)

@@ -1,13 +1,11 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -33,7 +31,6 @@ public class ArmSubsystem extends SubsystemBase{
     private SparkClosedLoopController m_HandController;
 
     private final SparkMax m_fingerMotor;
-    private final SparkMaxConfig m_configFinger = new SparkMaxConfig();
 
     private ArmState m_currentArmState = ArmState.STOP;
     private HandState m_currentHandState = HandState.STOP;
@@ -61,7 +58,6 @@ public class ArmSubsystem extends SubsystemBase{
     private static final double k_handMotorD1 = 2.0;
 
     private int ticks = 0;
-    private boolean m_coast = false;
 
     private enum ArmState {
         STOP,
@@ -104,12 +100,10 @@ public class ArmSubsystem extends SubsystemBase{
                                   .positionWrappingEnabled(false)
                                   .outputRange(-ArmConstants.kArmUpSpeed, ArmConstants.kArmDownSpeed)
                                   .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
-        m_configArmLeft.idleMode(IdleMode.kBrake);
         m_ArmMotorLeft.configure(m_configArmLeft, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         // right motor follows left motor with inverted direction
-        m_configArmRight.inverted(true);
-        m_configArmRight.idleMode(IdleMode.kBrake)
+        m_configArmRight.inverted(true)
                         .follow(11, true);  // XXX Constants
         m_ArmMotorRight.configure(m_configArmRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
@@ -120,20 +114,6 @@ public class ArmSubsystem extends SubsystemBase{
                                .positionWrappingEnabled(false)
                                .outputRange(-ArmConstants.kHandUpSpeed, ArmConstants.kHandDownSpeed)
                                .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
-        m_configHand.idleMode(IdleMode.kBrake);
-        m_handMotor.configure(m_configHand, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-    }
-
-    // set the arm motors to coast or brake mode
-    public void armCoast(boolean coast)
-    {
-        m_configArmLeft.idleMode(coast ? IdleMode.kCoast : IdleMode.kBrake);
-        m_ArmMotorLeft.configure(m_configArmLeft, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-
-        m_configArmRight.idleMode(coast ? IdleMode.kCoast : IdleMode.kBrake);
-        m_ArmMotorRight.configure(m_configArmRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-
-        m_configHand.idleMode(coast ? IdleMode.kCoast : IdleMode.kBrake);
         m_handMotor.configure(m_configHand, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
@@ -237,23 +217,6 @@ public class ArmSubsystem extends SubsystemBase{
     public void periodic() {
         if (ticks++%50==0) System.out.println("ARM: Arm Encoder: " + m_ArmEncoder.getPosition() +
                                               " Hand Encoder: " + m_handEncoder.getPosition());
-
-        if (DriverStation.isTest()) {
-            if (DriverStation.isEnabled()) {
-                if (ticks++%50==0) System.out.println("ARM STOP/COAST");
-                if (! m_coast) {
-                    m_ArmController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
-                    m_HandController.setReference(0, ControlType.kVelocity, ClosedLoopSlot.kSlot1);
-                    m_fingerMotor.set(0);
-                    armCoast(true);
-                    m_coast = true;
-                }
-            }
-            return;
-        } else if (m_coast) {
-            armCoast(false);
-            m_coast = false;
-        }
 
         // arm limit safety
         if (getArmPosition() > ArmConstants.kArmLevelBottom && m_currentArmState == ArmState.DOWN) {

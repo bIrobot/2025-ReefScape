@@ -1,24 +1,17 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants.ElevatorConstants;
 
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 public class ElevatorSubsystem extends SubsystemBase {
     private final SparkMax m_ElevatorMotorLeft;
-    private final SparkMaxConfig m_configLeft = new SparkMaxConfig();
     private final SparkMax m_ElevatorMotorRight;
-    private final SparkMaxConfig m_configRight = new SparkMaxConfig();
     private SparkAbsoluteEncoder m_ElevatorEncoder;
 
     private ElevatorState m_currentElevatorState = ElevatorState.STOP;
@@ -28,7 +21,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     private final DigitalInput m_limitSwitch = new DigitalInput(2);
 
     private int ticks = 0;
-    private boolean m_coast = false;
 
     private boolean m_firstPos = true;
     private double m_lastElevatorPos = -1.0;  // illegal value
@@ -50,12 +42,6 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         m_ElevatorMotorRight = new SparkMax(9, MotorType.kBrushless);  // XXX Constants
 
-        m_configLeft.idleMode(IdleMode.kBrake);
-        m_ElevatorMotorLeft.configure(m_configLeft, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-
-        m_configRight.idleMode(IdleMode.kBrake);
-        m_ElevatorMotorRight.configure(m_configRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-
         if (! elevatorRockBottom()) {
             LimelightHelpers.setLEDMode_ForceBlink("");
             elevatorCalibrationFailed = true;
@@ -64,16 +50,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
 
         // N.B. I don't believe we can use a PID controller because we manually add revolutions to our encoder?
-    }
-
-    // set the elevator motors to coast or brake mode
-    public void elevatorCoast(boolean coast)
-    {
-        m_configLeft.idleMode(coast ? IdleMode.kCoast : IdleMode.kBrake);
-        m_ElevatorMotorLeft.configure(m_configLeft, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-
-        m_configRight.idleMode(coast ? IdleMode.kCoast : IdleMode.kBrake);
-        m_ElevatorMotorRight.configure(m_configRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
     // return true if the elevator must not go lower!
@@ -131,21 +107,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         if (ticks++%50==0) System.out.println("ELEVATOR: Encoder: " + getFullElevatorPosition() +
                                                " rockBottom:" + elevatorRockBottom() +
                                                " rockTop:" + elevatorRockTop());
-
-        if (DriverStation.isTest()) {
-            if (DriverStation.isEnabled()) {
-                if (ticks++%50==0) System.out.println("ELEVATOR STOP/COAST");
-                if (! m_coast) {
-                    stopElevatorMotors();
-                    elevatorCoast(true);
-                    m_coast = true;
-                }
-            }
-            return;
-        } else if (m_coast) {
-            elevatorCoast(false);
-            m_coast = false;
-        }
 
         if (elevatorCalibrationFailed) {
             stopElevatorMotors();
