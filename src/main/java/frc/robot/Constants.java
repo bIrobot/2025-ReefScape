@@ -103,8 +103,9 @@ public final class Constants {
 
   public static final class RobotConstants {
     public static final double k_poseNsec = 10000000000.0;
-    public static final double k_feedNsec = 400000000.0;
-    public static final double k_raiseNsec = 400000000.0;
+    public static final double k_pulseNsec = 1000000000.0;
+    public static final double k_feedNsec = 1000000000.0;
+    public static final double k_raiseNsec = 1000000000.0;
   }
 
   public static final class DriveConstants {

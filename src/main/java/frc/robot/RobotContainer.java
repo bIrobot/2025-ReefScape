@@ -68,6 +68,7 @@ public class RobotContainer {
   enum HandoffState {
     STOP,
     POSE,
+    PULSE,
     FEED,
     RAISE
   };
@@ -165,6 +166,14 @@ public class RobotContainer {
     if (m_handoffState == HandoffState.POSE) {
         if ((System.nanoTime() - m_handoffStateTime) > RobotConstants.k_poseNsec) {
             m_handoffStateTime = System.nanoTime();
+            m_handoffState = HandoffState.PULSE;
+            m_IngestSubsystem.startIngesting();  // pulse
+        }
+    }
+
+    if (m_handoffState == HandoffState.PULSE) {
+        if ((System.nanoTime() - m_handoffStateTime) > RobotConstants.k_pulseNsec) {
+            m_handoffStateTime = System.nanoTime();
             m_handoffState = HandoffState.FEED;
             m_IngestSubsystem.handoffIngesting();  // XXX move this -- bring back pivot for handoff
             m_ArmSubsystem.fingerGrab();
@@ -175,6 +184,7 @@ public class RobotContainer {
         if ((System.nanoTime() - m_handoffStateTime) > RobotConstants.k_feedNsec) {
             m_handoffStateTime = System.nanoTime();
             m_handoffState = HandoffState.RAISE;
+            m_ArmSubsystem.fingerStop();
             RobotGoto(6);  // high handoff
             m_IngestSubsystem.reverseIngesting();
         }
