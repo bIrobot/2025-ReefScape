@@ -48,8 +48,8 @@ public final class Constants {
   };
 
   public static final class ArmConstants {
-    public static final double kArmUpSpeed = 0.25;
-    public static final double kArmDownSpeed = 0.22;
+    public static final double kArmUpSpeed = 0.30;
+    public static final double kArmDownSpeed = 0.25;
 
     public static final double kArmLevelSafe = 0.11;
     public static final double kArmLevelBottom = 0.43;  // soft limit
