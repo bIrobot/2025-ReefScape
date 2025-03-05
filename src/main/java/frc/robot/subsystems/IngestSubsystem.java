@@ -40,7 +40,9 @@ public class IngestSubsystem extends SubsystemBase{
         HANDOFF,
         FORWARD,
         REVERSE,
-        PULSE
+        PULSE1,  // forward
+        PULSE2,  // pause
+        PULSE3  // reverse
     };
 
     public IngestSubsystem()
@@ -77,7 +79,7 @@ public class IngestSubsystem extends SubsystemBase{
             m_PivotController.setReference(IngestConstants.k_pivotAngleGroundFraction, ControlType.kPosition);
         } else {
             m_PulseTime = System.nanoTime();
-            m_currentIngestState = IngestState.PULSE;
+            m_currentIngestState = IngestState.PULSE1;
         }
     }
 
@@ -130,12 +132,30 @@ public class IngestSubsystem extends SubsystemBase{
                     m_ingestMotorRight.set(IngestConstants.k_ejectSpeed);
                 }
                 break;
-            case PULSE:
-                if (System.nanoTime() - m_PulseTime > IngestConstants.k_pulseNsec) {
-                    m_currentIngestState = IngestState.STOP;
+            case PULSE1:
+                if (System.nanoTime() - m_PulseTime > IngestConstants.k_pulse1Nsec) {
+                    m_PulseTime = System.nanoTime();
+                    m_currentIngestState = IngestState.PULSE2;
                 } else {
                     m_ingestMotorLeft.set(IngestConstants.k_intakeSpeed);
                     m_ingestMotorRight.set(-IngestConstants.k_intakeSpeed);
+                }
+                break;
+            case PULSE2:
+                if (System.nanoTime() - m_PulseTime > IngestConstants.k_pulse2Nsec) {
+                    m_PulseTime = System.nanoTime();
+                    m_currentIngestState = IngestState.PULSE3;
+                } else {
+                    m_ingestMotorLeft.set(0);
+                    m_ingestMotorRight.set(0);
+                }
+                break;
+            case PULSE3:
+                if (System.nanoTime() - m_PulseTime > IngestConstants.k_pulse3Nsec) {
+                    m_currentIngestState = IngestState.STOP;
+                } else {
+                    m_ingestMotorLeft.set(-IngestConstants.k_ejectSpeed);
+                    m_ingestMotorRight.set(IngestConstants.k_ejectSpeed);
                 }
                 break;
             case STOP:

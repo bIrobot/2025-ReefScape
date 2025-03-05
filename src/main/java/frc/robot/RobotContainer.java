@@ -33,7 +33,8 @@ public class RobotContainer {
   private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
   private final ArmSubsystem m_ArmSubsystem = new ArmSubsystem();
 
-  private int lastPov = -1;
+  private int m_lastPov = -1;
+  private boolean m_lastCoral = false;
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -59,6 +60,8 @@ public class RobotContainer {
   }
 
   public void teleopRunning() {
+    boolean thisCoral;
+
     // if elevator calibration failed...
     if (m_ElevatorSubsystem.elevatorCalibrationFailed) {
         // don't take input from the controller
@@ -127,13 +130,20 @@ public class RobotContainer {
 
     // the POV control selects preset poses 1 (north), 2 (east), 3 (south), 4 (west)
     int pov = m_driverController.getPOV();
-    if (pov != lastPov) {
+    if (pov != m_lastPov) {
         if (pov%90 == 0) {
             int pose = pov/90;
             RobotGoto(pose);
         }
-        lastPov = pov;
+        m_lastPov = pov;
     }
+
+    thisCoral = m_IngestSubsystem.getIngestHasCoral();
+    if (thisCoral && ! m_lastCoral) {
+        // we just ingested coral; goto handoff position
+        RobotGoto(5);
+    }
+    m_lastCoral = thisCoral;
 }
 
 public void RobotGoto(int pose)

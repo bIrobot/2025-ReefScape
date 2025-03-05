@@ -34,7 +34,7 @@ public final class Constants {
       { 0.26, 0.65, 3.19 },  // [2]:pose 3
       { 0.11, 0.44, 4.20 },  // [3]:pose 4
       { 0.05, 0.42, 0.00 },  // [4]:pose 5 -- drive
-      { 0.42, 0.56, 3.20 }  // [5]: pose 6 -- handoff
+      { 0.42, 0.56, 3.20 }   // [5]:pose 6 -- handoff
     };
   };
 
@@ -73,7 +73,9 @@ public final class Constants {
     public static final double k_intakeSpeed = 1.0;
     public static final double k_ejectSpeed = 0.5;
     public static final double k_reverseNsec = 1000000000;
-    public static final double k_pulseNsec = 60000000;
+    public static final double k_pulse1Nsec = 80000000;
+    public static final double k_pulse2Nsec = 200000000;
+    public static final double k_pulse3Nsec = 60000000;
 
     public static final double k_pivotSpeed = 0.15;
 
