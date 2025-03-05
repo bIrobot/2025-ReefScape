@@ -42,7 +42,8 @@ public final class Constants {
       { 0.26, 0.65, 3.19 },  // [2]:pose 3
       { 0.11, 0.44, 4.20 },  // [3]:pose 4
       { 0.05, 0.42, 0.00 },  // [4]:pose 5 -- drive
-      { 0.42, 0.56, 3.20 }   // [5]:pose 6 -- handoff
+      { 0.42, 0.56, 3.20 },  // [5]:pose 6 -- handoff
+      { 0.42, 0.56, 3.80 }   // [6]:pose 6 -- high handoff
     };
   };
 
@@ -99,7 +100,13 @@ public final class Constants {
     public static final double k_pivotAngleVerticalFraction = 0.400;
     public static final double k_pivotAngleFrameFraction = 0.472;
   }
-  
+
+  public static final class RobotConstants {
+    public static final double k_poseNsec = 10000000000.0;
+    public static final double k_feedNsec = 400000000.0;
+    public static final double k_raiseNsec = 400000000.0;
+  }
+
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds

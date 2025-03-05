@@ -8,6 +8,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PoseConstants;
+import frc.robot.Constants.RobotConstants;
 import frc.robot.Constants.TestPosition.TestState;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IngestSubsystem;
@@ -36,6 +37,8 @@ public class RobotContainer {
 
   private int m_lastPov = -1;
   private boolean m_lastHandoffReady = false;
+  private HandoffState m_handoffState = HandoffState.STOP;
+  private double m_handoffStateTime = 0;
 
   private int ticks = 0;
 
@@ -61,6 +64,13 @@ public class RobotContainer {
                 false),
             m_robotDrive));
   }
+
+  enum HandoffState {
+    STOP,
+    POSE,
+    FEED,
+    RAISE
+  };
 
   public void teleopRunning() {
     boolean thisHandoffReady;
@@ -145,10 +155,37 @@ public class RobotContainer {
     if (thisHandoffReady && ! m_lastHandoffReady) {
         // we just ingested coral; goto handoff position
         RobotGoto(5);
+        m_handoffStateTime = System.nanoTime();
+        m_handoffState = HandoffState.POSE;
     }
     m_lastHandoffReady = thisHandoffReady;
 
     //RobotTestMoving(5);
+
+    if (m_handoffState == HandoffState.POSE) {
+        if ((System.nanoTime() - m_handoffStateTime) > RobotConstants.k_poseNsec) {
+            m_handoffStateTime = System.nanoTime();
+            m_handoffState = HandoffState.FEED;
+            m_IngestSubsystem.handoffIngesting();  // XXX move this -- bring back pivot for handoff
+            m_ArmSubsystem.fingerGrab();
+        }
+    }
+
+    if (m_handoffState == HandoffState.FEED) {
+        if ((System.nanoTime() - m_handoffStateTime) > RobotConstants.k_feedNsec) {
+            m_handoffStateTime = System.nanoTime();
+            m_handoffState = HandoffState.RAISE;
+            RobotGoto(6);  // high handoff
+            m_IngestSubsystem.reverseIngesting();
+        }
+    }
+
+    if (m_handoffState == HandoffState.RAISE) {
+        if ((System.nanoTime() - m_handoffStateTime) > RobotConstants.k_raiseNsec) {
+            m_handoffState = HandoffState.STOP;
+            m_ArmSubsystem.fingerStop();
+        }
+    }
 
     if (ticks++%100==0) System.out.println("TELEOP RUNNING");
 }
