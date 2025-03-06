@@ -4,11 +4,15 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.RobotConstants;
@@ -45,6 +49,9 @@ public class RobotContainer {
 
   private int ticks = 0;
 
+  private final Field2d field;
+  private final SendableChooser<Command> autoChooser;
+
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
 
@@ -60,6 +67,11 @@ public class RobotContainer {
     NamedCommands.registerCommand("L1", gotoCommand(0));
     // test path
     NamedCommands.registerCommand("drop", new InstantCommand(() -> m_ArmSubsystem.fingerRelease(), m_ArmSubsystem));
+
+    field = new Field2d();
+    SmartDashboard.putData("Field2", field);
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
 
     // Configure default commands
     m_robotDrive.setDefaultCommand(
@@ -295,7 +307,10 @@ public boolean RobotTestMoving(int pose)
    */
   public Command getAutonomousCommand()
   {
+    return autoChooser.getSelected();
+    /*
     return new PathPlannerAuto("test");
+    */
     /*
     return new SequentialCommandGroup(
         new InstantCommand(() -> m_robotDrive.drive(0.1, 0, 0, false), m_robotDrive),
