@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.OIConstants;
@@ -51,6 +54,12 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
+
+    NamedCommands.registerCommand("ingest", new InstantCommand(() -> { m_IngestSubsystem.startIngesting();
+                                                                            m_IngestSubsystem.stopIngesting(); }, m_IngestSubsystem));
+    NamedCommands.registerCommand("L1", gotoCommand(0));
+    // test path
+    NamedCommands.registerCommand("drop", new InstantCommand(() -> m_ArmSubsystem.fingerRelease(), m_ArmSubsystem));
 
     // Configure default commands
     m_robotDrive.setDefaultCommand(
@@ -195,7 +204,7 @@ public class RobotContainer {
     if (ticks++%100==0) System.out.println("TELEOP RUNNING");
 }
 
-public void RobotGoto(int pose)
+public Command gotoCommand(int pose)
 {
     double armPos;
     double handPos;
@@ -218,20 +227,25 @@ public void RobotGoto(int pose)
         elevatorDelay = 2;
     }
 
+    // set new targets giving elevator or arm/hand a chance to move first
+    return new ParallelCommandGroup(
+               new SequentialCommandGroup(new WaitCommand(armDelay),
+                                          new InstantCommand(() -> { m_ArmSubsystem.armGoto(armPos);
+                                                                     m_ArmSubsystem.handGoto(handPos); }, m_ArmSubsystem)),
+
+               new SequentialCommandGroup(new WaitCommand(elevatorDelay),
+                                          new InstantCommand(() -> m_ElevatorSubsystem.elevatorGoto(elevatorPos), m_ElevatorSubsystem))
+    );
+}
+
+public void RobotGoto(int pose)
+{
     // cancel any previous targets
     m_ArmSubsystem.armHold();
     m_ElevatorSubsystem.elevatorHold();
 
-    // set new targets giving elevator or arm/hand a chance to move first
-    ParallelCommandGroup commands = new ParallelCommandGroup(
-        new SequentialCommandGroup(new WaitCommand(armDelay),
-                                   new InstantCommand(() -> { m_ArmSubsystem.armGoto(armPos);
-                                                              m_ArmSubsystem.handGoto(handPos); }, m_ArmSubsystem)),
-
-        new SequentialCommandGroup(new WaitCommand(elevatorDelay),
-                                   new InstantCommand(() -> m_ElevatorSubsystem.elevatorGoto(elevatorPos), m_ElevatorSubsystem))
-    );
-    commands.schedule();
+    // schedule the new pose
+    gotoCommand(pose).schedule();
 }
 
 // return true if still moving
@@ -279,7 +293,14 @@ public boolean RobotTestMoving(int pose)
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
-    return null;
+  public Command getAutonomousCommand()
+  {
+    return new PathPlannerAuto("test");
+    /*
+    return new SequentialCommandGroup(
+        new InstantCommand(() -> m_robotDrive.drive(0.1, 0, 0, false), m_robotDrive),
+        new WaitCommand(3),
+        new InstantCommand(() -> m_robotDrive.drive(0.1, 0, 0, false), m_robotDrive));
+        */
   }
 }
