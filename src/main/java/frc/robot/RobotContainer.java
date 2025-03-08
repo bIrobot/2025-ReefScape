@@ -233,10 +233,10 @@ public Command gotoCommand(int pose)
     TestState state = m_ElevatorSubsystem.testElevatorPosition(elevatorPos);
     if (state == TestState.GOING_UP) {
         // going up -- move elevator first!
-        armDelay = 2;
+        armDelay = 1;
     } else if (state == TestState.GOING_DOWN) {
         // going down -- move arm/hand first!
-        elevatorDelay = 2;
+        elevatorDelay = 1;
     }
 
     // set new targets giving elevator or arm/hand a chance to move first
