@@ -48,8 +48,8 @@ public final class Constants {
   };
 
   public static final class ArmConstants {
-    public static final double kArmUpSpeed = 0.35;
-    public static final double kArmDownSpeed = 0.30;
+    public static final double kArmUpSpeed = 0.40;
+    public static final double kArmDownSpeed = 0.35;
 
     public static final double kArmLevelSafe = 0.11;
     public static final double kArmLevelBottom = 0.43;  // soft limit
@@ -103,7 +103,6 @@ public final class Constants {
 
   public static final class RobotConstants {
     public static final double k_poseNsec = 4000000000.0;
-    public static final double k_pulseNsec = 500000000.0;
     public static final double k_feedNsec = 500000000.0;
     public static final double k_raiseNsec = 500000000.0;
   }
