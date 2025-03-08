@@ -19,19 +19,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Oppisite coral score"
+            "pathName": "Start left"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "drop"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "from back to HPS"
           }
         }
       ]
