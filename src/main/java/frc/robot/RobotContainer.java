@@ -22,6 +22,7 @@ import frc.robot.subsystems.IngestSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -62,11 +63,11 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
-    NamedCommands.registerCommand("ingest", new InstantCommand(() -> { m_IngestSubsystem.startIngesting();
-                                                                            m_IngestSubsystem.stopIngesting(); }, m_IngestSubsystem));
+    NamedCommands.registerCommand("ingest", new InstantCommand(() -> { m_IngestSubsystem.startIngesting();                                                                            m_IngestSubsystem.stopIngesting(); }, m_IngestSubsystem));
     NamedCommands.registerCommand("L1", gotoCommand(0));
-    // test path
     NamedCommands.registerCommand("drop", new InstantCommand(() -> m_ArmSubsystem.fingerRelease(), m_ArmSubsystem));
+
+    NamedCommands.registerCommand(("findapril"), getfindAprilCommand());
 
     field = new Field2d();
     SmartDashboard.putData("Field2", field);
@@ -280,6 +281,47 @@ public boolean RobotTestMoving(int pose)
     elevatorState = m_ElevatorSubsystem.testElevatorPosition(elevatorPos);
 
     return elevatorState != TestState.TARGET_ACHIEVED || armState != TestState.TARGET_ACHIEVED || handState != TestState.TARGET_ACHIEVED;
+}
+
+public void findAprilExecute()
+{
+    double TA = LimelightHelpers.getTA("limelight");
+    double TX = LimelightHelpers.getTX("limelight");
+
+    // if seeing target
+    if (TA != 0) {
+        if (TX < 0) {
+            // target is on left
+            System.out.println("Slide left slo w" + TX); 
+            m_robotDrive.drive(0, 0.02, 0, false);
+        } else {
+            // target is on right
+            System.out.println("Slide right slow " + TX);
+            m_robotDrive.drive(0, -0.02, 0, false);
+        }
+    } else {
+        System.out.println("NOT SEEN");
+    }
+}
+
+public boolean findAprilFinished()
+{
+    double TX = LimelightHelpers.getTX("limelight");
+
+    if (Math.abs(TX) <= 2) {
+        System.out.println("Stop " + TX);
+        m_robotDrive.drive(0, 0, 0, false);
+        return true;
+    }
+    return false;
+}
+
+public Command getfindAprilCommand() {
+    return new FunctionalCommand (() -> {},  // onInit
+                                    () -> findAprilExecute(),  // onExecute
+                                    (interrupted) -> { m_robotDrive.drive(0, 0, 0, false); },  // onEnd
+                                    () -> { return findAprilFinished(); },  // isFinished
+                                    m_robotDrive);                                  
 }
 
 /**
