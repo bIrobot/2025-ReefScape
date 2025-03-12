@@ -1,6 +1,9 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IngestConstants;
 
@@ -33,6 +36,8 @@ public class IngestSubsystem extends SubsystemBase{
     private final DigitalInput m_beamNotBroken = new DigitalInput(0);
 
     private boolean m_handoffReady = false;
+
+    private boolean m_enabled = false;
 
     private int m_ticks = 0;
 
@@ -115,7 +120,14 @@ public class IngestSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         if (m_ticks++%100==0) System.out.println("INGEST: Position: " + m_PivotEncoder.getPosition() +
-                                              " hasCoral: " + getIngestHasCoral());
+                                                 " hasCoral: " + getIngestHasCoral());
+
+        boolean enabled = RobotState.isEnabled();
+        if (enabled && ! m_enabled) {
+            // we transitioned to enabled; make the pivot safe
+            m_PivotController.setReference(IngestConstants.k_pivotAngleVerticalFraction, ControlType.kPosition);
+        }
+        m_enabled = enabled;
 
         // seek motor targets
         setIngestMotorToTarget();
