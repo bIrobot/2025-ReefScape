@@ -65,6 +65,7 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
+    NamedCommands.registerCommand("drive", gotoCommand(4));
     NamedCommands.registerCommand("ingest", new InstantCommand(() -> { m_IngestSubsystem.startIngesting();                                                                            m_IngestSubsystem.stopIngesting(); }, m_IngestSubsystem));
     NamedCommands.registerCommand("L1", gotoCommand(0));
     NamedCommands.registerCommand("drop", new InstantCommand(() -> m_ArmSubsystem.fingerRelease(), m_ArmSubsystem));
@@ -370,18 +371,18 @@ public boolean moveFinished(double shift)
 }
 
 public Command getshiftRightCommand() {
-    return new FunctionalCommand (() -> { moveInit(-0.40); },  // onInit
+    return new FunctionalCommand (() -> { moveInit(-0.37); },  // onInit
                                     () -> { },  // onExecute
                                     (interrupted) -> { m_robotDrive.drive(0, 0, 0, false); },  // onEnd
-                                    () -> { return moveFinished(-0.40); },  // isFinished
+                                    () -> { return moveFinished(-0.37); },  // isFinished
                                     m_robotDrive);
 }
 
 public Command getshiftLeftCommand() {
-    return new FunctionalCommand (() -> { moveInit(-0.07); },  // onInit
+    return new FunctionalCommand (() -> { moveInit(-0.05); },  // onInit
                                     () -> { },  // onExecute
                                     (interrupted) -> { m_robotDrive.drive(0, 0, 0, false); },  // onEnd
-                                    () -> { return moveFinished(-0.07); },  // isFinished
+                                    () -> { return moveFinished(-0.05); },  // isFinished
                                     m_robotDrive);
 }
 
