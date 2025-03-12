@@ -371,18 +371,18 @@ public boolean moveFinished(double shift)
 }
 
 public Command getshiftRightCommand() {
-    return new FunctionalCommand (() -> { moveInit(-0.37); },  // onInit
+    return new FunctionalCommand (() -> { moveInit(RobotConstants.k_rightShift); },  // onInit
                                     () -> { },  // onExecute
                                     (interrupted) -> { m_robotDrive.drive(0, 0, 0, false); },  // onEnd
-                                    () -> { return moveFinished(-0.37); },  // isFinished
+                                    () -> { return moveFinished(RobotConstants.k_rightShift); },  // isFinished
                                     m_robotDrive);
 }
 
 public Command getshiftLeftCommand() {
-    return new FunctionalCommand (() -> { moveInit(-0.05); },  // onInit
+    return new FunctionalCommand (() -> { moveInit(RobotConstants.k_leftShift); },  // onInit
                                     () -> { },  // onExecute
                                     (interrupted) -> { m_robotDrive.drive(0, 0, 0, false); },  // onEnd
-                                    () -> { return moveFinished(-0.05); },  // isFinished
+                                    () -> { return moveFinished(RobotConstants.k_leftShift); },  // isFinished
                                     m_robotDrive);
 }
 

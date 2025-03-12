@@ -20,7 +20,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 public class ArmSubsystem extends SubsystemBase{
     private final SparkMax m_ArmMotorLeft;
     private final SparkMaxConfig m_configArmLeft = new SparkMaxConfig();
-    private SparkAbsoluteEncoder m_ArmEncoder;
+    private SparkAbsoluteEncoder m_ArmEncoder;  // calibrate 0 with green block removed and arm up all the way
     private SparkClosedLoopController m_ArmController;
 
     private final SparkMax m_ArmMotorRight;
@@ -28,7 +28,7 @@ public class ArmSubsystem extends SubsystemBase{
 
     private final SparkMax m_handMotor;
     private final SparkMaxConfig m_configHand = new SparkMaxConfig();
-    private SparkAbsoluteEncoder m_handEncoder;
+    private SparkAbsoluteEncoder m_handEncoder;  // calibrate 0 with black block removed and hand down all the way
     private SparkClosedLoopController m_HandController;
 
     private final SparkMax m_fingerMotor;

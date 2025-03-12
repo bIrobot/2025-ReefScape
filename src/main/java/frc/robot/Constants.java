@@ -105,6 +105,9 @@ public final class Constants {
     public static final double k_poseNsec = 4000000000.0;
     public static final double k_feedNsec = 500000000.0;
     public static final double k_raiseNsec = 500000000.0;
+
+    public static final double k_leftShift = -0.05;  // meters from apriltag view to left reef post
+    public static final double k_rightShift = -0.37;  // meters from apriltag view to right reef post
   }
 
   public static final class DriveConstants {

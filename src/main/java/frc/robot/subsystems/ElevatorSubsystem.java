@@ -13,7 +13,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 public class ElevatorSubsystem extends SubsystemBase {
     private final SparkMax m_ElevatorMotorLeft;
     private final SparkMax m_ElevatorMotorRight;
-    private SparkAbsoluteEncoder m_ElevatorEncoder;
+    private SparkAbsoluteEncoder m_ElevatorEncoder;  // calibrate 0 with elevator down all the way to rock bottom
 
     private ElevatorState m_currentElevatorState = ElevatorState.STOP;
     private double m_currentElevatorGoto = ElevatorConstants.kElevatorLevelSafe;

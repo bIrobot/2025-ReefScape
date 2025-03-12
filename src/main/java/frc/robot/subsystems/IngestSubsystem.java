@@ -19,7 +19,7 @@ public class IngestSubsystem extends SubsystemBase{
     private final SparkMax m_ingestMotorRight;
 
     private SparkMax m_PivotMotor;
-    private SparkAbsoluteEncoder m_PivotEncoder;
+    private SparkAbsoluteEncoder m_PivotEncoder;  // calibrate 0 with bumper removed and pivot down all the way to the frame
     private SparkClosedLoopController m_PivotController;
     private SparkMaxConfig m_configPivot = new SparkMaxConfig();
     private IngestState m_currentIngestState = IngestState.STOP;
