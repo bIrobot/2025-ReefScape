@@ -184,6 +184,7 @@ public class RobotContainer {
         RobotGoto(5);
         m_handoffStateTime = System.nanoTime();
         m_handoffState = HandoffState.POSE;
+        m_ArmSubsystem.fingerGrab();
     }
     m_lastHandoffReady = thisHandoffReady;
 
@@ -195,7 +196,6 @@ public class RobotContainer {
                 m_handoffStateTime = System.nanoTime();
                 m_handoffState = HandoffState.FEED;
                 m_IngestSubsystem.handoffIngesting();  // XXX move this -- bring back pivot for handoff
-                m_ArmSubsystem.fingerGrab();
                 } else {
                 m_handoffState = HandoffState.STOP;
             }
