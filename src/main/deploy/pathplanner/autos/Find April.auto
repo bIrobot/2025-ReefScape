@@ -5,12 +5,6 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "Small Limelight "
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "findapril"
@@ -19,7 +13,7 @@
       ]
     }
   },
-  "resetOdom": true,
+  "resetOdom": false,
   "folder": null,
   "choreoAuto": false
 }

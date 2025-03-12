@@ -292,7 +292,7 @@ public void findAprilExecute()
     if (TA != 0) {
         if (TX < 0) {
             // target is on left
-            System.out.println("Slide left slo w" + TX); 
+            System.out.println("Slide left slow " + TX);
             m_robotDrive.drive(0, 0.02, 0, false);
         } else {
             // target is on right
@@ -308,7 +308,7 @@ public boolean findAprilFinished()
 {
     double TX = LimelightHelpers.getTX("limelight");
 
-    if (Math.abs(TX) <= 2) {
+    if (Math.abs(TX) <= 1) {
         System.out.println("Stop " + TX);
         m_robotDrive.drive(0, 0, 0, false);
         return true;
