@@ -6,9 +6,9 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -50,6 +50,8 @@ public class RobotContainer {
 
   private int ticks = 0;
 
+  private Pose2d m_pose;
+
   private final Field2d field;
   private final SendableChooser<Command> autoChooser;
 
@@ -68,6 +70,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("drop", new InstantCommand(() -> m_ArmSubsystem.fingerRelease(), m_ArmSubsystem));
 
     NamedCommands.registerCommand(("findapril"), getfindAprilCommand());
+    NamedCommands.registerCommand(("shiftright"), getshiftRightCommand());
+    NamedCommands.registerCommand(("shiftleft"), getshiftLeftCommand());
 
     field = new Field2d();
     SmartDashboard.putData("Field2", field);
@@ -283,7 +287,7 @@ public boolean RobotTestMoving(int pose)
     return elevatorState != TestState.TARGET_ACHIEVED || armState != TestState.TARGET_ACHIEVED || handState != TestState.TARGET_ACHIEVED;
 }
 
-public void findAprilExecute()
+public void findAprilInit()
 {
     double TA = LimelightHelpers.getTA("limelight");
     double TX = LimelightHelpers.getTX("limelight");
@@ -317,11 +321,68 @@ public boolean findAprilFinished()
 }
 
 public Command getfindAprilCommand() {
-    return new FunctionalCommand (() -> {},  // onInit
-                                    () -> findAprilExecute(),  // onExecute
+    return new FunctionalCommand (() -> { findAprilInit(); },  // onInit
+                                    () -> { },  // onExecute
                                     (interrupted) -> { m_robotDrive.drive(0, 0, 0, false); },  // onEnd
                                     () -> { return findAprilFinished(); },  // isFinished
                                     m_robotDrive);                                  
+}
+
+public void moveInit(double shift)
+{
+    m_pose = m_robotDrive.getPose();
+    if (shift < 0) {
+        // right
+        m_robotDrive.drive(0, -0.02, 0, false);
+    } else {
+        // left
+        m_robotDrive.drive(0, 0.02, 0, false);
+    }
+}
+
+public boolean moveFinished(double shift)
+{
+    Pose2d pose;
+
+    // +Y to left; -Y to right
+    pose = m_robotDrive.getPose();
+    if (shift < 0) {
+        // right
+        if (pose.getY() <= m_pose.getY() + shift) {
+            // stop
+            m_robotDrive.drive(0, 0, 0, false);
+            return true;
+        } else {
+            // keep going
+            return false;
+        }
+    } else {
+        // left
+        if (pose.getY() >= m_pose.getY() + shift) {
+            // stop
+            m_robotDrive.drive(0, 0, 0, false);
+            return true;
+        } else {
+            // keep going
+            return false;
+        }
+    }
+}
+
+public Command getshiftRightCommand() {
+    return new FunctionalCommand (() -> { moveInit(-0.40); },  // onInit
+                                    () -> { },  // onExecute
+                                    (interrupted) -> { m_robotDrive.drive(0, 0, 0, false); },  // onEnd
+                                    () -> { return moveFinished(-0.40); },  // isFinished
+                                    m_robotDrive);
+}
+
+public Command getshiftLeftCommand() {
+    return new FunctionalCommand (() -> { moveInit(-0.07); },  // onInit
+                                    () -> { },  // onExecute
+                                    (interrupted) -> { m_robotDrive.drive(0, 0, 0, false); },  // onEnd
+                                    () -> { return moveFinished(-0.07); },  // isFinished
+                                    m_robotDrive);
 }
 
 /**
