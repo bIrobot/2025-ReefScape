@@ -18,7 +18,7 @@ import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.Constants.TestPosition.TestState;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.IngestSubsystem;
+//import frc.robot.subsystems.IngestSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -39,7 +39,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  private final IngestSubsystem m_IngestSubsystem = new IngestSubsystem();
+  //private final IngestSubsystem m_IngestSubsystem = new IngestSubsystem();
   private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
   private final ArmSubsystem m_ArmSubsystem = new ArmSubsystem();
 
@@ -66,7 +66,8 @@ public class RobotContainer {
     configureButtonBindings();
 
     NamedCommands.registerCommand("drive", gotoCommand(4));
-    NamedCommands.registerCommand("ingest", new InstantCommand(() -> { m_IngestSubsystem.startIngesting();                                                                            m_IngestSubsystem.stopIngesting(); }, m_IngestSubsystem));
+    //NamedCommands.registerCommand("ingest", new InstantCommand(() -> { m_IngestSubsystem.startIngesting();
+    //                                                                   m_IngestSubsystem.stopIngesting(); }, m_IngestSubsystem));
     NamedCommands.registerCommand("L1", gotoCommand(0));
     NamedCommands.registerCommand("drop", new InstantCommand(() -> m_ArmSubsystem.fingerRelease(), m_ArmSubsystem));
 
@@ -111,13 +112,13 @@ public class RobotContainer {
     // the X (blue, left) and B (red, right) buttons control ingest
     if (m_driverController.getXButtonPressed()) {
         // start ingesting on X until either the beam breaks or the button is released
-        m_IngestSubsystem.startIngesting();
+        //m_IngestSubsystem.startIngesting();
     } else if (m_driverController.getXButtonReleased()) {
         // stop ingesting wehen the button is released
-        m_IngestSubsystem.stopIngesting();
+        //m_IngestSubsystem.stopIngesting();
     } else if (m_driverController.getBButtonPressed()) {
         // reverse ingest on B for 1/10 second
-        m_IngestSubsystem.reverseIngesting();
+        //m_IngestSubsystem.reverseIngesting();
     }
 
     // the elevator up/down is controlled by the left bumper/left trigger
@@ -150,13 +151,13 @@ public class RobotContainer {
     // the "back" (left) and "start" (right) buttons control the fingers
     if (m_driverController.getBackButton()) {
         // start grabbing on "back" until the button is released (we need a beam break!)
-        m_IngestSubsystem.handoffIngesting();  // XXX move this -- bring back pivot for handoff
+        //m_IngestSubsystem.handoffIngesting();  // XXX move this -- bring back pivot for handoff
         m_ArmSubsystem.fingerGrab();
     } else if (m_driverController.getBackButtonReleased()) {
         // stop grabbing wehen the button is released
         m_ArmSubsystem.fingerStop();
     } else if (m_driverController.getStartButtonPressed()) {
-        // reverse ingest on "start" for 1/10 second
+        // reverse fingers on "start" for 1/10 second
         m_ArmSubsystem.fingerRelease();
     }
 
@@ -178,6 +179,7 @@ public class RobotContainer {
         m_lastPov = pov;
     }
 
+    /*
     thisHandoffReady = m_IngestSubsystem.getIngestHandoffReady();
     if (thisHandoffReady && ! m_lastHandoffReady) {
         // we just ingested coral; goto handoff position
@@ -187,18 +189,21 @@ public class RobotContainer {
         m_ArmSubsystem.fingerGrab();
     }
     m_lastHandoffReady = thisHandoffReady;
+    */
 
     //RobotTestMoving(5);
 
     if (m_handoffState == HandoffState.POSE) {
         if ((System.nanoTime() - m_handoffStateTime) > RobotConstants.k_poseNsec) {
+            /*
             if (m_IngestSubsystem.getIngestHasCoral()) {
                 m_handoffStateTime = System.nanoTime();
                 m_handoffState = HandoffState.FEED;
                 m_IngestSubsystem.handoffIngesting();  // XXX move this -- bring back pivot for handoff
-                } else {
+            } else {
                 m_handoffState = HandoffState.STOP;
             }
+            */
         }
     }
 
@@ -208,7 +213,7 @@ public class RobotContainer {
             m_handoffState = HandoffState.RAISE;
             m_ArmSubsystem.fingerStop();
             RobotGoto(6);  // high handoff
-            m_IngestSubsystem.reverseIngesting();
+            //m_IngestSubsystem.reverseIngesting();
         }
     }
 
