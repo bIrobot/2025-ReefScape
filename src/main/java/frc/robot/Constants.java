@@ -37,13 +37,14 @@ public final class Constants {
       // elevatorPos: bottom = 0.00; top = 4.00
       //
       // [0]:armPos, [1]:handPos, [2]:elevatorPos
-      { 0.27, 0.48, 2.24 },  // [0]:pose 1
+      { 0.29, 0.35, 2.84 },  // [0]:pose 1
       { 0.20, 0.58, 0.99 },  // [1]:pose 2
       { 0.26, 0.65, 3.19 },  // [2]:pose 3
       { 0.11, 0.44, 4.20 },  // [3]:pose 4
-      { 0.05, 0.42, 0.00 },  // [4]:pose 5 -- drive
-      { 0.42, 0.56, 3.20 },  // [5]:pose 6 -- handoff
-      { 0.42, 0.56, 3.80 }   // [6]:pose 6 -- high handoff
+      { 0.05, 0.42, 0.00 },  // [4]:pose 5 -- drive  left stick
+      { 0.30, 0.20, 2.82 },  // [5]:pose 6 -- ingest  X
+      { 0.36, 0.20, 2.61 },  // [6]:pose 7 -- lower and grab  B
+      { 0.36, 0.20, 3.00 }   // [7]:pose 8 -- safely raise before pose 1 or 2
     };
   };
 
@@ -102,8 +103,6 @@ public final class Constants {
   }
 
   public static final class RobotConstants {
-    public static final double k_poseNsec = 4000000000.0;
-    public static final double k_feedNsec = 800000000.0;
     public static final double k_raiseNsec = 500000000.0;
 
     public static final double k_leftShift = -0.05;  // meters from apriltag view to left reef post

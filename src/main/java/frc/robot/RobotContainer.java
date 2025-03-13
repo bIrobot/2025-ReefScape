@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.RobotConstants;
@@ -44,13 +45,14 @@ public class RobotContainer {
   private final ArmSubsystem m_ArmSubsystem = new ArmSubsystem();
 
   private int m_lastPov = -1;
-  private boolean m_lastHandoffReady = false;
+
   private HandoffState m_handoffState = HandoffState.STOP;
   private double m_handoffStateTime = 0;
+  private int m_handoffStateGoto = 0;
 
   private int ticks = 0;
 
-  private Pose2d m_pose;
+  private Pose2d m_pose;  // limelight position
 
   private final Field2d field;
   private final SendableChooser<Command> autoChooser;
@@ -95,8 +97,6 @@ public class RobotContainer {
 
   enum HandoffState {
     STOP,
-    POSE,
-    FEED,
     RAISE
   };
 
@@ -111,14 +111,15 @@ public class RobotContainer {
 
     // the X (blue, left) and B (red, right) buttons control ingest
     if (m_driverController.getXButtonPressed()) {
-        // start ingesting on X until either the beam breaks or the button is released
-        //m_IngestSubsystem.startIngesting();
-    } else if (m_driverController.getXButtonReleased()) {
-        // stop ingesting wehen the button is released
-        //m_IngestSubsystem.stopIngesting();
+        // set human player ingest elevator position
+        RobotGoto(5);
     } else if (m_driverController.getBButtonPressed()) {
-        // reverse ingest on B for 1/10 second
-        //m_IngestSubsystem.reverseIngesting();
+        // grab coral
+        m_ArmSubsystem.fingerGrab();
+        RobotGoto(6);
+    } else if (m_driverController.getBButtonReleased()) {
+        // we should have coral!
+        m_ArmSubsystem.fingerStop();
     }
 
     // the elevator up/down is controlled by the left bumper/left trigger
@@ -174,54 +175,21 @@ public class RobotContainer {
     if (pov != m_lastPov) {
         if (pov%90 == 0) {
             int pose = pov/90;
-            RobotGoto(pose);
+            if (pose == 0 || pose == 1) {
+                m_handoffStateGoto = pose;
+                m_handoffStateTime = System.nanoTime();
+                m_handoffState = HandoffState.RAISE;
+                RobotGoto(7);
+            } else {
+                RobotGoto(pose);
+            }
         }
         m_lastPov = pov;
     }
 
-    /*
-    thisHandoffReady = m_IngestSubsystem.getIngestHandoffReady();
-    if (thisHandoffReady && ! m_lastHandoffReady) {
-        // we just ingested coral; goto handoff position
-        RobotGoto(5);
-        m_handoffStateTime = System.nanoTime();
-        m_handoffState = HandoffState.POSE;
-        m_ArmSubsystem.fingerGrab();
-    }
-    m_lastHandoffReady = thisHandoffReady;
-    */
-
-    //RobotTestMoving(5);
-
-    if (m_handoffState == HandoffState.POSE) {
-        if ((System.nanoTime() - m_handoffStateTime) > RobotConstants.k_poseNsec) {
-            /*
-            if (m_IngestSubsystem.getIngestHasCoral()) {
-                m_handoffStateTime = System.nanoTime();
-                m_handoffState = HandoffState.FEED;
-                m_IngestSubsystem.handoffIngesting();  // XXX move this -- bring back pivot for handoff
-            } else {
-                m_handoffState = HandoffState.STOP;
-            }
-            */
-        }
-    }
-
-    if (m_handoffState == HandoffState.FEED) {
-        if ((System.nanoTime() - m_handoffStateTime) > RobotConstants.k_feedNsec) {
-            m_handoffStateTime = System.nanoTime();
-            m_handoffState = HandoffState.RAISE;
-            m_ArmSubsystem.fingerStop();
-            RobotGoto(6);  // high handoff
-            //m_IngestSubsystem.reverseIngesting();
-        }
-    }
-
-    if (m_handoffState == HandoffState.RAISE) {
-        if ((System.nanoTime() - m_handoffStateTime) > RobotConstants.k_raiseNsec) {
-            m_handoffState = HandoffState.STOP;
-            m_ArmSubsystem.fingerStop();
-        }
+    if (m_handoffState == HandoffState.RAISE && System.nanoTime() - m_handoffStateTime > RobotConstants.k_raiseNsec) {
+        m_handoffState = HandoffState.STOP;
+        RobotGoto(m_handoffStateGoto);
     }
 
     if (ticks++%100==0) System.out.println("TELEOP RUNNING");
