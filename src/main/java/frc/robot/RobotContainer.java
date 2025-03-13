@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.RobotConstants;
@@ -23,6 +22,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -71,7 +71,14 @@ public class RobotContainer {
     //NamedCommands.registerCommand("ingest", new InstantCommand(() -> { m_IngestSubsystem.startIngesting();
     //                                                                   m_IngestSubsystem.stopIngesting(); }, m_IngestSubsystem));
     NamedCommands.registerCommand("L1", gotoCommand(0));
+    NamedCommands.registerCommand("L2", gotoCommand(1));
+    NamedCommands.registerCommand("L3", gotoCommand(2));
+    NamedCommands.registerCommand("L4", gotoCommand(3));
     NamedCommands.registerCommand("drop", new InstantCommand(() -> m_ArmSubsystem.fingerRelease(), m_ArmSubsystem));
+
+    NamedCommands.registerCommand("ingest", gotoCommand(5));
+    NamedCommands.registerCommand("handoff", handoffCommand());
+    NamedCommands.registerCommand("raise", gotoCommand(7));
 
     NamedCommands.registerCommand(("findapril"), getfindAprilCommand());
     NamedCommands.registerCommand(("shiftright"), getshiftRightCommand());
@@ -101,8 +108,6 @@ public class RobotContainer {
   };
 
   public void teleopRunning() {
-    boolean thisHandoffReady;
-
     // if elevator calibration failed...
     if (m_ElevatorSubsystem.elevatorCalibrationFailed) {
         // don't take input from the controller
@@ -200,8 +205,8 @@ public Command gotoCommand(int pose)
     double armPos;
     double handPos;
     double elevatorPos;
-    int armDelay = 0;
-    int elevatorDelay = 0;
+    double armDelay = 0;
+    double elevatorDelay = 0;
 
     // get position targets for arm, hand, and elevator
     armPos = PoseConstants.poses[pose][0];
@@ -218,6 +223,8 @@ public Command gotoCommand(int pose)
         elevatorDelay = 1;
     }
 
+    Commands.print("RobotGoto pose: " + pose + " armDelay: " + armDelay + " elevatorDelay: " + elevatorDelay);
+
     // set new targets giving elevator or arm/hand a chance to move first
     return new ParallelCommandGroup(
                new SequentialCommandGroup(new WaitCommand(armDelay),
@@ -225,7 +232,7 @@ public Command gotoCommand(int pose)
                                                                      m_ArmSubsystem.handGoto(handPos); }, m_ArmSubsystem)),
 
                new SequentialCommandGroup(new WaitCommand(elevatorDelay),
-                                          new InstantCommand(() -> m_ElevatorSubsystem.elevatorGoto(elevatorPos), m_ElevatorSubsystem))
+                                          new InstantCommand(() -> { m_ElevatorSubsystem.elevatorGoto(elevatorPos); }, m_ElevatorSubsystem))
     );
 }
 
@@ -357,6 +364,14 @@ public Command getshiftLeftCommand() {
                                     (interrupted) -> { m_robotDrive.drive(0, 0, 0, false); },  // onEnd
                                     () -> { return moveFinished(RobotConstants.k_leftShift); },  // isFinished
                                     m_robotDrive);
+}
+
+public Command handoffCommand()
+{
+    return new SequentialCommandGroup(new InstantCommand(() -> { m_ArmSubsystem.fingerGrab(); }),
+                                      new ParallelCommandGroup(gotoCommand(6),
+                                                               new WaitCommand(3)),
+                                      new InstantCommand(() -> { m_ArmSubsystem.fingerStop(); }));
 }
 
 /**

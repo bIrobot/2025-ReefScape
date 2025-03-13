@@ -42,9 +42,9 @@ public final class Constants {
       { 0.26, 0.65, 3.19 },  // [2]:pose 3
       { 0.11, 0.44, 4.20 },  // [3]:pose 4
       { 0.05, 0.42, 0.00 },  // [4]:pose 5 -- drive  left stick
-      { 0.30, 0.20, 2.82 },  // [5]:pose 6 -- ingest  X
-      { 0.36, 0.20, 2.61 },  // [6]:pose 7 -- lower and grab  B
-      { 0.36, 0.20, 3.00 }   // [7]:pose 8 -- safely raise before pose 1 or 2
+      { 0.28, 0.20, 2.82 },  // [5]:pose 6 -- ingest  X
+      { 0.38, 0.20, 2.77 },  // [6]:pose 7 -- lower and grab  B
+      { 0.36, 0.20, 3.30 }   // [7]:pose 8 -- safely raise before pose 1 or 2
     };
   };
 
@@ -58,8 +58,8 @@ public final class Constants {
 
     public static final double kArmTestClose = 0.01;
 
-    public static final double kHandUpSpeed = 0.5;
-    public static final double kHandDownSpeed = 0.4;
+    public static final double kHandUpSpeed = 0.7;
+    public static final double kHandDownSpeed = 0.5;
 
     public static final double kHandLevelSafe = 0.45;
     public static final double kHandLevelBottom = 0.20;  // soft limit NOT 0
@@ -103,7 +103,7 @@ public final class Constants {
   }
 
   public static final class RobotConstants {
-    public static final double k_raiseNsec = 500000000.0;
+    public static final double k_raiseNsec = 1000000000.0;
 
     public static final double k_leftShift = -0.05;  // meters from apriltag view to left reef post
     public static final double k_rightShift = -0.37;  // meters from apriltag view to right reef post
