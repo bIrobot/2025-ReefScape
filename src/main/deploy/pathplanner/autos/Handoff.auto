@@ -1,0 +1,49 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "ingest"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "handoff"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "raise"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L3"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": false,
+  "folder": null,
+  "choreoAuto": false
+}
