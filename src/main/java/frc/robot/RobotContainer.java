@@ -79,6 +79,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("ingest", gotoCommand(5));
     NamedCommands.registerCommand("handoff", handoffCommand());
     NamedCommands.registerCommand("raise", gotoCommand(7));
+    NamedCommands.registerCommand("wristdown", wristCommand());
 
     NamedCommands.registerCommand(("findapril"), getfindAprilCommand());
     NamedCommands.registerCommand(("shiftright"), getshiftRightCommand());
@@ -372,6 +373,11 @@ public Command handoffCommand()
                                       new ParallelCommandGroup(gotoCommand(6),
                                                                new WaitCommand(3)),
                                       new InstantCommand(() -> { m_ArmSubsystem.fingerStop(); }));
+}
+
+public Command wristCommand()
+{
+    return new InstantCommand(() -> { m_ArmSubsystem.handGoto(0.31); });
 }
 
 /**
