@@ -279,11 +279,11 @@ public void findAprilInit()
         if (TX < 0) {
             // target is on left
             System.out.println("Slide left slow " + TX);
-            m_robotDrive.drive(0, 0.02, 0, false);
+            m_robotDrive.drive(0, RobotConstants.k_moveSpeed, 0, false);
         } else {
             // target is on right
             System.out.println("Slide right slow " + TX);
-            m_robotDrive.drive(0, -0.02, 0, false);
+            m_robotDrive.drive(0, -RobotConstants.k_moveSpeed, 0, false);
         }
     } else {
         System.out.println("NOT SEEN");
@@ -315,10 +315,10 @@ public void moveInit(double shift)
     m_pose = m_robotDrive.getPose();
     if (shift < 0) {
         // right
-        m_robotDrive.drive(0, -0.02, 0, false);
+        m_robotDrive.drive(0, -RobotConstants.k_moveSpeed, 0, false);
     } else {
         // left
-        m_robotDrive.drive(0, 0.02, 0, false);
+        m_robotDrive.drive(0, RobotConstants.k_moveSpeed, 0, false);
     }
 }
 
