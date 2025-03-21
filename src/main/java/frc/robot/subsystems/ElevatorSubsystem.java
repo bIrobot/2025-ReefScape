@@ -136,8 +136,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     {
         if (! elevatorRockTop()) {
             // up
-            m_ElevatorMotorLeft.set(ElevatorConstants.kElevatorUpSpeed/(slow?5:1));
-            m_ElevatorMotorRight.set(-ElevatorConstants.kElevatorUpSpeed/(slow?5:1));
+            m_ElevatorMotorLeft.set(ElevatorConstants.kElevatorUpSpeed/(slow?4:1));
+            m_ElevatorMotorRight.set(-ElevatorConstants.kElevatorUpSpeed/(slow?4:1));
+        } else {
+            stopElevatorMotors();
         }
     }
 
@@ -145,8 +147,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     {
         if (! elevatorRockBottom()) {
             // down
-            m_ElevatorMotorLeft.set(-ElevatorConstants.kElevatorDownSpeed/(slow?5:1));
-            m_ElevatorMotorRight.set(ElevatorConstants.kElevatorDownSpeed/(slow?5:1));
+            m_ElevatorMotorLeft.set(-ElevatorConstants.kElevatorDownSpeed/(slow?4:1));
+            m_ElevatorMotorRight.set(ElevatorConstants.kElevatorDownSpeed/(slow?4:1));
+        } else {
+            stopElevatorMotors();
         }
     }
 
@@ -214,7 +218,7 @@ public class ElevatorSubsystem extends SubsystemBase {
             // close enough
             m_ElevatorMotorLeft.set(0.0);
             m_ElevatorMotorRight.set(0.0);
-        } else if (diff <= 0.1) {
+        } else if (diff <= 0.2) {
             if (sign < 0) {
                 // down slow
                 moveElevatorMotorsDown(true);
