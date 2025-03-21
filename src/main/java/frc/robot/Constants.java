@@ -76,8 +76,8 @@ public final class Constants {
   }
 
   public static final class ElevatorConstants {
-    public static final double kElevatorUpSpeed = 0.75;//1.0;
-    public static final double kElevatorDownSpeed = 0.75;//1.0;
+    public static final double kElevatorUpSpeed = 0.75;//1.00;
+    public static final double kElevatorDownSpeed = 0.75;//1.00;
 
     public static final double kElevatorLevelSafe = 3.00;
     public static final double kElevatorLevelBottom = 0.00;  // soft limit (0 allowed)

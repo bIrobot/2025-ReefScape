@@ -23,6 +23,7 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -47,7 +48,7 @@ public class RobotContainer {
   private int m_lastPov = -1;
 
   private HandoffState m_handoffState = HandoffState.STOP;
-  private double m_handoffStateTime = 0;
+  private long m_handoffStateTime = 0;
   private int m_handoffStateGoto = 0;
 
   private int ticks = 0;
@@ -198,6 +199,24 @@ public class RobotContainer {
     }
 
     if (ticks++%100==0) System.out.println("TELEOP RUNNING");
+}
+
+public Command armWaitCommand(double elevatorPos)
+{
+    return new FunctionalCommand (() -> { },  // onInit
+                                    () -> { },  // onExecute
+                                    (interrupted) -> { },  // onEnd
+                                    () -> { return false; },  // isFinished
+                                    m_ArmSubsystem);
+}
+
+public Command elevatorWaitCommand(double elevatorPos)
+{
+    return new FunctionalCommand (() -> { },  // onInit
+                                    () -> { },  // onExecute
+                                    (interrupted) -> { },  // onEnd
+                                    () -> { return false; },  // isFinished
+                                    m_ArmSubsystem);
 }
 
 public Command gotoCommand(int pose)
