@@ -81,9 +81,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("raise", gotoCommand(7));
     NamedCommands.registerCommand("wristdown", wristCommand());
 
-    NamedCommands.registerCommand(("findapril"), getfindAprilCommand());
-    NamedCommands.registerCommand(("shiftright"), getshiftRightCommand());
-    NamedCommands.registerCommand(("shiftleft"), getshiftLeftCommand());
+    NamedCommands.registerCommand(("findaprilleft"), getfindAprilLeftCommand());
+    NamedCommands.registerCommand(("findaprilright"), getfindAprilRightCommand());
 
     field = new Field2d();
     SmartDashboard.putData("Field2", field);
@@ -269,14 +268,14 @@ public boolean RobotTestMoving(int pose)
     return elevatorState != TestState.TARGET_ACHIEVED || armState != TestState.TARGET_ACHIEVED || handState != TestState.TARGET_ACHIEVED;
 }
 
-public void findAprilInit()
+public void findAprilInit(double angle)
 {
     double TA = LimelightHelpers.getTA("limelight");
     double TX = LimelightHelpers.getTX("limelight");
 
     // if seeing target
     if (TA != 0) {
-        if (TX < 0) {
+        if (TX - angle < 0) {
             // target is on left
             System.out.println("Slide left slow " + TX);
             m_robotDrive.drive(0, RobotConstants.k_moveSpeed, 0, false);
@@ -290,11 +289,11 @@ public void findAprilInit()
     }
 }
 
-public boolean findAprilFinished()
+public boolean findAprilFinished(double angle)
 {
     double TX = LimelightHelpers.getTX("limelight");
 
-    if (Math.abs(TX) <= 1) {
+    if (Math.abs(TX - angle) <= 1) {
         System.out.println("Stop " + TX);
         m_robotDrive.drive(0, 0, 0, false);
         return true;
@@ -302,11 +301,19 @@ public boolean findAprilFinished()
     return false;
 }
 
-public Command getfindAprilCommand() {
-    return new FunctionalCommand (() -> { findAprilInit(); },  // onInit
+public Command getfindAprilLeftCommand() {
+    return new FunctionalCommand (() -> { findAprilInit(RobotConstants.k_leftAngle); },  // onInit
                                     () -> { },  // onExecute
                                     (interrupted) -> { m_robotDrive.drive(0, 0, 0, false); },  // onEnd
-                                    () -> { return findAprilFinished(); },  // isFinished
+                                    () -> { return findAprilFinished(RobotConstants.k_leftAngle); },  // isFinished
+                                    m_robotDrive);
+}
+
+public Command getfindAprilRightCommand() {
+    return new FunctionalCommand (() -> { findAprilInit(RobotConstants.k_rightAngle); },  // onInit
+                                    () -> { },  // onExecute
+                                    (interrupted) -> { m_robotDrive.drive(0, 0, 0, false); },  // onEnd
+                                    () -> { return findAprilFinished(RobotConstants.k_rightAngle); },  // isFinished
                                     m_robotDrive);                                  
 }
 

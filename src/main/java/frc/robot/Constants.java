@@ -109,8 +109,11 @@ public final class Constants {
 
     public static final double k_moveSpeed = 0.04;
 
-    public static final double k_leftShift = -0.05;  // meters from apriltag view to left reef post
-    public static final double k_rightShift = -0.37;  // meters from apriltag view to right reef post
+    public static final double k_leftAngle = 3;  // degrees from apriltag view to left reef post
+    public static final double k_rightAngle = -3;  // degrees from apriltag view to right reef post
+
+    public static final double k_leftShift = 0.16;  // meters from apriltag view to left reef post
+    public static final double k_rightShift = -0.16;  // meters from apriltag view to right reef post
   }
 
   public static final class DriveConstants {
