@@ -51,6 +51,8 @@ public class RobotContainer {
   private long m_handoffStateTime = 0;
   private int m_handoffStateGoto = 0;
 
+  private boolean m_toggle = false;
+
   private int ticks = 0;
 
   private Pose2d m_pose;  // limelight position
@@ -118,13 +120,17 @@ public class RobotContainer {
     if (m_driverController.getXButtonPressed()) {
         // set human player ingest elevator position
         RobotGoto(5);
-    } else if (m_driverController.getBButtonPressed()) {
-        // grab coral
+        m_ArmSubsystem.swivelZero();
         m_ArmSubsystem.fingerGrab();
-        RobotGoto(6);
-    } else if (m_driverController.getBButtonReleased()) {
-        // we should have coral!
-        m_ArmSubsystem.fingerStop();
+        m_toggle = false;
+        // XXX -- on beam break, m_ArmSubsystem.fingerStop();
+    } else if (m_driverController.getBButtonPressed()) {
+        if (m_toggle) {
+            m_ArmSubsystem.swivelPlus();
+        } else {
+            m_ArmSubsystem.swivelMinus();
+        }
+        m_toggle = ! m_toggle;
     }
 
     // the elevator up/down is controlled by the left bumper/left trigger
@@ -157,7 +163,6 @@ public class RobotContainer {
     // the "back" (left) and "start" (right) buttons control the fingers
     if (m_driverController.getBackButton()) {
         // start grabbing on "back" until the button is released (we need a beam break!)
-        //m_IngestSubsystem.handoffIngesting();  // XXX move this -- bring back pivot for handoff
         m_ArmSubsystem.fingerGrab();
     } else if (m_driverController.getBackButtonReleased()) {
         // stop grabbing wehen the button is released

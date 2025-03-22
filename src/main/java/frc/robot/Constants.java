@@ -43,7 +43,7 @@ public final class Constants {
       { 0.11, 0.44, 4.20 },  // [3]:pose 4
       { 0.05, 0.42, 0.00 },  // [4]:pose 5 -- drive  left stick
       { 0.34, 0.29, 2.82 },  // [5]:pose 6 -- ingest  X
-      { 0.40, 0.30, 3.12 },  // [6]:pose 7 -- lower and grab  B
+      { 0.40, 0.30, 3.12 },  // [6]:pose 7 -- unused
       { 0.36, 0.20, 3.30 }   // [7]:pose 8 -- safely raise before pose 1 or 2
     };
   };

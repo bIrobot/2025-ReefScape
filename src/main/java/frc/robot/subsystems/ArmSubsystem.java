@@ -158,6 +158,21 @@ public class ArmSubsystem extends SubsystemBase{
         m_ArmController.setReference(armPos, ControlType.kPosition);
     }
 
+    public void swivelZero()
+    {
+
+    }
+
+    public void swivelPlus()
+    {
+
+    }
+
+    public void swivelMinus()
+    {
+
+    }
+
     public void handHold()
     {
         m_HandController.setReference(getHandPosition(), ControlType.kPosition);
