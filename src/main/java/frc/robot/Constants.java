@@ -48,6 +48,12 @@ public final class Constants {
     };
   };
 
+  // this should not be here!
+  public static final double Round(double x)
+  {
+    return Math.round(x * 1000.0) / 1000.0;
+  }
+
   public static final class ArmConstants {
     public static final double kArmUpSpeed = 0.30;
     public static final double kArmDownSpeed = 0.25;
@@ -59,7 +65,7 @@ public final class Constants {
     public static final double kArmTestClose = 0.01;
 
     public static final double kSwivelSpeed = 0.5;
-    
+
     public static final double kHandUpSpeed = 0.7;
     public static final double kHandDownSpeed = 0.5;
 

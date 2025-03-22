@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
+import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.TestPosition.TestState;
 
@@ -105,7 +106,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (ticks++%100==0) System.out.println("ELEVATOR: Encoder: " + getFullElevatorPosition() +
+        if (ticks++%100==0) System.out.println("ELEVATOR: Encoder: " + Constants.Round(getFullElevatorPosition()) +
                                                " rockBottom:" + elevatorRockBottom() +
                                                " rockTop:" + elevatorRockTop());
 

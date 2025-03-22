@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.TestPosition.TestState;
 
@@ -90,7 +91,7 @@ public class ArmSubsystem extends SubsystemBase{
 
         m_ArmMotorRight = new SparkMax(12, MotorType.kBrushless);  // XXX Constants
 
-        m_swivelMotor = new SparkMax(16, MotorType.kBrushless);  // XXX Constants
+        m_swivelMotor = new SparkMax(15, MotorType.kBrushless);  // XXX Constants
         m_swivelEncoder = m_swivelMotor.getAbsoluteEncoder();
         m_swivelController = m_swivelMotor.getClosedLoopController();
 
@@ -248,9 +249,9 @@ public class ArmSubsystem extends SubsystemBase{
 
     @Override
     public void periodic() {
-        if (ticks++%100==0) System.out.println("ARM: Arm Encoder: " + m_ArmEncoder.getPosition() +
-                                              " Swivel Encoder: " + m_swivelEncoder.getPosition() +
-                                              " Hand Encoder: " + m_handEncoder.getPosition() +
+        if (ticks++%100==0) System.out.println("ARM: Arm Encoder: " + Constants.Round(m_ArmEncoder.getPosition()) +
+                                              " Swivel Encoder: " + Constants.Round(m_swivelEncoder.getPosition()) +
+                                              " Hand Encoder: " + Constants.Round(m_handEncoder.getPosition()) +
                                               " hasCoral: " + fingerHasCoral());
 
         // arm limit safety
