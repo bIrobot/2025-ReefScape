@@ -117,7 +117,7 @@ public class RobotContainer {
 
     // the X (blue, left) and B (red, right) buttons control ingest
     if (m_driverController.getXButtonPressed()) {
-        // set human player ingest elevator position
+        // set human player ingest elevator/arm/hand position
         RobotGoto(5);
         m_ArmSubsystem.swivelZero();
         m_ArmSubsystem.fingerGrab();
