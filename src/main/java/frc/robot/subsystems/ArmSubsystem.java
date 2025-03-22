@@ -25,6 +25,11 @@ public class ArmSubsystem extends SubsystemBase{
     private final SparkMax m_ArmMotorRight;
     private final SparkMaxConfig m_configArmRight = new SparkMaxConfig();
 
+    private final SparkMax m_swivelMotor;
+    private final SparkMaxConfig m_configSwivel = new SparkMaxConfig();
+    private SparkAbsoluteEncoder m_swivelEncoder;  // calibrate 0 with swivel horizontal
+    private SparkClosedLoopController m_swivelController;
+
     private final SparkMax m_handMotor;
     private final SparkMaxConfig m_configHand = new SparkMaxConfig();
     private SparkAbsoluteEncoder m_handEncoder;  // calibrate 0 with black block removed and hand down all the way
@@ -41,6 +46,11 @@ public class ArmSubsystem extends SubsystemBase{
     private static final double k_armMotorP = 5.0;
     private static final double k_armMotorI = 0.0;
     private static final double k_armMotorD = 10.0;
+
+    // slot 0 for position control
+    private static final double k_swivelMotorP = 4.0;
+    private static final double k_swivelMotorI = 0.0;
+    private static final double k_swivelMotorD = 2.0;
 
     // slot 0 for position control
     private static final double k_handMotorP = 4.0;
@@ -77,6 +87,10 @@ public class ArmSubsystem extends SubsystemBase{
 
         m_ArmMotorRight = new SparkMax(12, MotorType.kBrushless);  // XXX Constants
 
+        m_swivelMotor = new SparkMax(16, MotorType.kBrushless);  // XXX Constants
+        m_swivelEncoder = m_swivelMotor.getAbsoluteEncoder();
+        m_swivelController = m_swivelMotor.getClosedLoopController();
+
         m_handMotor = new SparkMax(13, MotorType.kBrushless);  // XXX Constants
         m_handEncoder = m_handMotor.getAbsoluteEncoder();
         m_HandController = m_handMotor.getClosedLoopController();
@@ -95,6 +109,14 @@ public class ArmSubsystem extends SubsystemBase{
         m_configArmRight.inverted(true)
                         .follow(11, true);  // XXX Constants
         m_ArmMotorRight.configure(m_configArmRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+
+        // swivel motor has encoder and controller
+        //m_configSwivel.inverted(true);
+        m_configSwivel.closedLoop.pid(k_swivelMotorP, k_swivelMotorI, k_swivelMotorD)
+                               .positionWrappingEnabled(false)
+                               .outputRange(-ArmConstants.kSwivelSpeed, ArmConstants.kSwivelSpeed)
+                               .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
+        m_swivelMotor.configure(m_configSwivel, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         // hand motor has encoder and controller
         m_configHand.inverted(true);
@@ -147,17 +169,17 @@ public class ArmSubsystem extends SubsystemBase{
 
     public void swivelZero()
     {
-
+        m_swivelController.setReference(0, ControlType.kPosition);
     }
 
     public void swivelPlus()
     {
-
+        m_swivelController.setReference(0.25, ControlType.kPosition);
     }
 
     public void swivelMinus()
     {
-
+        m_swivelController.setReference(-0.25, ControlType.kPosition);
     }
 
     public void handHold()

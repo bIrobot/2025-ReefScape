@@ -58,6 +58,8 @@ public final class Constants {
 
     public static final double kArmTestClose = 0.01;
 
+    public static final double kSwivelSpeed = 0.5;
+    
     public static final double kHandUpSpeed = 0.7;
     public static final double kHandDownSpeed = 0.5;
 
