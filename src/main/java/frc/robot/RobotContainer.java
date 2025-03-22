@@ -122,9 +122,9 @@ public class RobotContainer {
         m_ArmSubsystem.swivelZero();
         m_ArmSubsystem.fingerGrab();
         m_toggle = false;
-        // XXX -- on beam break, m_ArmSubsystem.fingerStop();
     } else if (m_driverController.getBButtonPressed()) {
         // swivel for scoring on reef
+        m_ArmSubsystem.fingerStop();
         if (m_toggle) {
             m_ArmSubsystem.swivelPlus();
         } else {
