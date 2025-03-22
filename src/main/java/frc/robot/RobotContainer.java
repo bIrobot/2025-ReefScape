@@ -20,7 +20,6 @@ import frc.robot.Constants.PoseConstants;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.Constants.TestPosition.TestState;
 import frc.robot.subsystems.DriveSubsystem;
-//import frc.robot.subsystems.IngestSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -43,7 +42,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  //private final IngestSubsystem m_IngestSubsystem = new IngestSubsystem();
   private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
   private final ArmSubsystem m_ArmSubsystem = new ArmSubsystem();
 
@@ -71,8 +69,6 @@ public class RobotContainer {
     configureButtonBindings();
 
     NamedCommands.registerCommand("drive", gotoCommand(4));
-    //NamedCommands.registerCommand("ingest", new InstantCommand(() -> { m_IngestSubsystem.startIngesting();
-    //                                                                   m_IngestSubsystem.stopIngesting(); }, m_IngestSubsystem));
     NamedCommands.registerCommand("L1", gotoCommand(0));
     NamedCommands.registerCommand("L2", gotoCommand(1));
     NamedCommands.registerCommand("L3", gotoCommand(2));
@@ -118,6 +114,7 @@ public class RobotContainer {
     }
 
     // the X (blue, left) and B (red, right) buttons control ingest
+    // XXX -- update for new swivel wrist
     if (m_driverController.getXButtonPressed()) {
         // set human player ingest elevator position
         RobotGoto(5);

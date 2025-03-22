@@ -43,9 +43,7 @@ public final class Constants {
       { 0.11, 0.44, 4.20 },  // [3]:pose 4
       { 0.05, 0.42, 0.00 },  // [4]:pose 5 -- drive  left stick
       { 0.34, 0.29, 2.82 },  // [5]:pose 6 -- ingest  X
-      //{ 0.28, 0.20, 2.82 },  // [5]:pose 6 -- ingest  X
       { 0.40, 0.30, 3.12 },  // [6]:pose 7 -- lower and grab  B
-      //{ 0.38, 0.20, 2.77 },  // [6]:pose 7 -- lower and grab  B
       { 0.36, 0.20, 3.30 }   // [7]:pose 8 -- safely raise before pose 1 or 2
     };
   };
@@ -86,24 +84,6 @@ public final class Constants {
     public static final double kElevatorTestClose = 0.01;
   }
   
-  public static final class IngestConstants {
-    // Intake speeds
-    public static final double k_intakeSpeed = 1.0;
-    public static final double k_ejectSpeed = 0.5;
-    public static final double k_reverseNsec = 1000000000;
-    public static final double k_pulse1Nsec = 30000000;
-    public static final double k_pulse2Nsec = 50000000;
-    public static final double k_pulse3Nsec = 40000000;
-
-    public static final double k_pivotSpeed = 0.15;
-
-    // Pivot set point encodings; readings are from 0..1(not inclusive).
-    public static final double k_pivotAngleGroundFraction = 0.111;  // NOT 0
-    public static final double k_pivotAngleSafeFraction = 0.300;
-    public static final double k_pivotAngleVerticalFraction = 0.420;
-    public static final double k_pivotAngleFrameFraction = 0.472;
-  }
-
   public static final class RobotConstants {
     public static final double k_raiseNsec = 1000000000.0;
 
