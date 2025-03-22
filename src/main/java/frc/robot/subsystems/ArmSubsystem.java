@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.TestPosition.TestState;
@@ -56,6 +57,8 @@ public class ArmSubsystem extends SubsystemBase{
     private static final double k_handMotorP = 4.0;
     private static final double k_handMotorI = 0.0;
     private static final double k_handMotorD = 2.0;
+
+    private final DigitalInput m_beamNotBroken = new DigitalInput(0);
 
     private int ticks = 0;
 
@@ -238,10 +241,17 @@ public class ArmSubsystem extends SubsystemBase{
 
     }
 
+    public boolean fingerHasCoral()
+    {
+        return ! m_beamNotBroken.get();
+    }
+
     @Override
     public void periodic() {
         if (ticks++%100==0) System.out.println("ARM: Arm Encoder: " + m_ArmEncoder.getPosition() +
-                                              " Hand Encoder: " + m_handEncoder.getPosition());
+                                              " Swivel Encoder: " + m_swivelEncoder.getPosition() +
+                                              " Hand Encoder: " + m_handEncoder.getPosition() +
+                                              " hasCoral: " + fingerHasCoral());
 
         // arm limit safety
         if (getArmPosition() > ArmConstants.kArmLevelBottom && m_currentArmState == ArmState.DOWN) {
@@ -294,6 +304,10 @@ public class ArmSubsystem extends SubsystemBase{
                 break;
             case GRAB:
                 m_fingerMotor.set(ArmConstants.kFingerGrabSpeed);
+                if (fingerHasCoral()) {
+                    System.out.println("FINGER HAS CORAL");
+                    m_currentFingerState = FingerState.STOP;
+                }
                 break;
             case RELEASE:
                 if (System.nanoTime() - m_FingerTime > ArmConstants.k_reverseNsec) {

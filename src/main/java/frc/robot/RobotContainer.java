@@ -116,7 +116,6 @@ public class RobotContainer {
     }
 
     // the X (blue, left) and B (red, right) buttons control ingest
-    // XXX -- update for new swivel wrist
     if (m_driverController.getXButtonPressed()) {
         // set human player ingest elevator position
         RobotGoto(5);
@@ -125,6 +124,7 @@ public class RobotContainer {
         m_toggle = false;
         // XXX -- on beam break, m_ArmSubsystem.fingerStop();
     } else if (m_driverController.getBButtonPressed()) {
+        // swivel for scoring on reef
         if (m_toggle) {
             m_ArmSubsystem.swivelPlus();
         } else {
