@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.Set;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -201,58 +203,43 @@ public class RobotContainer {
     if (ticks++%100==0) System.out.println("TELEOP RUNNING");
 }
 
-public Command armWaitCommand(double elevatorPos)
-{
-    return new FunctionalCommand (() -> { },  // onInit
-                                    () -> { },  // onExecute
-                                    (interrupted) -> { },  // onEnd
-                                    () -> { return false; },  // isFinished
-                                    m_ArmSubsystem);
-}
-
-public Command elevatorWaitCommand(double elevatorPos)
-{
-    return new FunctionalCommand (() -> { },  // onInit
-                                    () -> { },  // onExecute
-                                    (interrupted) -> { },  // onEnd
-                                    () -> { return false; },  // isFinished
-                                    m_ArmSubsystem);
-}
-
 public Command gotoCommand(int pose)
 {
-    double armPos;
-    double handPos;
-    double elevatorPos;
-    double armDelay = 0;
-    double elevatorDelay = 0;
+    // N.B. we use DeferredCommand() so that testElevatorPosition() is called at Command run time, rather than at construction time
+    return new DeferredCommand(() -> {
+        double armPos;
+        double handPos;
+        double elevatorPos;
+        double armDelay = 0;
+        double elevatorDelay = 0;
 
-    // get position targets for arm, hand, and elevator
-    armPos = PoseConstants.poses[pose][0];
-    handPos = PoseConstants.poses[pose][1];
-    elevatorPos = PoseConstants.poses[pose][2];
+        // get position targets for arm, hand, and elevator
+        armPos = PoseConstants.poses[pose][0];
+        handPos = PoseConstants.poses[pose][1];
+        elevatorPos = PoseConstants.poses[pose][2];
 
-    // test the elevator target direction
-    TestState state = m_ElevatorSubsystem.testElevatorPosition(elevatorPos);
-    if (state == TestState.GOING_UP) {
-        // going up -- move elevator first!
-        armDelay = 1;
-    } else if (state == TestState.GOING_DOWN) {
-        // going down -- move arm/hand first!
-        elevatorDelay = 1;
-    }
+        // test the elevator target direction
+        TestState state = m_ElevatorSubsystem.testElevatorPosition(elevatorPos);
+        if (state == TestState.GOING_UP) {
+            // going up -- move elevator first!
+            armDelay = 1;
+        } else if (state == TestState.GOING_DOWN) {
+            // going down -- move arm/hand first!
+            elevatorDelay = 1;
+        }
 
-    Commands.print("RobotGoto pose: " + pose + " armDelay: " + armDelay + " elevatorDelay: " + elevatorDelay);
+        Commands.print("RobotGoto pose: " + pose + " armDelay: " + armDelay + " elevatorDelay: " + elevatorDelay);
 
-    // set new targets giving elevator or arm/hand a chance to move first
-    return new ParallelCommandGroup(
-               new SequentialCommandGroup(new WaitCommand(armDelay),
-                                          new InstantCommand(() -> { m_ArmSubsystem.armGoto(armPos);
-                                                                     m_ArmSubsystem.handGoto(handPos); }, m_ArmSubsystem)),
+        // set new targets giving elevator or arm/hand a chance to move first
+        return new ParallelCommandGroup(
+                new SequentialCommandGroup(new WaitCommand(armDelay),
+                                            new InstantCommand(() -> { m_ArmSubsystem.armGoto(armPos);
+                                                                        m_ArmSubsystem.handGoto(handPos); }, m_ArmSubsystem)),
 
-               new SequentialCommandGroup(new WaitCommand(elevatorDelay),
-                                          new InstantCommand(() -> { m_ElevatorSubsystem.elevatorGoto(elevatorPos); }, m_ElevatorSubsystem))
-    );
+                new SequentialCommandGroup(new WaitCommand(elevatorDelay),
+                                            new InstantCommand(() -> { m_ElevatorSubsystem.elevatorGoto(elevatorPos); }, m_ElevatorSubsystem))
+        );
+    }, Set.of(m_ArmSubsystem, m_ElevatorSubsystem));
 }
 
 public void RobotGoto(int pose)
