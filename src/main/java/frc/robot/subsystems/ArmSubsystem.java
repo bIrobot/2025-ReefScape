@@ -11,7 +11,6 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
@@ -43,20 +42,10 @@ public class ArmSubsystem extends SubsystemBase{
     private static final double k_armMotorI = 0.0;
     private static final double k_armMotorD = 10.0;
 
-    // slot 1 for velocity control
-    private static final double k_armMotorP1 = 1.0;
-    private static final double k_armMotorI1 = 0.0;
-    private static final double k_armMotorD1 = 8.0;
-
     // slot 0 for position control
     private static final double k_handMotorP = 4.0;
     private static final double k_handMotorI = 0.0;
     private static final double k_handMotorD = 2.0;
-
-    // slot 1 for velocity control
-    private static final double k_handMotorP1 = 1.0;
-    private static final double k_handMotorI1 = 0.0;
-    private static final double k_handMotorD1 = 2.0;
 
     private int ticks = 0;
 
@@ -97,7 +86,6 @@ public class ArmSubsystem extends SubsystemBase{
         // left motor has encoder and controller
         m_configArmLeft.inverted(true);
         m_configArmLeft.closedLoop.pid(k_armMotorP, k_armMotorI, k_armMotorD)
-                                  .pid(k_armMotorP1, k_armMotorI1, k_armMotorD1, ClosedLoopSlot.kSlot1)
                                   .positionWrappingEnabled(false)
                                   .outputRange(-ArmConstants.kArmUpSpeed, ArmConstants.kArmDownSpeed)
                                   .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
@@ -111,7 +99,6 @@ public class ArmSubsystem extends SubsystemBase{
         // hand motor has encoder and controller
         m_configHand.inverted(true);
         m_configHand.closedLoop.pid(k_handMotorP, k_handMotorI, k_handMotorD)
-                               .pid(k_handMotorP1, k_handMotorI1, k_handMotorD1, ClosedLoopSlot.kSlot1)
                                .positionWrappingEnabled(false)
                                .outputRange(-ArmConstants.kHandUpSpeed, ArmConstants.kHandDownSpeed)
                                .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
