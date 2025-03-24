@@ -41,8 +41,8 @@ public final class Constants {
       { 0.20, 0.58, 0.99 },  // [1]:pose 2
       { 0.26, 0.65, 3.19 },  // [2]:pose 3
       { 0.11, 0.44, 4.20 },  // [3]:pose 4
-      { 0.05, 0.42, 0.00 },  // [4]:pose 5 -- drive  left stick
-      { 0.34, 0.29, 2.82 },  // [5]:pose 6 -- ingest  X
+      { 0.04, 0.42, 0.00 },  // [4]:pose 5 -- drive  left stick
+      { 0.04, 0.33, 0.00 },  // [5]:pose 6 -- ingest  X
       { 0.40, 0.30, 3.12 },  // [6]:pose 7 -- unused
       { 0.36, 0.20, 3.30 }   // [7]:pose 8 -- safely raise before pose 1 or 2
     };
@@ -60,11 +60,11 @@ public final class Constants {
 
     public static final double kArmLevelSafe = 0.11;
     public static final double kArmLevelBottom = 0.43;  // soft limit
-    public static final double kArmLevelTop = 0.05;  // soft limit NOT 0
+    public static final double kArmLevelTop = 0.04;  // soft limit NOT 0
 
     public static final double kArmTestClose = 0.01;
 
-    public static final double kSwivelSpeed = 0.5;
+    public static final double kSwivelSpeed = 0.1;
 
     public static final double kHandUpSpeed = 0.7;
     public static final double kHandDownSpeed = 0.5;

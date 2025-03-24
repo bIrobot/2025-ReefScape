@@ -29,7 +29,7 @@ public class ArmSubsystem extends SubsystemBase{
 
     private final SparkMax m_swivelMotor;
     private final SparkMaxConfig m_configSwivel = new SparkMaxConfig();
-    private SparkAbsoluteEncoder m_swivelEncoder;  // calibrate 0 with swivel horizontal
+    private SparkAbsoluteEncoder m_swivelEncoder;  // calibrate 0 with swivel 180 degrees off ingest
     private SparkClosedLoopController m_swivelController;
 
     private final SparkMax m_handMotor;
@@ -50,9 +50,9 @@ public class ArmSubsystem extends SubsystemBase{
     private static final double k_armMotorD = 10.0;
 
     // slot 0 for position control
-    private static final double k_swivelMotorP = 4.0;
+    private static final double k_swivelMotorP = 2.0;
     private static final double k_swivelMotorI = 0.0;
-    private static final double k_swivelMotorD = 2.0;
+    private static final double k_swivelMotorD = 100.0;
 
     // slot 0 for position control
     private static final double k_handMotorP = 4.0;
@@ -115,9 +115,7 @@ public class ArmSubsystem extends SubsystemBase{
         m_ArmMotorRight.configure(m_configArmRight, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         // swivel motor has encoder and controller
-        //m_configSwivel.inverted(true);
         m_configSwivel.closedLoop.pid(k_swivelMotorP, k_swivelMotorI, k_swivelMotorD)
-                               .positionWrappingEnabled(false)
                                .outputRange(-ArmConstants.kSwivelSpeed, ArmConstants.kSwivelSpeed)
                                .feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
         m_swivelMotor.configure(m_configSwivel, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -173,17 +171,17 @@ public class ArmSubsystem extends SubsystemBase{
 
     public void swivelZero()
     {
-        m_swivelController.setReference(0, ControlType.kPosition);
+        m_swivelController.setReference(0.5, ControlType.kPosition);
     }
 
     public void swivelPlus()
     {
-        m_swivelController.setReference(0.25, ControlType.kPosition);
+        m_swivelController.setReference(0.78, ControlType.kPosition);
     }
 
     public void swivelMinus()
     {
-        m_swivelController.setReference(-0.25, ControlType.kPosition);
+        m_swivelController.setReference(0.22, ControlType.kPosition);
     }
 
     public void handHold()

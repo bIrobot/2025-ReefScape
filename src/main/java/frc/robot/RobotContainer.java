@@ -193,6 +193,10 @@ public class RobotContainer {
             } else {
                 RobotGoto(pose);
             }
+            if (pose != 0) {
+                m_ArmSubsystem.swivelMinus();
+                m_toggle = true;
+            }
         }
         m_lastPov = pov;
     }
