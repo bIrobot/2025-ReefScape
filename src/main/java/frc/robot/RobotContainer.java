@@ -71,10 +71,9 @@ public class RobotContainer {
     NamedCommands.registerCommand("L4", gotoCommand(3));
 
     NamedCommands.registerCommand("ingest", gotoCommand(5));
+    NamedCommands.registerCommand("findaprilleft", getfindAprilLeftCommand());
     NamedCommands.registerCommand("wristdown", wristCommand());
     NamedCommands.registerCommand("release", new InstantCommand(() -> m_ArmSubsystem.fingerRelease(), m_ArmSubsystem));
-
-    NamedCommands.registerCommand(("findaprilleft"), getfindAprilLeftCommand());
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
