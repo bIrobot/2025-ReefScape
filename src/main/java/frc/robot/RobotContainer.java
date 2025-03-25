@@ -47,10 +47,6 @@ public class RobotContainer {
 
   private int m_lastPov = -1;
 
-  private HandoffState m_handoffState = HandoffState.STOP;
-  private long m_handoffStateTime = 0;
-  private int m_handoffStateGoto = 0;
-
   private boolean m_toggle = false;
 
   private int ticks = 0;
@@ -78,8 +74,6 @@ public class RobotContainer {
     NamedCommands.registerCommand("drop", new InstantCommand(() -> m_ArmSubsystem.fingerRelease(), m_ArmSubsystem));
 
     NamedCommands.registerCommand("ingest", gotoCommand(5));
-    NamedCommands.registerCommand("handoff", handoffCommand());
-    NamedCommands.registerCommand("raise", gotoCommand(7));
     NamedCommands.registerCommand("wristdown", wristCommand());
 
     NamedCommands.registerCommand(("findaprilleft"), getfindAprilLeftCommand());
@@ -102,11 +96,6 @@ public class RobotContainer {
                 false),
             m_robotDrive));
   }
-
-  enum HandoffState {
-    STOP,
-    RAISE
-  };
 
   public void teleopRunning() {
     // if elevator calibration failed...
@@ -185,25 +174,9 @@ public class RobotContainer {
     if (pov != m_lastPov) {
         if (pov%90 == 0) {
             int pose = pov/90;
-            if (pose == 0 || pose == 1) {
-                m_handoffStateGoto = pose;
-                m_handoffStateTime = System.nanoTime();
-                m_handoffState = HandoffState.RAISE;
-                RobotGoto(7);
-            } else {
-                RobotGoto(pose);
-            }
-            if (pose != 0) {
-                m_ArmSubsystem.swivelMinus();
-                m_toggle = true;
-            }
+            RobotGoto(pose);
         }
         m_lastPov = pov;
-    }
-
-    if (m_handoffState == HandoffState.RAISE && System.nanoTime() - m_handoffStateTime > RobotConstants.k_raiseNsec) {
-        m_handoffState = HandoffState.STOP;
-        RobotGoto(m_handoffStateGoto);
     }
 
     if (ticks++%100==0) System.out.println("TELEOP RUNNING");
@@ -218,6 +191,14 @@ public Command gotoCommand(int pose)
         double elevatorPos;
         double armDelay = 0;
         double elevatorDelay = 0;
+
+        if (pose == 0) {
+            m_ArmSubsystem.swivelZero();
+            m_toggle = true;
+        } else if (pose == 1 || pose == 2 || pose == 3) {
+            m_ArmSubsystem.swivelMinus();
+            m_toggle = true;
+        }
 
         // get position targets for arm, hand, and elevator
         armPos = PoseConstants.poses[pose][0];
@@ -384,14 +365,6 @@ public Command getshiftLeftCommand() {
                                     (interrupted) -> { m_robotDrive.drive(0, 0, 0, false); },  // onEnd
                                     () -> { return moveFinished(RobotConstants.k_leftShift); },  // isFinished
                                     m_robotDrive);
-}
-
-public Command handoffCommand()
-{
-    return new SequentialCommandGroup(new InstantCommand(() -> { m_ArmSubsystem.fingerGrab(); }),
-                                      new ParallelCommandGroup(gotoCommand(6),
-                                                               new WaitCommand(3)),
-                                      new InstantCommand(() -> { m_ArmSubsystem.fingerStop(); }));
 }
 
 public Command wristCommand()

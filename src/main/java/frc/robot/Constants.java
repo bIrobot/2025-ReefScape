@@ -37,14 +37,14 @@ public final class Constants {
       // elevatorPos: bottom = 0.00; top = 4.00
       //
       // [0]:armPos, [1]:handPos, [2]:elevatorPos
-      { 0.29, 0.35, 2.84 },  // [0]:pose 1
-      { 0.20, 0.58, 0.99 },  // [1]:pose 2
-      { 0.26, 0.65, 3.19 },  // [2]:pose 3
-      { 0.11, 0.44, 4.20 },  // [3]:pose 4
-      { 0.04, 0.42, 0.00 },  // [4]:pose 5 -- drive  left stick
-      { 0.04, 0.33, 0.00 },  // [5]:pose 6 -- ingest  X
-      { 0.40, 0.30, 3.12 },  // [6]:pose 7 -- unused
-      { 0.36, 0.20, 3.30 }   // [7]:pose 8 -- safely raise before pose 1 or 2
+      { 0.064, 0.201, 0.000 },  // [0]:pose 1
+      { 0.216, 0.579, 0.985 },  // [1]:pose 2
+      { 0.274, 0.633, 3.180 },  // [2]:pose 3
+      { 0.054, 0.302, 4.055 },  // [3]:pose 4
+      { 0.040, 0.420, 0.000 },  // [4]:pose 5 -- drive  left stick
+      { 0.040, 0.330, 0.000 },  // [5]:pose 6 -- ingest  X
+      { 0.400, 0.300, 3.120 },  // [6]:pose 7 -- unused
+      { 0.360, 0.200, 3.300 }   // [7]:pose 8 -- unused
     };
   };
 
