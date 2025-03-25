@@ -48,12 +48,10 @@ public class RobotContainer {
   private int m_lastPov = -1;
 
   private boolean m_toggle = false;
+  private double m_sign = 0.0;
 
   private int ticks = 0;
 
-  private Pose2d m_pose;  // limelight position
-
-  private final Field2d field;
   private final SendableChooser<Command> autoChooser;
 
   // The driver's controller
@@ -71,16 +69,13 @@ public class RobotContainer {
     NamedCommands.registerCommand("L2", gotoCommand(1));
     NamedCommands.registerCommand("L3", gotoCommand(2));
     NamedCommands.registerCommand("L4", gotoCommand(3));
-    NamedCommands.registerCommand("drop", new InstantCommand(() -> m_ArmSubsystem.fingerRelease(), m_ArmSubsystem));
 
     NamedCommands.registerCommand("ingest", gotoCommand(5));
     NamedCommands.registerCommand("wristdown", wristCommand());
+    NamedCommands.registerCommand("release", new InstantCommand(() -> m_ArmSubsystem.fingerRelease(), m_ArmSubsystem));
 
     NamedCommands.registerCommand(("findaprilleft"), getfindAprilLeftCommand());
-    NamedCommands.registerCommand(("findaprilright"), getfindAprilRightCommand());
 
-    field = new Field2d();
-    SmartDashboard.putData("Field2", field);
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
@@ -279,18 +274,23 @@ public void findAprilInit(double angle)
         }
     } else {
         System.out.println("NOT SEEN");
+        m_robotDrive.drive(0, 0, 0, false);
     }
 }
 
 public boolean findAprilFinished(double angle)
 {
+    double TA = LimelightHelpers.getTA("limelight");
     double TX = LimelightHelpers.getTX("limelight");
 
-    if (Math.abs(TX - angle) <= 1) {
+    if (m_sign * (TX - angle) < 0.0 || TA == 0.0 || Math.abs(TX - angle) <= 0.3) {
+        m_sign = 0.0;
         System.out.println("Stop " + TX);
         m_robotDrive.drive(0, 0, 0, false);
         return true;
     }
+    m_sign = TX - angle;
+
     return false;
 }
 
@@ -299,71 +299,6 @@ public Command getfindAprilLeftCommand() {
                                     () -> { },  // onExecute
                                     (interrupted) -> { m_robotDrive.drive(0, 0, 0, false); },  // onEnd
                                     () -> { return findAprilFinished(RobotConstants.k_leftAngle); },  // isFinished
-                                    m_robotDrive);
-}
-
-public Command getfindAprilRightCommand() {
-    return new FunctionalCommand (() -> { findAprilInit(RobotConstants.k_rightAngle); },  // onInit
-                                    () -> { },  // onExecute
-                                    (interrupted) -> { m_robotDrive.drive(0, 0, 0, false); },  // onEnd
-                                    () -> { return findAprilFinished(RobotConstants.k_rightAngle); },  // isFinished
-                                    m_robotDrive);                                  
-}
-
-public void moveInit(double shift)
-{
-    m_pose = m_robotDrive.getPose();
-    if (shift < 0) {
-        // right
-        m_robotDrive.drive(0, -RobotConstants.k_moveSpeed, 0, false);
-    } else {
-        // left
-        m_robotDrive.drive(0, RobotConstants.k_moveSpeed, 0, false);
-    }
-}
-
-public boolean moveFinished(double shift)
-{
-    Pose2d pose;
-
-    // +Y to left; -Y to right
-    pose = m_robotDrive.getPose();
-    if (shift < 0) {
-        // right
-        if (pose.getY() <= m_pose.getY() + shift) {
-            // stop
-            m_robotDrive.drive(0, 0, 0, false);
-            return true;
-        } else {
-            // keep going
-            return false;
-        }
-    } else {
-        // left
-        if (pose.getY() >= m_pose.getY() + shift) {
-            // stop
-            m_robotDrive.drive(0, 0, 0, false);
-            return true;
-        } else {
-            // keep going
-            return false;
-        }
-    }
-}
-
-public Command getshiftRightCommand() {
-    return new FunctionalCommand (() -> { moveInit(RobotConstants.k_rightShift); },  // onInit
-                                    () -> { },  // onExecute
-                                    (interrupted) -> { m_robotDrive.drive(0, 0, 0, false); },  // onEnd
-                                    () -> { return moveFinished(RobotConstants.k_rightShift); },  // isFinished
-                                    m_robotDrive);
-}
-
-public Command getshiftLeftCommand() {
-    return new FunctionalCommand (() -> { moveInit(RobotConstants.k_leftShift); },  // onInit
-                                    () -> { },  // onExecute
-                                    (interrupted) -> { m_robotDrive.drive(0, 0, 0, false); },  // onEnd
-                                    () -> { return moveFinished(RobotConstants.k_leftShift); },  // isFinished
                                     m_robotDrive);
 }
 
