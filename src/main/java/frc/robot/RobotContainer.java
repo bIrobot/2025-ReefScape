@@ -10,9 +10,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
@@ -70,9 +68,10 @@ public class RobotContainer {
     NamedCommands.registerCommand("L3", gotoCommand(2));
     NamedCommands.registerCommand("L4", gotoCommand(3));
 
-    NamedCommands.registerCommand("ingest", gotoCommand(5));
+    NamedCommands.registerCommand("ingest", gotoCommand(5));  // XXX fix me!
     NamedCommands.registerCommand("findaprilleft", getfindAprilLeftCommand());
     NamedCommands.registerCommand("wristdown", wristCommand());
+    NamedCommands.registerCommand("wristdownL3", wristL3Command());
     NamedCommands.registerCommand("release", new InstantCommand(() -> m_ArmSubsystem.fingerRelease(), m_ArmSubsystem));
 
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -303,7 +302,12 @@ public Command getfindAprilLeftCommand() {
 
 public Command wristCommand()
 {
-    return new InstantCommand(() -> { m_ArmSubsystem.handGoto(0.31); });
+    return new InstantCommand(() -> { m_ArmSubsystem.handGoto(0.248); });
+}
+
+public Command wristL3Command()
+{
+    return new InstantCommand(() -> { m_ArmSubsystem.handGoto(0.500); });
 }
 
 /**
