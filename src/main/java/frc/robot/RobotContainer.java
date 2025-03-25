@@ -44,6 +44,7 @@ public class RobotContainer {
   private final ArmSubsystem m_ArmSubsystem = new ArmSubsystem();
 
   private int m_lastPov = -1;
+  private int m_lastPose = 0;
 
   private boolean m_toggle = false;
   private double m_sign = 0.0;
@@ -62,17 +63,20 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
-    NamedCommands.registerCommand("drive", gotoCommand(4));
-    NamedCommands.registerCommand("L1", gotoCommand(0));
-    NamedCommands.registerCommand("L2", gotoCommand(1));
-    NamedCommands.registerCommand("L3", gotoCommand(2));
-    NamedCommands.registerCommand("L4", gotoCommand(3));
+    NamedCommands.registerCommand("drive", gotoCommand(4, false));
 
-    NamedCommands.registerCommand("ingest", gotoCommand(5));  // XXX fix me!
-    NamedCommands.registerCommand("findaprilleft", getfindAprilLeftCommand());
-    NamedCommands.registerCommand("wristdown", wristCommand());
-    NamedCommands.registerCommand("wristdownL3", wristL3Command());
-    NamedCommands.registerCommand("release", new InstantCommand(() -> m_ArmSubsystem.fingerRelease(), m_ArmSubsystem));
+    NamedCommands.registerCommand("L1", gotoCommand(0, false));
+    NamedCommands.registerCommand("L2", gotoCommand(1, false));
+    NamedCommands.registerCommand("L3", gotoCommand(2, false));
+    NamedCommands.registerCommand("L4", gotoCommand(3, false));
+
+    NamedCommands.registerCommand("L1DR", gotoCommand(0, true));
+    NamedCommands.registerCommand("L2DR", gotoCommand(1, true));
+    NamedCommands.registerCommand("L3DR", gotoCommand(2, true));
+    NamedCommands.registerCommand("L4DR", gotoCommand(3, true));
+
+    NamedCommands.registerCommand("ingest", gotoCommand(5, false));
+    NamedCommands.registerCommand("aprilleft", getfindAprilLeftCommand());
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -101,9 +105,6 @@ public class RobotContainer {
     if (m_driverController.getXButtonPressed()) {
         // set human player ingest elevator/arm/hand position
         RobotGoto(5);
-        m_ArmSubsystem.swivelZero();
-        m_ArmSubsystem.fingerGrab();
-        m_toggle = false;
     } else if (m_driverController.getBButtonPressed()) {
         // swivel for scoring on reef
         m_ArmSubsystem.fingerStop();
@@ -159,7 +160,7 @@ public class RobotContainer {
     }
 
     if (m_driverController.getRightStickButtonPressed()) {
-        RobotGoto(5);
+        gotoCommand(m_lastPose, true).schedule();
     }
 
     // the POV control selects preset poses 1 (north), 2 (east), 3 (south), 4 (west)
@@ -168,6 +169,7 @@ public class RobotContainer {
         if (pov%90 == 0) {
             int pose = pov/90;
             RobotGoto(pose);
+            m_lastPose = pose;
         }
         m_lastPov = pov;
     }
@@ -175,7 +177,7 @@ public class RobotContainer {
     if (ticks++%100==0) System.out.println("TELEOP RUNNING");
 }
 
-public Command gotoCommand(int pose)
+public Command gotoCommand(int pose, boolean downRelease)
 {
     // N.B. we use DeferredCommand() so that testElevatorPosition() is called at Command run time, rather than at construction time
     return new DeferredCommand(() -> {
@@ -185,18 +187,24 @@ public Command gotoCommand(int pose)
         double armDelay = 0;
         double elevatorDelay = 0;
 
-        if (pose == 0) {
-            m_ArmSubsystem.swivelZero();
-            m_toggle = true;
-        } else if (pose == 1 || pose == 2 || pose == 3) {
-            m_ArmSubsystem.swivelMinus();
-            m_toggle = true;
+        if (! downRelease) {
+            if (pose == 0) {
+                m_ArmSubsystem.swivelZero();
+                m_toggle = true;
+            } else if (pose == 1 || pose == 2 || pose == 3) {
+                m_ArmSubsystem.swivelMinus();
+                m_toggle = true;
+            } else if (pose == 5) {
+                m_ArmSubsystem.swivelZero();
+                m_ArmSubsystem.fingerGrab();
+                m_toggle = false;
+            }
         }
 
         // get position targets for arm, hand, and elevator
         armPos = PoseConstants.poses[pose][0];
-        handPos = PoseConstants.poses[pose][1];
-        elevatorPos = PoseConstants.poses[pose][2];
+        handPos = PoseConstants.poses[pose][1] - ((downRelease && pose != 0)?0.07:0);
+        elevatorPos = PoseConstants.poses[pose][2] - ((downRelease && pose != 0)?0.20:0);
 
         // test the elevator target direction
         TestState state = m_ElevatorSubsystem.testElevatorPosition(elevatorPos);
@@ -208,10 +216,8 @@ public Command gotoCommand(int pose)
             elevatorDelay = 1;
         }
 
-        Commands.print("RobotGoto pose: " + pose + " armDelay: " + armDelay + " elevatorDelay: " + elevatorDelay);
-
         // set new targets giving elevator or arm/hand a chance to move first
-        return new ParallelCommandGroup(
+        Command command = new ParallelCommandGroup(
                 new SequentialCommandGroup(new WaitCommand(armDelay),
                                             new InstantCommand(() -> { m_ArmSubsystem.armGoto(armPos);
                                                                         m_ArmSubsystem.handGoto(handPos); }, m_ArmSubsystem)),
@@ -219,6 +225,12 @@ public Command gotoCommand(int pose)
                 new SequentialCommandGroup(new WaitCommand(elevatorDelay),
                                             new InstantCommand(() -> { m_ElevatorSubsystem.elevatorGoto(elevatorPos); }, m_ElevatorSubsystem))
         );
+        if (downRelease) {
+            command = new SequentialCommandGroup(command,
+                                                 new WaitCommand(0.5),
+                                                 new InstantCommand(() -> { m_ArmSubsystem.fingerRelease(); }, m_ArmSubsystem));
+        }
+        return command;
     }, Set.of(m_ArmSubsystem, m_ElevatorSubsystem));
 }
 
@@ -229,7 +241,7 @@ public void RobotGoto(int pose)
     m_ElevatorSubsystem.elevatorHold();
 
     // schedule the new pose
-    gotoCommand(pose).schedule();
+    gotoCommand(pose, false).schedule();
 }
 
 // return true if still moving

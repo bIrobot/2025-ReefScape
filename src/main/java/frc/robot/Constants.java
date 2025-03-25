@@ -42,9 +42,7 @@ public final class Constants {
       { 0.274, 0.633, 3.180 },  // [2]:pose 3
       { 0.054, 0.302, 4.055 },  // [3]:pose 4
       { 0.040, 0.420, 0.000 },  // [4]:pose 5 -- drive  left stick
-      { 0.040, 0.330, 0.000 },  // [5]:pose 6 -- ingest  X
-      { 0.400, 0.300, 3.120 },  // [6]:pose 7 -- unused
-      { 0.360, 0.200, 3.300 }   // [7]:pose 8 -- unused
+      { 0.040, 0.330, 0.000 }  // [5]:pose 6 -- ingest  X
     };
   };
 
@@ -78,18 +76,18 @@ public final class Constants {
     public static final double kFingerGrabSpeed = 1.0;
     public static final double kFingerReleaseSpeed = 0.5;
 
-    public static final double k_reverseNsec = 40000000;
+    public static final double k_reverseNsec = 70000000;
   }
 
   public static final class ElevatorConstants {
-    public static final double kElevatorUpSpeed = 0.75;//1.00;
-    public static final double kElevatorDownSpeed = 0.75;//1.00;
+    public static final double kElevatorUpSpeed = 1.00;
+    public static final double kElevatorDownSpeed = 0.75;
 
     public static final double kElevatorLevelSafe = 3.00;
     public static final double kElevatorLevelBottom = 0.00;  // soft limit (0 allowed)
     public static final double kElevatorLevelTop = 4.20;  // soft limit
 
-    public static final double kElevatorTestClose = 0.01;
+    public static final double kElevatorTestClose = 0.05;
   }
   
   public static final class RobotConstants {
