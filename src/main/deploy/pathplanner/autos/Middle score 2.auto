@@ -99,12 +99,6 @@
           "data": {
             "name": "L4DR"
           }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "release"
-          }
         }
       ]
     }

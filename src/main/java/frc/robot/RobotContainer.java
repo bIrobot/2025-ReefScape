@@ -219,16 +219,19 @@ public Command gotoCommand(int pose, boolean downRelease)
         // set new targets giving elevator or arm/hand a chance to move first
         Command command = new ParallelCommandGroup(
                 new SequentialCommandGroup(new WaitCommand(armDelay),
-                                            new InstantCommand(() -> { m_ArmSubsystem.armGoto(armPos);
-                                                                        m_ArmSubsystem.handGoto(handPos); }, m_ArmSubsystem)),
+                                            new InstantCommand(() -> { m_ArmSubsystem.armGoto(armPos); }, m_ArmSubsystem)),
 
                 new SequentialCommandGroup(new WaitCommand(elevatorDelay),
                                             new InstantCommand(() -> { m_ElevatorSubsystem.elevatorGoto(elevatorPos); }, m_ElevatorSubsystem))
         );
         if (downRelease) {
-            command = new SequentialCommandGroup(command,
+            command = new SequentialCommandGroup(new InstantCommand(() -> { m_ArmSubsystem.handGoto(handPos); }, m_ArmSubsystem ),
+                                                 command,
                                                  new WaitCommand(0.5),
                                                  new InstantCommand(() -> { m_ArmSubsystem.fingerRelease(); }, m_ArmSubsystem));
+        } else {
+            command = new SequentialCommandGroup(new InstantCommand(() -> { m_ArmSubsystem.handGoto(handPos); }, m_ArmSubsystem ),
+                                                 command);
         }
         return command;
     }, Set.of(m_ArmSubsystem, m_ElevatorSubsystem));
