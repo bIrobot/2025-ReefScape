@@ -93,7 +93,7 @@ public final class Constants {
   public static final class RobotConstants {
     public static final double k_raiseNsec = 1000000000.0;
 
-    public static final double k_moveSpeed = 0.05;
+    public static final double k_moveSpeed = 0.02;
 
     public static final double k_leftAngle = -5;  // degrees from apriltag view to left reef post
   }
