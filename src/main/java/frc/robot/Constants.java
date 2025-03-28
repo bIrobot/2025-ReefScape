@@ -76,7 +76,7 @@ public final class Constants {
     public static final double kFingerGrabSpeed = 1.0;
     public static final double kFingerReleaseSpeed = 0.5;
 
-    public static final double k_reverseNsec = 70000000;
+    public static final double k_reverseNsec = 200000000;
   }
 
   public static final class ElevatorConstants {

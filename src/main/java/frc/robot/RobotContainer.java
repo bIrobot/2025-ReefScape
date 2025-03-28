@@ -203,8 +203,8 @@ public Command gotoCommand(int pose, boolean downRelease)
 
         // get position targets for arm, hand, and elevator
         armPos = PoseConstants.poses[pose][0];
-        handPos = PoseConstants.poses[pose][1] - ((downRelease && pose != 0)?0.07:0);
-        elevatorPos = PoseConstants.poses[pose][2] - ((downRelease && pose != 0)?0.20:0);
+        handPos = PoseConstants.poses[pose][1] - ((downRelease && pose != 0)?0.08:0);
+        elevatorPos = PoseConstants.poses[pose][2] - ((downRelease && pose != 0)?0.24:0);
 
         // test the elevator target direction
         TestState state = m_ElevatorSubsystem.testElevatorPosition(elevatorPos);
@@ -313,16 +313,6 @@ public Command getfindAprilLeftCommand() {
                                     (interrupted) -> { m_robotDrive.drive(0, 0, 0, false); },  // onEnd
                                     () -> { return findAprilFinished(RobotConstants.k_leftAngle); },  // isFinished
                                     m_robotDrive);
-}
-
-public Command wristCommand()
-{
-    return new InstantCommand(() -> { m_ArmSubsystem.handGoto(0.248); });
-}
-
-public Command wristL3Command()
-{
-    return new InstantCommand(() -> { m_ArmSubsystem.handGoto(0.500); });
 }
 
 /**
