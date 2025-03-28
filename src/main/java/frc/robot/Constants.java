@@ -42,7 +42,7 @@ public final class Constants {
       { 0.274, 0.633, 3.180 },  // [2]:pose 3
       { 0.054, 0.302, 4.055 },  // [3]:pose 4
       { 0.040, 0.420, 0.000 },  // [4]:pose 5 -- drive  left stick
-      { 0.040, 0.330, 0.000 }  // [5]:pose 6 -- ingest  X
+      { 0.044, 0.377, 0.000 }  // [5]:pose 6 -- ingest  X
     };
   };
 
@@ -93,9 +93,9 @@ public final class Constants {
   public static final class RobotConstants {
     public static final double k_raiseNsec = 1000000000.0;
 
-    public static final double k_moveSpeed = 0.02;
+    public static final double k_moveSpeed = 0.05;
 
-    public static final double k_leftAngle = 2;  // degrees from apriltag view to left reef post
+    public static final double k_leftAngle = -5;  // degrees from apriltag view to left reef post
   }
 
   public static final class DriveConstants {
