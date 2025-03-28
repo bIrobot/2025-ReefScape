@@ -76,6 +76,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("L4DR", gotoCommand(3, true));
 
     NamedCommands.registerCommand("ingest", gotoCommand(5, false));
+    NamedCommands.registerCommand("flooringest", gotoCommand(6, false));
     NamedCommands.registerCommand("aprilleft", getfindAprilLeftCommand());
 
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -160,7 +161,8 @@ public class RobotContainer {
     }
 
     if (m_driverController.getRightStickButtonPressed()) {
-        gotoCommand(m_lastPose, true).schedule();
+        //gotoCommand(m_lastPose, true).schedule();
+        gotoCommand(6, false).schedule();
     }
 
     // the POV control selects preset poses 1 (north), 2 (east), 3 (south), 4 (west)
@@ -196,6 +198,10 @@ public Command gotoCommand(int pose, boolean downRelease)
                 m_toggle = true;
             } else if (pose == 5) {
                 m_ArmSubsystem.swivelZero();
+                m_ArmSubsystem.fingerGrab();
+                m_toggle = false;
+            } else if (pose == 6) {
+                m_ArmSubsystem.swivelMinus();
                 m_ArmSubsystem.fingerGrab();
                 m_toggle = false;
             }

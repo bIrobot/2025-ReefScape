@@ -42,7 +42,8 @@ public final class Constants {
       { 0.274, 0.633, 3.180 },  // [2]:pose 3
       { 0.054, 0.302, 4.055 },  // [3]:pose 4
       { 0.040, 0.420, 0.000 },  // [4]:pose 5 -- drive  left stick
-      { 0.044, 0.377, 0.000 }  // [5]:pose 6 -- ingest  X
+      { 0.044, 0.377, 0.000 },  // [5]:pose 6 -- ingest  X
+      { 0.335, 0.495, 1.127 }  // [6]:pose 7 -- floor ingest
     };
   };
 
